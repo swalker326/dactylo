@@ -7,6 +7,7 @@ import {
   ScrollRestoration
 } from "@remix-run/react";
 import "~/tailwind.css";
+import { Button } from "./components/ui/button";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
       </head>
       <body>
         <h1 className="text-6xl">dactylo</h1>
+        <Button>Click me</Button>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
