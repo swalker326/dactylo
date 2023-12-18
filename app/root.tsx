@@ -4,8 +4,9 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
+  ScrollRestoration
 } from "@remix-run/react";
+import "~/tailwind.css";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Links />
       </head>
       <body>
+        <h1 className="text-6xl">dactylo</h1>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
