@@ -1,0 +1,66 @@
+// prisma/schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Sign {
+  id           String     @id @default(cuid())
+  term         String
+  description  String
+  definition   String
+  videos       Video[]
+  categories   Category[] @relation("SignCategories")
+  relatedSigns Sign[]     @relation("RelatedSigns")
+  relatedTo    Sign[]     @relation("RelatedSigns")
+}
+
+model Video {
+  id           String      @id @default(cuid())
+  signId       String
+  userId       String
+  uploaderInfo String
+  uploadDate   DateTime    @default(now())
+  voteCount    Int         @default(0)
+  videoURL     String
+  user         User        @relation(fields: [userId], references: [id])
+  status       VideoStatus
+  sign         Sign        @relation(fields: [signId], references: [id])
+  votes        Vote[]
+}
+
+model User {
+  id             String  @id @default(cuid())
+  username       String  @unique
+  email          String  @unique
+  uploadedVideos Video[]
+  votes          Vote[]
+}
+
+model Vote {
+  id       String   @id @default(cuid())
+  userId   String
+  videoId  String
+  voteType VoteType
+  voteDate DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+  video    Video    @relation(fields: [videoId], references: [id])
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String
+  signs Sign[] @relation("SignCategories")
+}
+
+enum VideoStatus {
+  ACTIVE
+  UNDER_REVIEW
+  REMOVED
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
