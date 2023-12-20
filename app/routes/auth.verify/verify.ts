@@ -1,17 +1,12 @@
-import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { Form, useActionData, useSearchParams } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
 import { z } from "zod";
 import { prisma } from "~/db.server";
 import { getDomainUrl } from "~/utils/misc";
 import { generateTOTP, verifyTOTP } from "~/utils/totp.server";
-import { validateCSRF } from "~/utils/csrf.server";
-import { Submission, useForm, conform } from "@conform-to/react";
+import { Submission } from "@conform-to/react";
 import { verifySessionStorage } from "~/utils/verification.server";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { parse } from "@conform-to/zod";
 import { invariant } from "@epic-web/invariant";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 
 export const codeQueryParam = "code";
 export const targetQueryParam = "target";
@@ -20,10 +15,10 @@ export const redirectToQueryParam = "redirectTo";
 
 const types = ["onboarding", "reset-password", "change-email", "2fa"] as const;
 export const onboardingEmailSessionKey = "onboardingEmail";
-const VerificationTypeSchema = z.enum(types);
+export const VerificationTypeSchema = z.enum(types);
 export type VerificationTypes = z.infer<typeof VerificationTypeSchema>;
 export const twoFAVerificationType = "2fa" satisfies VerificationTypes;
-const VerifySchema = z.object({
+export const VerifySchema = z.object({
   [codeQueryParam]: z.string().min(6).max(6),
   [typeQueryParam]: VerificationTypeSchema,
   [targetQueryParam]: z.string(),
@@ -98,6 +93,7 @@ export async function handleOnboardingVerification({
 }: VerifyFunctionArgs) {
   invariant(submission.value, "submission.value should be defined by now");
   const verifySession = await verifySessionStorage.getSession();
+  console.log("submission.value.target", submission.value.target);
   verifySession.set(onboardingEmailSessionKey, submission.value.target);
   return redirect("/auth/onboarding", {
     headers: {
@@ -132,7 +128,7 @@ export async function isCodeValid({
   return true;
 }
 
-async function validateRequest(
+export async function validateRequest(
   request: Request,
   body: URLSearchParams | FormData
 ) {
@@ -196,83 +192,4 @@ async function validateRequest(
     //   return handleLoginTwoFactorVerification({ request, body, submission });
     // }
   }
-}
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  await validateCSRF(formData, request.headers);
-  return validateRequest(request, formData);
-}
-
-export default function VerifyRoute() {
-  const [searchParams] = useSearchParams();
-  const actionData = useActionData<typeof action>();
-  const parsedType = VerificationTypeSchema.safeParse(
-    searchParams.get(typeQueryParam)
-  );
-  const type = parsedType.success ? parsedType.data : null;
-  const checkEmail = (
-    <>
-      <h1 className="text-h1">Check your email</h1>
-      <p className="mt-3 text-body-md text-muted-foreground">
-        We've sent you a code to verify your email address.
-      </p>
-    </>
-  );
-  const [form, fields] = useForm({
-    id: "verify-form",
-    constraint: getFieldsetConstraint(VerifySchema),
-    lastSubmission: actionData?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: VerifySchema });
-    },
-    defaultValue: {
-      code: searchParams.get(codeQueryParam) ?? "",
-      type,
-      target: searchParams.get(targetQueryParam) ?? "",
-      redirectTo: searchParams.get(redirectToQueryParam) ?? ""
-    }
-  });
-  return (
-    <main className="container flex flex-col justify-center pb-32 pt-20">
-      <div className="text-center">
-        {type ? checkEmail : "Invalid Verification Type"}
-      </div>
-
-      <div className="mx-auto flex w-72 max-w-full flex-col justify-center gap-1">
-        {/* <div>
-          <ErrorList errors={form.errors} id={form.errorId} />
-        </div> */}
-        <div className="flex w-full gap-2">
-          <Form method="POST" {...form.props} className="flex-1">
-            <AuthenticityTokenInput />
-            <Input
-              {...conform.input(fields[codeQueryParam])}
-              // labelProps={{
-              //   htmlFor: fields[codeQueryParam].id,
-              //   children: "Code"
-              // }}
-              // inputProps={{
-              //   ...conform.input(fields[codeQueryParam]),
-              //   autoComplete: "one-time-code"
-              // }}
-              // errors={fields[codeQueryParam].errors}
-            />
-            <input
-              {...conform.input(fields[typeQueryParam], { type: "hidden" })}
-            />
-            <input
-              {...conform.input(fields[targetQueryParam], { type: "hidden" })}
-            />
-            <input
-              {...conform.input(fields[redirectToQueryParam], {
-                type: "hidden"
-              })}
-            />
-            <Button type="submit">Submit</Button>
-          </Form>
-        </div>
-      </div>
-    </main>
-  );
 }

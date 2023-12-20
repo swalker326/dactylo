@@ -1,13 +1,8 @@
-import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  json,
-  redirect
-} from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
 import { z } from "zod";
 import { PasswordAndConfirmPasswordSchema } from "~/utils/user-validation";
 import { verifySessionStorage } from "~/utils/verification.server";
-import { onboardingEmailSessionKey } from "./auth.verify";
+
 import { authSessionStorage } from "~/services/session.server";
 import { sessionKey, signup } from "~/services/auth.server";
 import { validateCSRF } from "~/utils/csrf.server";
@@ -17,6 +12,7 @@ import { redirectWithToast } from "~/utils/toast.server";
 import { safeRedirect } from "remix-utils/safe-redirect";
 import {
   Form,
+  Link,
   useActionData,
   useLoaderData,
   useSearchParams
@@ -25,6 +21,8 @@ import { useForm } from "@conform-to/react";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
+import { getSessionEmail } from "./onboarding";
+import { Checkbox } from "~/components/ui/checkbox";
 
 const SignupFormSchema = z
   .object({
@@ -36,17 +34,6 @@ const SignupFormSchema = z
     redirectTo: z.string().optional()
   })
   .and(PasswordAndConfirmPasswordSchema);
-
-const getSessionEmail = async (request: Request) => {
-  const verifySession = await verifySessionStorage.getSession(
-    request.headers.get("cookie")
-  );
-  const email = verifySession.get(onboardingEmailSessionKey);
-  if (typeof email !== "string" || !email) {
-    throw redirect("/signup");
-  }
-  return email;
-};
 
 export async function action({ request }: ActionFunctionArgs) {
   const email = await getSessionEmail(request);
@@ -115,11 +102,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function SignupRoute() {
   const data = useLoaderData<typeof loader>();
+  console.log("ON BOARDING DATA", data);
   const actionData = useActionData<typeof action>();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");
 
-  const [form, fields] = useForm({
+  const [form] = useForm({
     id: "onboarding-form",
     constraint: getFieldsetConstraint(SignupFormSchema),
     defaultValue: { redirectTo },
@@ -133,21 +121,34 @@ export default function SignupRoute() {
   return (
     <>
       {form.errors.toString()}
-      <Form method="POST" {...form.props}>
+      <Form method="POST" {...form.props} className="space-y-3">
         <AuthenticityTokenInput />
-        <Input name="password" />
-        <Input name="confirmPassword" />
-        <Input type="checkbox" name="agreeToTermsOfServiceAndPrivacyPolicy" />
-        <label htmlFor="agreeToTermsOfServiceAndPrivacyPolicy">
-          I agree to the{" "}
-          <a href="/terms-of-service" target="_blank">
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="/privacy-policy" target="_blank">
-            Privacy Policy
-          </a>
-        </label>
+        <Input type="password" name="password" placeholder="Password" />
+        <Input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+        />
+        <div className="flex items-center gap-2 justify-center">
+          <Checkbox name="agreeToTermsOfServiceAndPrivacyPolicy" />
+          <label htmlFor="agreeToTermsOfServiceAndPrivacyPolicy">
+            <Link
+              className="text-blue-300"
+              to="/terms-of-service"
+              target="_blank"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              className="text-blue-300"
+              to="/privacy-policy"
+              target="_blank"
+            >
+              Privacy Policy
+            </Link>
+          </label>
+        </div>
         <Button>Sign Up</Button>
       </Form>
     </>

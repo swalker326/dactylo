@@ -8,24 +8,43 @@ import {
   useLoaderData
 } from "@remix-run/react";
 import "~/tailwind.css";
-import { Button } from "./components/ui/button";
 import { csrf } from "./utils/csrf.server";
-import { json } from "@remix-run/node";
-import { combineHeaders } from "./utils/misc";
+import { HeadersFunction, LoaderFunctionArgs, json } from "@remix-run/node";
 import { AuthenticityTokenProvider } from "remix-utils/csrf/react";
+import { Header } from "./components/header";
+import { getUserId } from "./services/auth.server";
+import { prisma } from "./db.server";
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
   const [csrfToken, csrfCookieHeader] = await csrf.commitToken();
-  console.log("Commited token", csrfToken, csrfCookieHeader);
-  return json(
-    { csrfToken },
+  const userId = await getUserId(request);
+  if (!userId)
+    return json(
+      { csrfToken, user: null },
+      {
+        headers: { "set-cookie": csrfCookieHeader || "" }
+      }
+    );
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true }
+  });
+  const response = json(
+    { csrfToken, user },
     {
-      headers: combineHeaders(
-        csrfCookieHeader ? { "set-cookie": csrfCookieHeader } : null
-      )
+      headers: { "set-cookie": csrfCookieHeader || "" }
     }
   );
+  return response;
 }
+
+export const headers: HeadersFunction = ({ loaderHeaders }) => {
+  const headers = {
+    "set-cookie": loaderHeaders.get("set-cookie") ?? "",
+    "Server-Timing": loaderHeaders.get("Server-Timing") ?? ""
+  };
+  return headers;
+};
 
 export default function App() {
   const data = useLoaderData<typeof loader>();
@@ -40,12 +59,8 @@ export default function App() {
       <body className="">
         <AuthenticityTokenProvider token={data.csrfToken}>
           <div className="min-h-screen flex flex-col">
-            <header className="flex justify-between items-center px-2 mb-2 bg-gray-200 p-6">
-              <h1 className="text-6xl">
-                <span className="font-bold text-blue-400">dact</span>ylo
-              </h1>
-            </header>
-            <div className="container flex-1">
+            <Header user={data.user || null} />
+            <div className="container p-2 flex-1">
               <Outlet />
             </div>
             <footer className="flex justify-between items-center px-2 mt-2">

@@ -14,6 +14,14 @@ export const getSessionExpirationDate = () =>
 
 export const sessionKey = "sessionId";
 
+export async function requireAnonymous(request: Request) {
+  const userId = await getUserId(request);
+  console.log("anonymous", userId);
+  if (userId) {
+    throw redirect("/");
+  }
+}
+
 export async function getUserId(request: Request) {
   const authSession = await authSessionStorage.getSession(
     request.headers.get("cookie")
@@ -179,15 +187,15 @@ export async function verifyUserPassword(
   return { id: userWithPassword.id };
 }
 
-export let authenticator = new Authenticator<User>(authSessionStorage);
+export const authenticator = new Authenticator<User>(authSessionStorage);
 
 authenticator.use(
   new FormStrategy(async ({ form }) => {
-    let email = form.get("email") as string;
-    let password = form.get("password") as string;
+    const email = form.get("email") as string;
+    const password = form.get("password") as string;
     if (!email || !password)
       throw new AuthorizationError("Invalid email or password");
-    let user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) throw new AuthorizationError("Invalid email or password");
     // the type of this user must match the type you pass to the Authenticator
     // the strategy will automatically inherit the type if you instantiate

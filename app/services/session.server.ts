@@ -3,7 +3,7 @@ import { createCookieSessionStorage } from "@remix-run/node";
 // export the whole sessionStorage object
 export const authSessionStorage = createCookieSessionStorage({
   cookie: {
-    name: "en_session",
+    name: "authSession",
     sameSite: "lax",
     path: "/",
     httpOnly: true,
@@ -13,4 +13,4 @@ export const authSessionStorage = createCookieSessionStorage({
 });
 
 // you can also export the methods individually for your own usage
-export let { getSession, commitSession, destroySession } = authSessionStorage;
+export const { getSession, commitSession, destroySession } = authSessionStorage;

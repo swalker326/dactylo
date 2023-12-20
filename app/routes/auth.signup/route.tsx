@@ -7,21 +7,23 @@ import { Form, useActionData } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { sendEmail } from "~/utils/email.server";
-import { prepareVerification } from "./auth.verify";
+import { prepareVerification } from "~/routes/auth.verify/verify";
 import { prisma } from "~/db.server";
+// import { validateCSRF } from "~/utils/csrf.server";
+// import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 
-const schema = z.object({
+const SIGNUP_SCHEMA = z.object({
   email: z
     .string({ required_error: "Email is required" })
-    .email("Email is invalid"),
-  password: z.string({ required_error: "Message is required" })
+    .email("Email is invalid")
 });
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  // Replace `Object.fromEntries()` with the parse function
+  // await validateCSRF(formData, request.headers);
+
   const submission = await parse(formData, {
-    schema: schema.superRefine(async (data, ctx) => {
+    schema: SIGNUP_SCHEMA.superRefine(async (data, ctx) => {
       const exisitngUser = await prisma.user.findUnique({
         where: { email: data.email },
         select: { id: true }
@@ -51,13 +53,14 @@ export async function action({ request }: ActionFunctionArgs) {
     type: "onboarding",
     target: email
   });
-
   const response = await sendEmail({
     to: email,
-    subject: `Welcome to Epic Notes!`,
+    subject: `Welcome to Dactylo!`,
     react: <SignupEmail onboardingUrl={verifyUrl.toString()} otp={otp} />
   });
+  console.log("GOT HERE REDIRECTING");
   if (response.status === "success") {
+    console.log("\n Redirecting to", redirectTo.toString());
     return redirect(redirectTo.toString());
   } else {
     submission.error[""] = [response.error.message];
@@ -68,34 +71,27 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function SignupRoute() {
   const actionData = useActionData<typeof action>();
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(schema),
+    constraint: getFieldsetConstraint(SIGNUP_SCHEMA),
     lastSubmission: actionData?.submission,
-
     onValidate({ formData }) {
-      return parse(formData, { schema });
+      return parse(formData, { schema: SIGNUP_SCHEMA });
     },
     shouldValidate: "onBlur"
   });
-  console.log(form.props);
   return (
     <div>
       <Form method="POST" {...form.props}>
         <div className="flex flex-col gap-y-2 w-full">
           <Input
+            data-1p-ignore
             type="email"
             name="email"
             required
+            placeholder="Email"
             // defaultValue={fields.email.defaultValue}
           />
-          <div>{fields.password.errors}</div>
-          <Input
-            type="password"
-            name="password"
-            autoComplete="current-password"
-            // defaultValue={fields.password.defaultValue}
-            required
-          />
-          <div>{fields.password.errors}</div>
+          <div>{fields.email.errors}</div>
+
           <Button>Sign Up</Button>
         </div>
       </Form>
@@ -103,7 +99,7 @@ export default function SignupRoute() {
   );
 }
 
-export function SignupEmail({
+function SignupEmail({
   onboardingUrl,
   otp
 }: {
@@ -118,7 +114,7 @@ export function SignupEmail({
         </h1>
         <p>
           <E.Text>
-            Here's your verification code: <strong>{otp}</strong>
+            This is your verification code: <strong>{otp}</strong>
           </E.Text>
         </p>
         <p>

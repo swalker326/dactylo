@@ -1,20 +1,19 @@
 import { createCookie } from "@remix-run/node";
 import { CSRF, CSRFError } from "remix-utils/csrf/server";
-
+const secrets = process.env.CSRF_SECRETS?.split(",") ?? [];
+console.log(secrets);
 const cookie = createCookie("csrf", {
   path: "/",
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
-  secrets: ["mys3cr3t"]
+  secrets: process.env.CSRF_SECRETS?.split(",") ?? []
 });
 
 export const csrf = new CSRF({ cookie });
 
 export async function validateCSRF(formData: FormData, headers: Headers) {
   try {
-    console.log("validateCSRF");
-    console.log(csrf);
     await csrf.validate(formData, headers);
   } catch (error) {
     if (error instanceof CSRFError) {
