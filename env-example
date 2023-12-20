@@ -1,0 +1,4 @@
+DATABASE_URL="postgresql://local:mypassword@localhost:5432/dactylo-db"
+DIRECT_URL="postgresql://local:mypassword@localhost:5432/dactylo-db"
+SESSION_SECRET="mys3cr3t"
+CSRF_SECRETS="csrf-secret,testing-something"
