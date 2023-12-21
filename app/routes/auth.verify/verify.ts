@@ -19,10 +19,10 @@ export const VerificationTypeSchema = z.enum(types);
 export type VerificationTypes = z.infer<typeof VerificationTypeSchema>;
 export const twoFAVerificationType = "2fa" satisfies VerificationTypes;
 export const VerifySchema = z.object({
-  [codeQueryParam]: z.string().min(6).max(6),
-  [typeQueryParam]: VerificationTypeSchema,
-  [targetQueryParam]: z.string(),
-  [redirectToQueryParam]: z.string().optional()
+  code: z.string().min(6).max(6),
+  type: VerificationTypeSchema,
+  target: z.string(),
+  redirectTo: z.string().optional()
 });
 
 export type VerifyFunctionArgs = {
@@ -135,9 +135,9 @@ export async function validateRequest(
   const submission = await parse(body, {
     schema: VerifySchema.superRefine(async (data, ctx) => {
       const codeIsValid = await isCodeValid({
-        code: data[codeQueryParam],
-        type: data[typeQueryParam],
-        target: data[targetQueryParam]
+        code: data["code"],
+        target: data["target"],
+        type: data["type"]
       });
       if (!codeIsValid) {
         ctx.addIssue({

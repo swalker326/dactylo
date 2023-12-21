@@ -1,6 +1,5 @@
 import { useForm } from "@conform-to/react";
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import z from "zod";
 import { parse, getFieldsetConstraint } from "@conform-to/zod";
 import * as E from "@react-email/components";
 import { Form, useActionData } from "@remix-run/react";
@@ -9,6 +8,7 @@ import { Input } from "~/components/ui/input";
 import { sendEmail } from "~/utils/email.server";
 import { prepareVerification } from "~/routes/auth.verify/verify";
 import { prisma } from "~/db.server";
+import { z } from "zod";
 // import { validateCSRF } from "~/utils/csrf.server";
 // import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 
@@ -60,8 +60,10 @@ export async function action({ request }: ActionFunctionArgs) {
   });
   console.log("GOT HERE REDIRECTING");
   if (response.status === "success") {
+    const path = redirectTo.pathname + redirectTo.search;
+    console.log(path);
     console.log("\n Redirecting to", redirectTo.toString());
-    return redirect(redirectTo.toString());
+    return redirect(path);
   } else {
     submission.error[""] = [response.error.message];
     return json({ status: "error", submission } as const, { status: 500 });
