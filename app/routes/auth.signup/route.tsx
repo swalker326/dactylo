@@ -1,6 +1,5 @@
 import { useForm } from "@conform-to/react";
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import z from "zod";
 import { parse, getFieldsetConstraint } from "@conform-to/zod";
 import * as E from "@react-email/components";
 import { Form, useActionData } from "@remix-run/react";
@@ -9,6 +8,7 @@ import { Input } from "~/components/ui/input";
 import { sendEmail } from "~/utils/email.server";
 import { prepareVerification } from "~/routes/auth.verify/verify";
 import { prisma } from "~/db.server";
+import { z } from "zod";
 // import { validateCSRF } from "~/utils/csrf.server";
 // import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 

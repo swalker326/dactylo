@@ -1,22 +1,34 @@
-import { useForm, conform } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { useRemixForm, getValidatedFormData } from "remix-hook-form";
+import { useSearchParams, Form } from "@remix-run/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@react-email/components";
 import { ActionFunctionArgs, json } from "@remix-run/node";
-import { useSearchParams, useActionData, Form } from "@remix-run/react";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { Input } from "~/components/ui/input";
 import { validateCSRF } from "~/utils/csrf.server";
 import {
-  typeQueryParam,
   codeQueryParam,
   targetQueryParam,
   redirectToQueryParam,
   VerifySchema,
-  validateRequest
+  validateRequest,
+  VerificationTypes
 } from "./verify";
+
+type FormData = z.infer<typeof VerifySchema>;
+const resolver = zodResolver(VerifySchema);
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
+  const {
+    errors,
+    // data,
+    receivedValues: defaultValues
+  } = await getValidatedFormData<FormData>(request, resolver);
+  if (errors) {
+    return json({ errors, defaultValues }, { status: 400 });
+  }
   await validateCSRF(formData, request.headers);
   return validateRequest(request, formData);
 }
@@ -27,35 +39,31 @@ export async function loader() {
 }
 
 export default function VerifyRoute() {
-  const actionData = useActionData<typeof action>();
+  // const actionData = useActionData<typeof action>();
   const [searchParams] = useSearchParams();
-  const verifyType = searchParams.get("type");
-  const [form, fields] = useForm({
-    // id: "verify-form",
-    // TODO: uncomment this and it breaks
-    // constraint: getFieldsetConstraint(VerifySchema),
-    lastSubmission: actionData?.submission
-    // TODO: uncomment this and it breaks
-    // onValidate({ formData }) {
-    //   return parse(formData, { schema: VerifySchema });
-    // }
-    // TODO: uncomment this and it breaks
-    // defaultValue: {
-    //   code: searchParams.get(codeQueryParam) ?? "",
-    //   type: verifyType ?? "",
-    //   target: searchParams.get(targetQueryParam) ?? "",
-    //   redirectTo: searchParams.get(redirectToQueryParam) ?? ""
-    // }
+  const verifyType = searchParams.get("type") as VerificationTypes;
+  const {
+    handleSubmit,
+    formState: { errors },
+    register
+  } = useRemixForm<FormData>({
+    mode: "onSubmit",
+    defaultValues: {
+      code: searchParams.get(codeQueryParam) ?? "",
+      type: verifyType ?? "",
+      target: searchParams.get(targetQueryParam) ?? "",
+      redirectTo: searchParams.get(redirectToQueryParam) ?? ""
+    },
+    resolver
   });
-  // if (!true) {
-  //   return (
-  //     <main className="container flex flex-col justify-center pb-32 pt-20">
-  //       <div className="text-center">
-  //         <h1 className="text-h1">Invalid Verification Type</h1>
-  //       </div>
-  //     </main>
-  //   );
+
+  // defaultValue: {
+  //   code: searchParams.get(codeQueryParam) ?? "",
+  //   type: verifyType ?? "",
+  //   target: searchParams.get(targetQueryParam) ?? "",
+  //   redirectTo: searchParams.get(redirectToQueryParam) ?? ""
   // }
+
   return (
     <div className="container flex flex-col justify-center pb-32 pt-20">
       <div className="text-center">
@@ -76,12 +84,16 @@ export default function VerifyRoute() {
           <ErrorList errors={form.errors} id={form.errorId} />
         </div> */}
         <div className="flex w-full gap-2">
-          <Form method="POST" {...form.props}>
+          <Form method="POST" onSubmit={handleSubmit}>
+            <AuthenticityTokenInput />
             {/* <AuthenticityTokenInput /> */}
-            <Input name="code" />
-            <input name="typeQueryParam" type="hidden" />
-            <input name="targetQueryParam" type="hidden" />
-            <input name="redirectToQueryParam" type="hidden" />
+            <Input {...register("code")} />
+            {errors?.code && (
+              <p className="text-red-500">{errors.code.message}</p>
+            )}
+            <input {...register("type")} type="hidden" />
+            <input {...register("target")} type="hidden" />
+            <input {...register("redirectTo")} type="hidden" />
             <Button type="submit">Submit</Button>
           </Form>
         </div>

@@ -19,10 +19,10 @@ export const VerificationTypeSchema = z.enum(types);
 export type VerificationTypes = z.infer<typeof VerificationTypeSchema>;
 export const twoFAVerificationType = "2fa" satisfies VerificationTypes;
 export const VerifySchema = z.object({
-  [codeQueryParam]: z.string().min(6).max(6),
-  [typeQueryParam]: VerificationTypeSchema,
-  [targetQueryParam]: z.string(),
-  [redirectToQueryParam]: z.string().optional()
+  code: z.string().min(6).max(6),
+  type: VerificationTypeSchema,
+  target: z.string(),
+  redirectTo: z.string().optional()
 });
 
 export type VerifyFunctionArgs = {
