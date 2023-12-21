@@ -12,6 +12,9 @@
     "db:setup": "prisma generate && prisma migrate deploy"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.478.0",
+    "@aws-sdk/lib-storage": "^3.478.0",
+    "@aws-sdk/s3-request-presigner": "^3.478.0",
     "@epic-web/invariant": "^1.0.0",
     "@epic-web/totp": "^1.1.1",
     "@paralleldrive/cuid2": "^2.2.2",
