@@ -38,7 +38,7 @@ docker run --name local-postgres -e POSTGRES_USER=local -e POSTGRES_PASSWORD=myp
 If the DB is fresh, you need to run the migration:
 
 ```shell
-npx prisma db migrate dev
+npx prisma migrate dev
 ```
 
 You can check if you instance is running with:
