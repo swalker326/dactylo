@@ -23,15 +23,17 @@ model Sign {
 
 model Video {
   id           String      @id @default(cuid())
-  signId       String
+  name         String
+  signId       String?
   userId       String
   uploaderInfo String
   uploadDate   DateTime    @default(now())
   voteCount    Int         @default(0)
-  videoURL     String
+  url          String
+  gifUrl       String?
   user         User        @relation(fields: [userId], references: [id])
   status       VideoStatus
-  sign         Sign        @relation(fields: [signId], references: [id])
+  sign         Sign?       @relation(fields: [signId], references: [id])
   votes        Vote[]
 }
 
