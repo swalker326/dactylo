@@ -70,7 +70,7 @@ export default function App() {
             <div className="container p-2 flex-1">
               <Outlet />
             </div>
-            <footer className="flex justify-between items-center px-2 mt-2">
+            <footer className=" hidden md:flex  justify-between items-center px-2 mt-2">
               <p>© 2024 Dactylo</p>
             </footer>
           </div>
