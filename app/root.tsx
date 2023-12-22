@@ -65,7 +65,7 @@ export default function App() {
       </head>
       <body className="">
         <AuthenticityTokenProvider token={data.csrfToken}>
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-[100svh] flex flex-col">
             <Header user={data.user || null} />
             <div className="container p-2 flex-1">
               <Outlet />
@@ -78,6 +78,7 @@ export default function App() {
           <Scripts />
           <LiveReload />
         </AuthenticityTokenProvider>
+        <div id="camera-root"></div>
       </body>
     </html>
   );
