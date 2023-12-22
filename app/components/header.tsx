@@ -1,7 +1,7 @@
 import { Cross2Icon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Input } from "./ui/input";
-import { Form, NavLink } from "@remix-run/react";
+import { Form, NavLink, useLocation } from "@remix-run/react";
 import { useRef, useState } from "react";
 import { User } from "@prisma/client";
 import { Button } from "./ui/button";
@@ -14,6 +14,7 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const isLoggedIn = Boolean(user);
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const loc = useLocation();
   return (
     <header className="flex justify-between items-center px-2 bg-gray-200 p-6">
       <div className="flex justify-between w-full items-center">
@@ -112,7 +113,11 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
                     </li>
                   </ul>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-3 pb-8">
+                <div
+                  className={`absolute bottom-0 left-0 right-0 p-3 ${
+                    loc.pathname.startsWith("/dashboard") ? "pb-14" : ""
+                  }`}
+                >
                   {isLoggedIn ? (
                     <div className="flex justify-between items-center">
                       <p>{user?.email}</p>
