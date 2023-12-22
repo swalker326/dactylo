@@ -17,7 +17,6 @@ import { Button } from "~/components/ui/button";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  console.log("Hi");
   await validateCSRF(formData, request.headers);
   return validateRequest(request, formData);
 }
@@ -30,7 +29,6 @@ export default function VerifyRoute() {
   const actionData = useActionData<typeof action>();
   const [searchParams] = useSearchParams();
   const verifyType = searchParams.get("type");
-  console.log(verifyType);
   const [form, { code, redirectTo, target, type }] = useForm({
     id: "verify-form",
     constraint: getFieldsetConstraint(VerifySchema),
@@ -45,8 +43,6 @@ export default function VerifyRoute() {
       redirectTo: searchParams.get(redirectToQueryParam) ?? ""
     }
   });
-  console.log(target.defaultValue);
-  console.log(type.defaultValue);
   return (
     <div className="container flex flex-col justify-center pb-32 pt-20">
       <div className="text-center">
@@ -63,16 +59,25 @@ export default function VerifyRoute() {
       </div>
 
       <div className="mx-auto flex w-72 max-w-full flex-col justify-center gap-1">
-        <div className="flex w-full gap-2">
-          <Form method="POST" {...form.props}>
-            <AuthenticityTokenInput />
-            <Input {...code} type="hidden" />
-            <input {...type} type="hidden" />
-            <input {...target} type="hidden" />
-            <input {...redirectTo} type="hidden" />
+        <Form
+          method="POST"
+          {...form.props}
+          className="flex flex-col w-full gap-3"
+        >
+          <AuthenticityTokenInput />
+          <Input {...code} />
+          {code.error && (
+            <div className="bg-red-100 text-red-600 p-1 px-2 rounded-md">
+              {code.error}
+            </div>
+          )}
+          <input {...type} type="hidden" />
+          <input {...target} type="hidden" />
+          <input {...redirectTo} type="hidden" />
+          <div className="w-full flex justify-center">
             <Button>Submit</Button>
-          </Form>
-        </div>
+          </div>
+        </Form>
       </div>
     </div>
   );
