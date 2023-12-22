@@ -13,6 +13,7 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
   const [open, setOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const isLoggedIn = Boolean(user);
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
   return (
     <header className="flex justify-between items-center px-2 bg-gray-200 p-6">
       <div className="flex justify-between w-full items-center">
@@ -28,14 +29,14 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
           <Dialog.Portal>
             <Dialog.Overlay className="bg-gray-800 opacity-70 data-[state=open]:animate-overlayShow fixed inset-0" />
             <Dialog.Content
-              // onOpenAutoFocus={() => {
-              //   // wait for the dialog to be in the DOM
-              //   // then focus the input, super weird but it works
-              //   wait(1).then(() => {
-              //     searchInputRef.current?.focus();
-              //   });
-              // }}
-              className="data-[state=open]:animate-contentShow fixed w-screen h-screen top-0 bg-white p-4 focus:outline-none"
+              onOpenAutoFocus={() => {
+                // wait for the dialog to be in the DOM
+                // then focus the input, super weird but it works
+                wait(1).then(() => {
+                  searchInputRef.current?.focus();
+                });
+              }}
+              className="data-[state=open]:animate-contentShow fixed w-screen h-[100svh] top-0 bg-white p-4 focus:outline-none"
             >
               <div className="h-full relative ">
                 <div className="flex justify-between items-center pb-2">
