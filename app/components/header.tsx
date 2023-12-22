@@ -112,7 +112,7 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
                     </li>
                   </ul>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-3">
+                <div className="absolute bottom-0 left-0 right-0 p-3 pb-8">
                   {isLoggedIn ? (
                     <div className="flex justify-between items-center">
                       <p>{user?.email}</p>
