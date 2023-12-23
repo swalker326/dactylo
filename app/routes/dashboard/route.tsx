@@ -1,5 +1,16 @@
+import { MetaFunction } from "@remix-run/node";
 import { NavLink, Outlet } from "@remix-run/react";
 import { CameraIcon, Home, Settings, Upload } from "lucide-react";
+
+export const meta: MetaFunction = () => {
+  return [
+    {
+      title: "Dactylo | Dashboard",
+      keywords: "asl, american sign language, learn, teach, dactylo"
+    },
+    { name: "description", content: "Learning ASL with others" }
+  ];
+};
 
 export default function DashboardRoute() {
   return (

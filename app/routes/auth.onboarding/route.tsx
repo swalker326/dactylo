@@ -14,7 +14,7 @@ import {
   Form,
   Link,
   useActionData,
-  useLoaderData,
+  // useLoaderData,
   useSearchParams
 } from "@remix-run/react";
 import { useForm } from "@conform-to/react";
@@ -101,8 +101,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function SignupRoute() {
-  const data = useLoaderData<typeof loader>();
-  console.log("ON BOARDING DATA", data);
+  // const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");

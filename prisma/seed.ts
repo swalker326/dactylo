@@ -1,4 +1,5 @@
 import { prisma } from "~/db.server";
+import sampleWords from "../app/sampleWords";
 
 async function seed() {
   console.time("👑 Created roles...");
@@ -25,6 +26,18 @@ async function seed() {
     }
   });
   console.timeEnd("👑 Created roles...");
+  // Create sample roles
+  console.time("Adding sample words...");
+  sampleWords.forEach(async ({ term, definition, example }) => {
+    await prisma.sign.create({
+      data: {
+        term: term,
+        definition: definition,
+        example: example
+      }
+    });
+  });
+  console.timeEnd("Adding sample words...");
 }
 
 seed()

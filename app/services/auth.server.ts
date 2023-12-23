@@ -16,7 +16,6 @@ export const sessionKey = "sessionId";
 
 export async function requireAnonymous(request: Request) {
   const userId = await getUserId(request);
-  console.log("anonymous", userId);
   if (userId) {
     throw redirect("/");
   }

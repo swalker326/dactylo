@@ -34,8 +34,6 @@ const CameraComponent: React.FC = () => {
       } else {
         videoRef.current.srcObject = stream;
       }
-    } else {
-      console.log("NO VIDEO REF");
     }
   }, [stream, mediaBlobUrl, cameraActive]);
 

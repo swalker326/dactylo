@@ -13,7 +13,7 @@ generator client {
 model Sign {
   id           String     @id @default(cuid())
   term         String
-  description  String
+  example      String
   definition   String
   videos       Video[]
   categories   Category[] @relation("SignCategories")

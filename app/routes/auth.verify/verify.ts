@@ -93,7 +93,6 @@ export async function handleOnboardingVerification({
 }: VerifyFunctionArgs) {
   invariant(submission.value, "submission.value should be defined by now");
   const verifySession = await verifySessionStorage.getSession();
-  console.log("submission.value.target", submission.value.target);
   verifySession.set(onboardingEmailSessionKey, submission.value.target);
   return redirect("/auth/onboarding", {
     headers: {

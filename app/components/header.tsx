@@ -1,7 +1,7 @@
 import { Cross2Icon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Input } from "./ui/input";
-import { Form, NavLink, useLocation } from "@remix-run/react";
+import { Form, NavLink, useFetcher, useLocation } from "@remix-run/react";
 import { useRef, useState } from "react";
 import { User } from "@prisma/client";
 import { Button } from "./ui/button";
@@ -14,6 +14,7 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const isLoggedIn = Boolean(user);
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const searchFetcher = useFetcher();
   const loc = useLocation();
   return (
     <header className="flex justify-between items-center px-2 bg-gray-200 p-6">
@@ -47,11 +48,14 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
                   </Dialog.Close>
                 </div>
                 <div>
-                  <Input
-                    ref={searchInputRef}
-                    placeholder="Search"
-                    className="order-1"
-                  />
+                  <searchFetcher.Form method="GET" action="/sign/search">
+                    <Input
+                      ref={searchInputRef}
+                      placeholder="Search"
+                      className="order-1"
+                      name="q"
+                    />
+                  </searchFetcher.Form>
                 </div>
                 <div className="py-2">
                   <ul className="flex flex-col space-y-3">

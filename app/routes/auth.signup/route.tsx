@@ -58,11 +58,8 @@ export async function action({ request }: ActionFunctionArgs) {
     subject: `Welcome to Dactylo!`,
     react: <SignupEmail onboardingUrl={verifyUrl.toString()} otp={otp} />
   });
-  console.log("GOT HERE REDIRECTING");
   if (response.status === "success") {
     const path = redirectTo.pathname + redirectTo.search;
-    console.log(path);
-    console.log("\n Redirecting to", redirectTo.toString());
     return redirect(path);
   } else {
     submission.error[""] = [response.error.message];

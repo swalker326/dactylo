@@ -1,78 +1,168 @@
-import { VideoStatus } from "@prisma/client";
-import {
-  ActionFunctionArgs,
-  json,
-  unstable_parseMultipartFormData
-} from "@remix-run/node";
+import * as E from "@react-email/components";
+import { ActionFunctionArgs, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { prisma } from "~/db.server";
+// import { prisma } from "~/db.server";
 import { requireUserId } from "~/services/auth.server";
-import { uploadHandler } from "~/utils/storage.server";
+import {
+  FileUploadResponseSchema,
+  uploadHandler
+} from "~/utils/storage.server";
+import { SignSelect } from "~/routes/resources.sign/route";
+import { z } from "zod";
+import { useForm } from "@conform-to/react";
+import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { invariant } from "@epic-web/invariant";
+import { prisma } from "~/db.server";
+import { sendEmail } from "~/utils/email.server";
+import { addGifToVideo } from "~/utils/gif.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
   if (!userId) {
     throw new Error("Not logged in");
   }
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler
+  const user = await prisma.user.findUnique({
+    where: { id: userId }
+  });
+  const formData = await request.formData();
+  const file = formData.get("file");
+  invariant(file instanceof File, "No file uploaded");
+  invariant(user, "No user found");
+  const signId = formData.get("sign");
+  const sign = await prisma.sign.findUnique({
+    where: { id: signId as string }
+  });
+  invariant(sign, `No sign found matching id ${signId}`);
+  const videoUploadResponse = await uploadHandler({
+    data: file,
+    filename: sign.term,
+    contentType: file.type
+  });
+  invariant(videoUploadResponse, "No video returned");
+  invariant(signId, "No sign selected");
+  const parsedUploadResponse = FileUploadResponseSchema.safeParse(
+    JSON.parse(videoUploadResponse)
   );
-
-  const file = formData.get("file") as string;
-  if (!file) {
-    throw new Error("No file uploaded");
+  if (!parsedUploadResponse.success) {
+    throw new Error("Invalid video");
   }
-  const fileObject = JSON.parse(file);
-  const video = await prisma.video.create({
+  const dbVideo = await prisma.video.create({
     data: {
-      name: encodeURIComponent(fileObject.filename),
-      url: fileObject.url,
-      status: VideoStatus.UNDER_REVIEW,
+      name: encodeURIComponent(parsedUploadResponse.data.filename),
+      url:
+        process.env.STORAGE_ACCESS_URL +
+        encodeURIComponent(parsedUploadResponse.data.filename),
+      status: "UNDER_REVIEW",
       uploaderInfo: JSON.stringify({}),
       user: { connect: { id: userId } }
     }
   });
-  console.log(video);
+  await addGifToVideo({
+    video: file,
+    videoId: dbVideo.id,
+    name: sign.term
+  });
+  const updatedSign = await prisma.sign.update({
+    where: { id: signId as string },
+    data: {
+      videos: {
+        connect: [{ id: dbVideo.id }]
+      }
+    }
+  });
+  sendEmail({
+    to: "shane@swalker.dev",
+    subject: "New video uploaded for review",
+    react: (
+      <NewUploadEmailTemplate videoUrl={dbVideo.url} userEmail={user.email} />
+    )
+  });
 
-  return json({ video });
+  return json({ sign: updatedSign });
 }
 
+const UploadFormSchema = z.object({
+  file: z.instanceof(File, { message: "Please upload a file" }),
+  sign: z.string({
+    required_error: "Please select a sign",
+    invalid_type_error: "That's not a sign"
+  })
+});
+
 export default function DashboardRoute() {
-  const [rdyToUpload, setRdyToUpload] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const fetcher = useFetcher<typeof action>();
-  useEffect(() => {
-    console.log("VALUE:", !!inputRef.current?.value);
-    console.log("VALUE:", inputRef.current?.files?.length);
-    if (fetcher.state === "idle" && !!inputRef.current?.files?.length) {
-      setRdyToUpload(true);
+  const [form, { file, sign }] = useForm({
+    constraint: getFieldsetConstraint(UploadFormSchema),
+    // defaultValue: { redirectTo },
+    // lastSubmission: fetcher.data?.submission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: UploadFormSchema });
     }
-  }, [fetcher.state, inputRef.current?.files, setRdyToUpload]);
-  console.log("RDY TO UPLOAD:", rdyToUpload);
+  });
+
   return (
     <div className="flex flex-col gap-y-4">
       <h2 className="text-3xl">Upload a New Video</h2>
       {fetcher.state === "loading" && <p>Uploading...</p>}
-      <fetcher.Form method="POST" encType="multipart/form-data">
+      <fetcher.Form
+        {...form.props}
+        action="/dashboard/upload"
+        className="flex flex-col gap-y-2"
+        method="POST"
+        encType="multipart/form-data"
+      >
+        {/* {sign.error && <p>{sign.error}</p>} */}
+        <SignSelect {...sign} />
+        {/* <input readOnly name={sign.name} value="clqgq33v500004w8jgjuivbxh" /> */}
+
         <div className="flex flex-col gap-y-2">
-          <Input ref={inputRef} type="file" accept="video/*" name="file" />
-          <Button className="float-right" type="submit">
-            Upload
+          {file.error && <p>{file.error}</p>}
+          <Input type="file" accept="video/*" name={file.name} />
+          <Button
+            className="float-right"
+            type="submit"
+            disabled={fetcher.state !== "idle"}
+          >
+            {fetcher.state === "loading" ? "Uploading..." : "Upload"}
           </Button>
         </div>
       </fetcher.Form>
-      {fetcher.data?.video && (
+      {/* {fetcher.data?.video && (
         <video controls>
           <track kind="captions" />
           <source
             src={`https://pub-a23e49e30e144cf1878114cb90d30a22.r2.dev/${fetcher.data.video.name}`}
           />
         </video>
-      )}
+      )} */}
     </div>
+  );
+}
+
+function NewUploadEmailTemplate({
+  videoUrl,
+  userEmail
+}: {
+  videoUrl: string;
+  userEmail: string;
+}) {
+  return (
+    <E.Html lang="en" dir="ltr">
+      <E.Container>
+        <h1>
+          <E.Text>{userEmail} just uploaded a new video for review</E.Text>
+        </h1>
+        <p>
+          <E.Text>
+            Checkout the video and reivew it{" "}
+            <strong>
+              <E.Link href={videoUrl}>here</E.Link>
+            </strong>
+          </E.Text>
+        </p>
+      </E.Container>
+    </E.Html>
   );
 }

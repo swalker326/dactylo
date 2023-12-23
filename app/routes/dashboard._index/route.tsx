@@ -25,11 +25,13 @@ type LoaderData = Awaited<ReturnType<typeof loader>>;
 const Thumbnail = ({ video }: { video: LoaderData["videos"][number] }) => {
   if (!video || !video.sign) return null;
   return (
-    <div>
-      <Link to={`sign/${video.sign.id}`}>
-        <img src={video.gifUrl || ""} alt={video.sign.term} />
-        <h3>{video.sign.term}</h3>
-        <p>{video.name}</p>
+    <div
+      className="w-full bg-cover aspect-square relative"
+      style={{ backgroundImage: `url('${video.gifUrl}')` }}
+    >
+      <Link to={`/sign/${video.sign.id}`}>
+        <h3 className="text-3xl">{video.sign.term}</h3>
+        {/* <img src={video.gifUrl || ""} alt={video.sign.term} /> */}
       </Link>
     </div>
   );
@@ -38,13 +40,15 @@ export default function DashboardIndex() {
   const { videos } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col">
-      <h2 className="text-4xl">_Index</h2>
-      {videos.map((VideoWithSign) =>
-        VideoWithSign ? (
-          <Thumbnail key={VideoWithSign.id} video={VideoWithSign} />
-        ) : null
-      )}
+    <div className="flex flex-col pb-12">
+      <h2 className="text-4xl">Your Videos</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-4">
+        {[...videos, ...videos.reverse(), ...videos].map((VideoWithSign) =>
+          VideoWithSign ? (
+            <Thumbnail key={VideoWithSign.id} video={VideoWithSign} />
+          ) : null
+        )}
+      </div>
     </div>
   );
 }

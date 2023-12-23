@@ -1,7 +1,13 @@
+import { v4 as uuidv4 } from "uuid";
 import { S3Client } from "@aws-sdk/client-s3";
 
 import { Upload } from "@aws-sdk/lib-storage";
-import type { UploadHandler } from "@remix-run/node";
+import { z } from "zod";
+
+export const FileUploadResponseSchema = z.object({
+  filename: z.string(),
+  url: z.string()
+});
 
 const { STORAGE_ACCESS_KEY, STORAGE_SECRET, STORAGE_ENDPOINT } = process.env;
 
@@ -29,9 +35,9 @@ const storage = new S3Client({
 });
 
 export async function uploadStreamToSpaces(
-  //TODO: figure out what type this actually is
-  stream: ReadableStream<any>,
-  filename: string
+  stream: File,
+  filename: string,
+  contentType: string
 ) {
   return new Upload({
     client: storage,
@@ -39,34 +45,66 @@ export async function uploadStreamToSpaces(
     params: {
       Bucket: "dact",
       Key: filename,
-      Body: stream
+      Body: stream,
+      ContentType: contentType
     }
   }).done();
 }
-async function* generateChunks(asyncIterable: AsyncIterable<Uint8Array>) {
-  for await (const chunk of asyncIterable) {
-    yield chunk;
-  }
-}
 
-export const uploadHandler: UploadHandler = async ({ data, filename }) => {
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of generateChunks(data)) {
-        controller.enqueue(chunk);
-      }
-      controller.close();
-    }
-  });
+export const uploadHandler = async ({
+  data,
+  filename,
+  contentType,
+  prefix = "sign"
+}: {
+  filename?: string;
+  contentType: string;
+  data: File;
+  prefix?: string;
+}) => {
   if (!filename) {
     return "no filename";
   }
-
-  const upload = await uploadStreamToSpaces(readableStream, filename);
-  console.log(upload);
+  const sanatizedFileName = generateFileName(filename, prefix);
+  const upload = await uploadStreamToSpaces(
+    data,
+    sanatizedFileName,
+    contentType
+  );
   if (upload.$metadata.httpStatusCode === 200) {
-    return JSON.stringify({ filename, url: upload.Location });
+    return JSON.stringify({
+      filename: sanatizedFileName,
+      url: upload.Location,
+      errors: []
+    });
   }
 
-  return "error uploading file";
+  return JSON.stringify({ errors: ["Upload failed"] });
 };
+
+function sanitizeWord(word: string) {
+  // Converts to lowercase
+  // Replace spaces with underscores
+  // Removes special characters except for underscore
+  let sanitizedWord = word.toLowerCase();
+  sanitizedWord = sanitizedWord.replace(/\s+/g, "_");
+  sanitizedWord = sanitizedWord.replace(/[^a-z0-9_]/g, "");
+  return sanitizedWord;
+}
+
+function generateFileName(word: string, prefix: string) {
+  const now = new Date();
+  const dateString = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}${String(now.getDate()).padStart(2, "0")}${String(now.getHours()).padStart(
+    2,
+    "0"
+  )}${String(now.getMinutes()).padStart(2, "0")}${String(
+    now.getSeconds()
+  ).padStart(2, "0")}`;
+  const id = uuidv4();
+  const sanitizedWord = sanitizeWord(word);
+
+  return `${prefix}-${sanitizedWord}-${id}-${dateString}`;
+}
