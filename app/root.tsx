@@ -7,15 +7,9 @@ import {
   ScrollRestoration,
   useLoaderData
 } from "@remix-run/react";
-import rdtStylesheet from "remix-development-tools/index.css";
-import styles from "~/tailwind.css";
+import "~/tailwind.css";
 import { csrf } from "./utils/csrf.server";
-import {
-  HeadersFunction,
-  LinksFunction,
-  LoaderFunctionArgs,
-  json
-} from "@remix-run/node";
+import { HeadersFunction, LoaderFunctionArgs, json } from "@remix-run/node";
 import { AuthenticityTokenProvider } from "remix-utils/csrf/react";
 import { Header } from "./components/header";
 import { getUserId } from "./services/auth.server";
@@ -52,14 +46,7 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
   return headers;
 };
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: styles },
-  ...(process.env.NODE_ENV === "development"
-    ? [{ rel: "stylesheet", href: rdtStylesheet }]
-    : [])
-];
-
-function App() {
+export default function App() {
   const data = useLoaderData<typeof loader>();
   return (
     <html lang="en">
@@ -89,11 +76,3 @@ function App() {
     </html>
   );
 }
-
-let AppExport = App;
-if (process.env.NODE_ENV === "development") {
-  const { withDevTools } = await import("remix-development-tools");
-  AppExport = withDevTools(AppExport);
-}
-
-export default AppExport;

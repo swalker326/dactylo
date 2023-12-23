@@ -1,10 +1,7 @@
 import { redirect } from "@remix-run/node";
 import { safeRedirect } from "remix-utils/safe-redirect";
 import { prisma } from "~/db.server";
-import {
-  twoFAVerificationType,
-  getRedirectToUrl
-} from "~/routes/auth.verify/verify";
+import { twoFAVerificationType, getRedirectToUrl } from "~/utils/verify.server";
 import { sessionKey } from "~/services/auth.server";
 import { authSessionStorage } from "~/services/session.server";
 import { combineResponseInits } from "~/utils/misc";

@@ -6,7 +6,7 @@ import { Form, useActionData } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { sendEmail } from "~/utils/email.server";
-import { prepareVerification } from "~/routes/auth.verify/verify";
+import { prepareVerification } from "~/utils/verify.server";
 import { prisma } from "~/db.server";
 import { z } from "zod";
 // import { validateCSRF } from "~/utils/csrf.server";

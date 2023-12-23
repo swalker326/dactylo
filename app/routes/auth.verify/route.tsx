@@ -7,13 +7,22 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { Input } from "~/components/ui/input";
 import { validateCSRF } from "~/utils/csrf.server";
 import {
-  codeQueryParam,
-  targetQueryParam,
-  redirectToQueryParam,
-  VerifySchema,
+  // codeQueryParam,
+  // targetQueryParam,
+  // redirectToQueryParam,
   validateRequest
-} from "./verify";
+} from "../../utils/verify.server";
+const types = ["onboarding", "reset-password", "change-email", "2fa"] as const;
+const VerificationTypeSchema = z.enum(types);
+const VerifySchema = z.object({
+  code: z.string().min(6).max(6),
+  type: VerificationTypeSchema,
+  target: z.string(),
+  redirectTo: z.string().optional()
+});
+
 import { Button } from "~/components/ui/button";
+import { z } from "zod";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -37,10 +46,10 @@ export default function VerifyRoute() {
       return parse(formData, { schema: VerifySchema });
     },
     defaultValue: {
-      code: searchParams.get(codeQueryParam) ?? "",
+      code: searchParams.get("code") ?? "",
       type: verifyType ?? "",
-      target: searchParams.get(targetQueryParam) ?? "",
-      redirectTo: searchParams.get(redirectToQueryParam) ?? ""
+      target: searchParams.get("target") ?? "",
+      redirectTo: searchParams.get("redirectTo") ?? ""
     }
   });
   return (

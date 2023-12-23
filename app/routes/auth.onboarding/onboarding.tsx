@@ -1,6 +1,6 @@
 import { verifySessionStorage } from "~/utils/verification.server";
 import { redirect } from "@remix-run/node";
-import { onboardingEmailSessionKey } from "~/routes/auth.verify/verify";
+import { onboardingEmailSessionKey } from "~/utils/verify.server";
 
 export const getSessionEmail = async (request: Request) => {
   const verifySession = await verifySessionStorage.getSession(

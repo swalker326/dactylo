@@ -9,7 +9,6 @@ import {
   FileUploadResponseSchema,
   uploadHandler
 } from "~/utils/storage.server";
-import { SignSelect } from "~/routes/resources.sign/route";
 import { z } from "zod";
 import { useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
@@ -17,6 +16,7 @@ import { invariant } from "@epic-web/invariant";
 import { prisma } from "~/db.server";
 import { sendEmail } from "~/utils/email.server";
 import { addGifToVideo } from "~/utils/gif.server";
+import { SignSelect } from "../resources.sign/SignSelect";
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
