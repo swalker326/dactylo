@@ -44,7 +44,10 @@ export async function addGifToVideo({
   };
 
   ffmpeg(videoPath)
-    .outputOption("-vf", "scale=320:-1:flags=lanczos,fps=15")
+    .outputOption(
+      "-filter_complex",
+      "[0:v] fps=12,scale=480:-1,split [a][b];[a] palettegen [p];[b][p] paletteuse"
+    )
     .save(gifPath)
     .on("end", async () => {
       const gif = await readFile(gifPath);
