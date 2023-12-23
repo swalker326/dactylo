@@ -43,7 +43,7 @@ export default function DashboardIndex() {
     <div className="flex flex-col pb-12">
       <h2 className="text-4xl">Your Videos</h2>
       <div className="grid grid-cols-1 lg:grid-cols-4">
-        {[...videos, ...videos.reverse(), ...videos].map((VideoWithSign) =>
+        {videos.map((VideoWithSign) =>
           VideoWithSign ? (
             <Thumbnail key={VideoWithSign.id} video={VideoWithSign} />
           ) : null
