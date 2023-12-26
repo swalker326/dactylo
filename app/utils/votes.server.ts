@@ -37,58 +37,50 @@ export const addVote = async ({
   if (!payload.success) {
     return { status: "error", errors: payload.error };
   }
+
   const { user, video } = payload.data;
-  const existingVote = video.votes.find((vote) => vote.userId === user.id);
-  const upvotes = video.votes.filter((vote) => vote.voteType === "UPVOTE");
-  const downvotes = video.votes.filter((vote) => vote.voteType === "DOWNVOTE");
-  const currentVoteCount = upvotes.length - downvotes.length;
-  let response: VoteResponse<ZodError<AddVoteSchema>> = {
-    status: "success",
-    vote
-  };
-  let newVoteCount = currentVoteCount + (vote === "UPVOTE" ? 1 : -1);
-  //if the user has already voted on this video, and this vote is the same as the existing vote, remove the vote
-  //since we're actually removing a vote, UPVOTE === -1 and DOWNVOTE === 1
-  if (existingVote && existingVote.voteType === vote) {
-    newVoteCount = currentVoteCount - (vote === "UPVOTE" ? 1 : -1);
-    await prisma.video.update({
-      where: { id: video.id },
+  const existingVote = video.votes.find((v) => v.userId === user.id);
+
+  if (existingVote) {
+    if (vote === existingVote.voteType) {
+      // Set vote to NO_VOTE
+      await prisma.vote.update({
+        where: { id: existingVote.id },
+        data: { voteType: "NO_VOTE" }
+      });
+    } else {
+      // Change vote
+      await prisma.vote.update({
+        where: { id: existingVote.id },
+        data: { voteType: vote }
+      });
+    }
+  } else if (vote !== "NO_VOTE") {
+    // Create new vote
+    await prisma.vote.create({
       data: {
-        voteCount: newVoteCount,
-        votes: { delete: { id: existingVote.id } }
-      }
-    });
-    response = { status: "success", vote: null };
-  }
-  //if the user has already voted on this video, and this vote is different from the existing vote, update the vote
-  //since we're switching votes, UPVOTE === 2 and DOWNVOTE === -2
-  else if (existingVote && existingVote.voteType !== vote) {
-    newVoteCount = currentVoteCount - (vote === "UPVOTE" ? -2 : 2);
-    await prisma.video.update({
-      where: { id: video.id },
-      data: {
-        voteCount: newVoteCount,
-        votes: {
-          update: { where: { id: existingVote.id }, data: { voteType: vote } }
-        }
-      }
-    });
-    response = { status: "success", vote };
-  } else {
-    //if the user has not voted on this video, create a new vote
-    //since we're creating a new vote, UPVOTE === 1 and DOWNVOTE === -1
-    await prisma.video.update({
-      where: { id: video.id },
-      data: {
-        voteCount: newVoteCount,
-        votes: {
-          create: {
-            userId: user.id,
-            voteType: vote
-          }
-        }
+        userId: user.id,
+        videoId: video.id,
+        voteType: vote
       }
     });
   }
-  return response;
+  // Update video vote count
+  const votes = await prisma.vote.findMany({
+    where: { videoId: video.id }
+  });
+  const newVoteCount = votes.reduce((acc, vote) => {
+    if (vote.voteType === "UPVOTE") {
+      return acc + 1;
+    } else if (vote.voteType === "DOWNVOTE") {
+      return acc - 1;
+    }
+    return acc;
+  }, 0);
+  await prisma.video.update({
+    where: { id: video.id },
+    data: { voteCount: newVoteCount }
+  });
+
+  return { status: "success", vote: vote !== "NO_VOTE" ? vote : null };
 };

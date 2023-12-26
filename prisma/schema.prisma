@@ -79,6 +79,7 @@ enum VideoStatus {
 enum VoteType {
   UPVOTE
   DOWNVOTE
+  NO_VOTE
 }
 
 //User Related Models

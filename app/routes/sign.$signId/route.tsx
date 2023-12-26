@@ -1,6 +1,6 @@
 import { invariant } from "@epic-web/invariant";
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import { Form, Link, useSubmit } from "@remix-run/react";
+import { Link, useFetcher } from "@remix-run/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { z } from "zod";
 import { prisma } from "~/db.server";
@@ -9,8 +9,8 @@ import { getUserId, requireUserId } from "~/services/auth.server";
 import { VideoWithVotes, addVote } from "~/utils/votes.server";
 import { Vote, VoteType } from "@prisma/client";
 import { superjson, useSuperLoaderData } from "~/utils/data";
-import { Dispatch, SetStateAction, useState } from "react";
 import { updateVoteCount } from "~/utils/votes";
+import { useState } from "react";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const { signId } = params;
@@ -31,7 +31,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 
 const SignActionSchema = z.object({
-  intent: z.enum(["UPVOTE", "DOWNVOTE"]),
+  intent: z.enum(["UPVOTE", "DOWNVOTE", "NO_VOTE"]),
   videoId: z.string()
 });
 
@@ -87,10 +87,8 @@ function VideoCard({
   video: VideoWithVotes;
   userId: string | null;
 }) {
-  const [currentVote, setCurrentVote] = useState<Vote | undefined>(
-    video.votes?.find((vote) => vote.userId === userId)
-  );
-  console.log("current vote count in route: ", video.voteCount);
+  const currentVote = video.votes?.find((vote) => vote.userId === userId);
+
   return (
     <div>
       <img
@@ -103,7 +101,6 @@ function VideoCard({
           count={video.voteCount}
           videoId={video.id}
           currentVote={currentVote}
-          setCurrentVote={setCurrentVote}
         />
       </div>
     </div>
@@ -113,59 +110,64 @@ function VideoCard({
 function VoteButtons({
   count,
   videoId,
-  currentVote,
-  setCurrentVote
+  currentVote
 }: {
   count: number;
   videoId: string;
   currentVote: Vote | undefined;
-  setCurrentVote: Dispatch<SetStateAction<Vote | undefined>>;
 }) {
-  const [intent, setIntent] = useState<VoteType>();
-  const [optCount, setOptCount] = useState<number>(count);
-  const submit = useSubmit();
+  const fetcher = useFetcher();
+  const [intent, setIntent] = useState<VoteType>(
+    currentVote?.voteType || "NO_VOTE"
+  );
+  if (fetcher.formData?.has("intent")) {
+    let intent = fetcher.formData.get("intent") as VoteType;
+    const origianlVoteType = currentVote?.voteType;
+    if (intent === origianlVoteType) {
+      intent = "NO_VOTE";
+    }
+    if (!currentVote) {
+      currentVote = {
+        id: "1",
+        userId: "1",
+        videoId: videoId,
+        voteDate: new Date(),
+        voteType: intent
+      };
+    } else if (currentVote.voteType === intent) {
+      currentVote = undefined;
+    } else {
+      currentVote = {
+        ...currentVote,
+        voteType: intent === origianlVoteType ? "NO_VOTE" : intent
+      };
+    }
+    count = updateVoteCount({
+      currentVoteType: origianlVoteType || null,
+      count,
+      newVoteType: intent
+    });
+  }
+  const handleUpdateIntent = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const intent = e.currentTarget.value as VoteType;
+    if (intent === currentVote?.voteType) {
+      setIntent("NO_VOTE");
+    } else {
+      setIntent(intent);
+    }
+  };
+
   return (
-    <Form
+    <fetcher.Form
       method="POST"
       className="h-full flex flex-col justify-center items-center"
-      onSubmit={(e) => {
-        e.preventDefault();
-
-        e.currentTarget;
-        const fd = new FormData(e.currentTarget);
-        fd.set("intent", intent as VoteType);
-        setOptCount(() => {
-          return updateVoteCount(
-            count,
-            currentVote?.voteType || null,
-            intent as VoteType
-          );
-        });
-        setCurrentVote((currentVote) => {
-          if (currentVote?.voteType === fd.get("intent")) {
-            return undefined;
-          }
-          return {
-            ...currentVote,
-            id: "1",
-            userId: "1",
-            videoId: videoId,
-            voteDate: new Date(),
-            voteType: fd.get("intent") as VoteType
-          };
-        });
-        submit(fd, {
-          method: "POST",
-          navigate: false,
-          unstable_flushSync: true
-        });
-      }}
     >
       <input type="hidden" name="videoId" value={videoId} />
+      <input type="hidden" name="intent" value={intent} />
       <button
-        name="intent"
         value="UPVOTE"
-        onClick={() => setIntent("UPVOTE")}
+        type="submit"
+        onClick={handleUpdateIntent}
         className={`group text-black hover:text-white px-6 h-full hover:bg-blue-600 transition-colors duration-300 ease-in-out ${
           currentVote?.voteType === "UPVOTE" ? `bg-blue-300` : ""
         } `}
@@ -177,12 +179,11 @@ function VoteButtons({
           />
         </span>
       </button>
-      {optCount}
+      {count}
       <button
         type="submit"
-        name="intent"
         value="DOWNVOTE"
-        onClick={() => setIntent("DOWNVOTE")}
+        onClick={handleUpdateIntent}
         className={`group text-black hover:text-white px-6 h-full hover:bg-orange-600 transition-colors duration-300 ease-in-out  ${
           currentVote?.voteType === "DOWNVOTE" ? `bg-orange-300` : ""
         } `}
@@ -194,6 +195,6 @@ function VoteButtons({
           />
         </span>
       </button>
-    </Form>
+    </fetcher.Form>
   );
 }
