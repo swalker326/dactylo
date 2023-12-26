@@ -1,12 +1,15 @@
 import { Circle, Play, Pause, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import useCamera from "~/hooks/useCamera";
 import useCameraRecorder from "~/hooks/useCameraRecorder";
+import { Button } from "~/components/ui/button";
 
 const CameraComponent = ({
-  onRecordingComplete
+  onRecordingComplete,
+  label
 }: {
+  label: React.ReactNode;
   onRecordingComplete: (blobUrl: string) => void;
 }) => {
   const { stream } = useCamera();
@@ -104,14 +107,20 @@ const CameraComponent = ({
               </button>
             )}
             {mediaBlobUrl && (
-              <button onClick={togglePlayback}>
+              <button type="button" onClick={togglePlayback}>
                 {isPlaying ? <Pause size={24} /> : <Play size={24} />}
               </button>
             )}
           </div>
           <div>
             {mediaBlobUrl && (
-              <button onClick={() => onRecordingComplete(mediaBlobUrl)}>
+              <button
+                type="button"
+                onClick={() => {
+                  setCameraActive(false);
+                  onRecordingComplete(mediaBlobUrl);
+                }}
+              >
                 <p>Use</p>
               </button>
             )}
@@ -123,12 +132,9 @@ const CameraComponent = ({
 
   return (
     <>
-      <button
-        onClick={() => setCameraActive(true)}
-        className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300"
-      >
-        Open Camera
-      </button>
+      <Button type="button" onClick={() => setCameraActive(true)}>
+        {label}
+      </Button>
       {cameraActive &&
         cameraPortal &&
         isClient &&

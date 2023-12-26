@@ -1,11 +1,13 @@
 import { useFetcher } from "@remix-run/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import CameraComponent from "~/components/camera";
 import { Input } from "~/components/ui/input";
 import { SignSelect } from "../resources.sign/SignSelect";
 import { useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { z } from "zod";
+import { CameraIcon } from "lucide-react";
+import { Button } from "~/components/ui/button";
 
 const UploadFormSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file" }),
@@ -17,6 +19,7 @@ const UploadFormSchema = z.object({
 
 export default function CreateRoute() {
   const fetcher = useFetcher();
+  const [videoUrl, setVideoUrl] = useState<string | null>(null); // [1
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, { file, sign }] = useForm({
     constraint: getFieldsetConstraint(UploadFormSchema),
@@ -43,6 +46,7 @@ export default function CreateRoute() {
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
         fileInputRef.current.files = dataTransfer.files;
+        setVideoUrl(URL.createObjectURL(file));
       } catch (error) {
         console.error("Error processing the recorded video:", error);
       }
@@ -50,28 +54,34 @@ export default function CreateRoute() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-y-3">
       <h2 className="text-4xl">Create</h2>
       <fetcher.Form
         {...form.props}
         method="POST"
         encType="multipart/form-data"
         action="/dashboard/upload"
+        className="flex flex-col gap-y-2"
       >
         <SignSelect {...sign} />
-        <Input type="file" name={file.name} ref={fileInputRef} />
-        <button type="submit">Upload</button>
-      </fetcher.Form>
-      {fileInputRef &&
-        fileInputRef.current &&
-        fileInputRef.current.files &&
-        fileInputRef.current.files.length > 0 && (
+        <CameraComponent
+          onRecordingComplete={handleRecordingCompleted}
+          label={<CameraIcon size={32} />}
+        />
+        <Input
+          className="hidden"
+          type="file"
+          name={file.name}
+          ref={fileInputRef}
+        />
+        {videoUrl && (
           <video controls>
-            <source src={URL.createObjectURL(fileInputRef.current.files[0])} />
+            <source src={videoUrl} />
             <track kind="captions" />
           </video>
         )}
-      <CameraComponent onRecordingComplete={handleRecordingCompleted} />
+        <Button type="submit">Upload</Button>
+      </fetcher.Form>
     </div>
   );
 }

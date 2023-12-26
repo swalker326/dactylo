@@ -1,5 +1,6 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/services/auth.server";
 
@@ -25,15 +26,24 @@ type LoaderData = Awaited<ReturnType<typeof loader>>;
 const Thumbnail = ({ video }: { video: LoaderData["videos"][number] }) => {
   if (!video || !video.sign) return null;
   return (
-    <div
-      className="w-full bg-cover aspect-square relative"
-      style={{ backgroundImage: `url('${video.gifUrl}')` }}
-    >
-      <Link to={`/sign/${video.sign.id}`}>
-        <h3 className="text-3xl">{video.sign.term}</h3>
-        {/* <img src={video.gifUrl || ""} alt={video.sign.term} /> */}
-      </Link>
-    </div>
+    <Card>
+      <div className="w-full">
+        <CardHeader>
+          <Link to={`/sign/${video.sign.id}`}>
+            <CardTitle className="underline">{video.sign.term}</CardTitle>
+          </Link>
+        </CardHeader>
+        <CardContent>
+          <Link to={`/sign/${video.sign.id}`}>
+            <img
+              src={video.gifUrl || ""}
+              alt="sign video"
+              className="w-full object-contain"
+            />
+          </Link>
+        </CardContent>
+      </div>
+    </Card>
   );
 };
 export default function DashboardIndex() {
@@ -42,7 +52,7 @@ export default function DashboardIndex() {
   return (
     <div className="flex flex-col pb-12">
       <h2 className="text-4xl">Your Videos</h2>
-      <div className="grid grid-cols-1 lg:grid-cols-4">
+      <div className="flex gap-3 flex-wrap">
         {videos.map((VideoWithSign) =>
           VideoWithSign ? (
             <Thumbnail key={VideoWithSign.id} video={VideoWithSign} />

@@ -1,6 +1,6 @@
 import * as E from "@react-email/components";
 import { ActionFunctionArgs, json } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useNavigation } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 // import { prisma } from "~/db.server";
@@ -92,7 +92,10 @@ const UploadFormSchema = z.object({
 });
 
 export default function DashboardRoute() {
+  const navigation = useNavigation();
   const fetcher = useFetcher<typeof action>();
+  const isSubmitting = fetcher.formData?.has("intent");
+  console.log(isSubmitting);
   const [form, { file, sign }] = useForm({
     constraint: getFieldsetConstraint(UploadFormSchema),
     // defaultValue: { redirectTo },
@@ -105,7 +108,7 @@ export default function DashboardRoute() {
   return (
     <div className="flex flex-col gap-y-4">
       <h2 className="text-3xl">Upload a New Video</h2>
-      {fetcher.state === "loading" && <p>Uploading...</p>}
+
       <fetcher.Form
         {...form.props}
         action="/dashboard/upload"
@@ -120,23 +123,13 @@ export default function DashboardRoute() {
         <div className="flex flex-col gap-y-2">
           {file.error && <p>{file.error}</p>}
           <Input type="file" accept="video/*" name={file.name} />
-          <Button
-            className="float-right"
-            type="submit"
-            disabled={fetcher.state !== "idle"}
-          >
-            {fetcher.state === "loading" ? "Uploading..." : "Upload"}
+          <Button className="float-right" type="submit" disabled={isSubmitting}>
+            {navigation.formAction === "/dashboard/upload"
+              ? "Uploading..."
+              : "Upload"}
           </Button>
         </div>
       </fetcher.Form>
-      {/* {fetcher.data?.video && (
-        <video controls>
-          <track kind="captions" />
-          <source
-            src={`https://pub-a23e49e30e144cf1878114cb90d30a22.r2.dev/${fetcher.data.video.name}`}
-          />
-        </video>
-      )} */}
     </div>
   );
 }
