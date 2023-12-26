@@ -1,10 +1,14 @@
-import { Circle, Play, Pause, DownloadIcon, X } from "lucide-react";
+import { Circle, Play, Pause, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import useCamera from "~/hooks/useCamera";
 import useCameraRecorder from "~/hooks/useCameraRecorder";
 
-const CameraComponent: React.FC = () => {
+const CameraComponent = ({
+  onRecordingComplete
+}: {
+  onRecordingComplete: (blobUrl: string) => void;
+}) => {
   const { stream } = useCamera();
   const {
     startRecording,
@@ -107,9 +111,9 @@ const CameraComponent: React.FC = () => {
           </div>
           <div>
             {mediaBlobUrl && (
-              <a href={mediaBlobUrl} download="recorded-video.webm">
-                <DownloadIcon size={24} />
-              </a>
+              <button onClick={() => onRecordingComplete(mediaBlobUrl)}>
+                <p>Use</p>
+              </button>
             )}
           </div>
         </div>

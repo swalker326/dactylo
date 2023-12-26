@@ -7,7 +7,7 @@ import { loader as resouceLoader } from "~/routes/resources.sign/route";
 export function SignSelect(config: FieldConfig<string>) {
   const signFetcher = useFetcher<typeof resouceLoader>();
   const signs = signFetcher.data?.signs;
-  const [selectedSign, setSelectedSign] = useState<string>();
+  const [selectedSign, setSelectedSign] = useState<string>("");
   const [query, setQuery] = useState("");
   const shadowInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,6 +54,7 @@ export function SignSelect(config: FieldConfig<string>) {
             }
             return sign.term;
           }}
+          defaultValue={""}
           placeholder={"Find a sign"}
           onChange={(event) => {
             setQuery(event.target.value);
