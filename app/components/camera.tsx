@@ -132,7 +132,11 @@ const CameraComponent = ({
 
   return (
     <>
-      <Button type="button" onClick={() => setCameraActive(true)}>
+      <Button
+        className="w-full"
+        type="button"
+        onClick={() => setCameraActive(true)}
+      >
         {label}
       </Button>
       {cameraActive &&
