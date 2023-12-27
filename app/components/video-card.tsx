@@ -51,7 +51,8 @@ function VoteButtons({
   signId,
   variant = "default",
   userId,
-  favorite
+  favorite,
+  animate = false
 }: {
   signId: string;
   count: number;
@@ -60,14 +61,18 @@ function VoteButtons({
   userId: string | null;
   variant?: "default" | "compact";
   favorite: Favorite | undefined;
+  animate?: boolean;
 }) {
   const fetcher = useFetcher();
   const favoriteFetcher = useFetcher();
+  // const [animating, setAnimating] = useState(false);
   const [intent, setIntent] = useState<VoteType>(
     currentVote?.voteType || "NO_VOTE"
   );
+  console.log(animate);
   if (favoriteFetcher.formData?.has("userId")) {
     if (!favorite) {
+      animate = true;
       favorite = { id: "1", userId: "1", videoId: videoId };
     } else {
       favorite = undefined;
@@ -115,7 +120,7 @@ function VoteButtons({
   };
   const variantClassName =
     variant === "compact" ? "justify-center" : "justify-between";
-
+  console.log("favorite", favorite);
   return (
     <div className="flex justify-between items-center">
       <fetcher.Form
@@ -165,7 +170,12 @@ function VoteButtons({
           <favoriteFetcher.Form method="POST" action="/sign/favorite">
             <input type="hidden" name="videoId" value={videoId} />
             <input type="hidden" name="userId" value={userId || ""} />
-            <button className={`${favorite ? "text-red-500" : ""}`}>
+            <button
+              onAnimationEnd={() => (animate = false)}
+              className={`${favorite ? "text-red-500" : ""}  ${
+                animate ? "animate-zoomy" : ""
+              } `}
+            >
               <Heart size={24} />
             </button>
           </favoriteFetcher.Form>

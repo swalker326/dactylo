@@ -61,6 +61,10 @@ module.exports = {
           from: { height: 0 },
           to: { height: "var(--radix-accordion-content-height)" }
         },
+        zoomy: {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(2)" }
+        },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 }
@@ -68,7 +72,8 @@ module.exports = {
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out"
+        "accordion-up": "accordion-up 0.2s ease-out",
+        zoomy: "zoomy 500ms ease-in-out"
       }
     }
   },

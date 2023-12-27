@@ -6,7 +6,6 @@ import { SignSelect } from "../resources.sign/SignSelect";
 import { z } from "zod";
 import { CameraIcon, X } from "lucide-react";
 import { Button } from "~/components/ui/button";
-// import { getErrorMessage, parseFormData } from "~/utils/data";
 import { useZodErrors } from "~/hooks/useZodErrors";
 
 const UploadFormSchema = z.object({
