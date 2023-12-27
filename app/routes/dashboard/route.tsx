@@ -1,6 +1,32 @@
-import { MetaFunction } from "@remix-run/node";
-import { NavLink, Outlet } from "@remix-run/react";
+// import { Prisma, User } from "@prisma/client";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { CameraIcon, Home, Settings } from "lucide-react";
+import { prisma } from "~/db.server";
+import { requireUserId } from "~/services/auth.server";
+import { userHasRole } from "~/utils/permissions.server";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await requireUserId(request);
+  const user = await prisma.user.findUnique({
+    select: {
+      id: true,
+      email: true,
+      image: { select: { id: true } },
+      roles: {
+        select: {
+          name: true,
+          permissions: {
+            select: { entity: true, action: true, access: true }
+          }
+        }
+      }
+    },
+    where: { id: userId }
+  });
+  const isAdmin = userHasRole(user, "admin");
+  return { user, isAdmin };
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,46 +38,51 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+const NAV_LINKS: Record<
+  string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  {
+    name: string;
+    icon: React.ReactNode;
+    condition?: (condition: boolean) => boolean;
+  }
+> = {
+  "/dashboard": { name: "Home", icon: <Home /> },
+  "/dashboard/create": { name: "Create", icon: <CameraIcon /> },
+  "/dashboard/settings": { name: "Settings", icon: <Settings /> },
+  "/dashboard/admin": {
+    name: "Admin",
+    icon: "Admin",
+    condition: (isAdmin) => isAdmin
+  }
+};
+
 export default function DashboardRoute() {
+  const { isAdmin } = useLoaderData<typeof loader>();
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pb-5">
       <div className="fixed bottom-0 flex border justify-evenly right-0 left-0 z-10 bg-white max-w-[100svw] h-[60px] ">
-        <NavLink
-          unstable_viewTransition
-          end
-          className={({ isActive }) => {
-            return `px-2 py-2 w-full flex justify-center items-center flex-1 ${
-              isActive ? "bg-gray-200 text-blue-400" : ""
-            }`;
-          }}
-          to="/dashboard"
-        >
-          <Home size={28} />
-        </NavLink>
-        <NavLink
-          unstable_viewTransition
-          end
-          className={({ isActive }) => {
-            return `px-2 py-2 w-full flex justify-center items-center flex-1 ${
-              isActive ? "bg-gray-200 text-blue-400" : ""
-            }`;
-          }}
-          to="create"
-        >
-          <CameraIcon size={28} />
-        </NavLink>
-        <NavLink
-          unstable_viewTransition
-          end
-          className={({ isActive }) => {
-            return `px-2 py-2 flex justify-center items-center flex-1 ${
-              isActive ? "bg-gray-200 text-blue-400" : ""
-            }`;
-          }}
-          to="settings"
-        >
-          <Settings size={28} />
-        </NavLink>
+        {Object.entries(NAV_LINKS).map(([path, values]) => {
+          if (values.condition && values.condition(isAdmin) === false) {
+            return null;
+          }
+          const { name, icon: Icon } = values;
+          return (
+            <NavLink
+              key={name}
+              unstable_viewTransition
+              end
+              className={({ isActive }) => {
+                return `px-2 py-2 w-full flex justify-center items-center flex-1 ${
+                  isActive ? "bg-blue-400 text-gray-800" : ""
+                }`;
+              }}
+              to={path}
+            >
+              {Icon}
+            </NavLink>
+          );
+        })}
       </div>
       <div className="pt-3 pb-8">
         <Outlet />

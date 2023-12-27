@@ -36,7 +36,7 @@ export function SignSelect({ name }: { name: string }) {
             return sign.term;
           }}
           defaultValue={""}
-          placeholder={"Find a sign"}
+          placeholder={"Search"}
           onChange={(event) => {
             setQuery(event.target.value);
           }}

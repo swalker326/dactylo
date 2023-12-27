@@ -1,4 +1,4 @@
-import { Circle, Play, Pause, X } from "lucide-react";
+import { Circle, Play, Pause, X, CameraIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import useCamera from "~/hooks/useCamera";
@@ -9,7 +9,7 @@ const CameraComponent = ({
   onRecordingComplete,
   label
 }: {
-  label: React.ReactNode;
+  label?: React.ReactNode;
   onRecordingComplete: (blobUrl: string) => void;
 }) => {
   const { stream } = useCamera();
@@ -137,7 +137,7 @@ const CameraComponent = ({
         type="button"
         onClick={() => setCameraActive(true)}
       >
-        {label}
+        {label || <CameraIcon />}
       </Button>
       {cameraActive &&
         cameraPortal &&

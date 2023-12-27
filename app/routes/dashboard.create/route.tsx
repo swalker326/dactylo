@@ -54,7 +54,7 @@ export default function CreateRoute() {
 
   return (
     <div className="flex flex-col gap-y-3">
-      <h2 className="text-4xl">Create</h2>
+      <h2 className="text-4xl">Add a Video</h2>
       <fetcher.Form
         method="POST"
         encType="multipart/form-data"
@@ -65,7 +65,6 @@ export default function CreateRoute() {
           if (fetcher.state !== "idle") return;
           const formData = new FormData(event.currentTarget);
           const success = await parse(formData);
-          console.log("SUCCESS??", success);
           if (success) {
             fetcher.submit(formData, {
               method: "POST",
@@ -78,35 +77,79 @@ export default function CreateRoute() {
           }
         }}
       >
-        <SignSelect name="sign" />
-        {errorMessages?.sign && (
-          <p className="bg-red-300 rounded-sm w-full p-2">
-            {errorMessages["sign"]}
-          </p>
-        )}
-        <div className="w-full space-y-3 flex flex-col items-center">
-          <CameraComponent
-            onRecordingComplete={handleRecordingCompleted}
-            label={<CameraIcon size={32} />}
-          />
-          <h6>OR</h6>
-          <div className="flex w-full">
-            <Input
-              className={`${
-                fileInputRef.current?.files?.length &&
-                fileInputRef.current?.files?.length > 0
-                  ? "rounded-r-none"
-                  : ""
-              }`}
-              type="file"
-              accept="video/*"
-              name="file"
-              ref={fileInputRef}
-            />
-            {fileInputRef.current?.files?.length &&
-            fileInputRef.current?.files?.length > 0 ? (
+        <div className="border bg-white p-4 rounded-md">
+          <label htmlFor="sign">
+            <h2 className="text-3xl pb-2">Select a Sign</h2>
+          </label>
+          <SignSelect name="sign" />
+          {errorMessages?.sign && (
+            <p className="bg-red-300 rounded-sm w-full p-2">
+              {errorMessages["sign"]}
+            </p>
+          )}
+        </div>
+        <div className="w-full space-y-3 bg-white p-4 rounded-md">
+          <h2 className="text-3xl">Upload or Record</h2>
+          <div className="flex-col flex justify-between gap-x-4 md:items-center md:flex-row border rounded-sm p-6">
+            <div className="px-2">
+              <label htmlFor="file" className="text-lg">
+                Upload
+              </label>
+              <div className="flex">
+                <Input
+                  className={`${videoUrl ? "rounded-r-none" : ""}`}
+                  type="file"
+                  onChange={(event) => {
+                    if (event.currentTarget.files?.length) {
+                      setVideoUrl(
+                        URL.createObjectURL(event.currentTarget.files[0])
+                      );
+                    }
+                  }}
+                  accept="video/*"
+                  name="file"
+                  ref={fileInputRef}
+                />
+                {videoUrl ? (
+                  <button
+                    className="bg-primary text-white  p-1 rounded-r-md "
+                    onClick={() => {
+                      fileInputRef.current?.value &&
+                        (fileInputRef.current.value = "");
+                      setVideoUrl(null);
+                    }}
+                  >
+                    <X size={22} />
+                  </button>
+                ) : null}
+              </div>
+              {errorMessages?.file && (
+                <p className="bg-red-300 rounded-sm w-full p-2">
+                  {errorMessages.file}
+                </p>
+              )}
+            </div>
+            <div className="w-full md:w-auto text-center pt-2">
+              <h3 className="text-2xl">OR</h3>
+            </div>
+            <div className="px-2 flex-shrink">
+              <label htmlFor="file" className="text-lg">
+                Record
+              </label>
+              <CameraComponent
+                onRecordingComplete={handleRecordingCompleted}
+                label={
+                  <div className="flex gap-x-2 items-center">
+                    Record a Video <CameraIcon />
+                  </div>
+                }
+              />
+            </div>
+          </div>
+          {videoUrl && (
+            <div className="relative">
               <button
-                className="bg-primary text-white  p-1 rounded-r-md "
+                className="absolute top-2 right-2 bg-primary text-white rounded-full p-1 z-10"
                 onClick={() => {
                   fileInputRef.current?.value &&
                     (fileInputRef.current.value = "");
@@ -115,36 +158,21 @@ export default function CreateRoute() {
               >
                 <X size={22} />
               </button>
-            ) : null}
-          </div>
-          {errorMessages?.file && (
-            <p className="bg-red-300 rounded-sm w-full p-2">
-              {errorMessages.file}
-            </p>
+              <video controls className="w-full max-h-[20rem]">
+                <source src={videoUrl} />
+                <track kind="captions" />
+              </video>
+            </div>
           )}
-        </div>
-        {videoUrl && (
-          <div className="relative">
-            <button
-              className="absolute top-2 right-2 bg-primary text-white rounded-full p-1 z-10"
-              onClick={() => {
-                fileInputRef.current?.value &&
-                  (fileInputRef.current.value = "");
-                setVideoUrl(null);
-              }}
+          <div className="pt-6">
+            <Button
+              className="float-right"
+              type="submit"
+              disabled={isSubmitting}
             >
-              <X size={22} />
-            </button>
-            <video controls>
-              <source src={videoUrl} />
-              <track kind="captions" />
-            </video>
+              Upload
+            </Button>
           </div>
-        )}
-        <div className="pt-6">
-          <Button className="float-right" type="submit" disabled={isSubmitting}>
-            Upload
-          </Button>
         </div>
       </fetcher.Form>
     </div>
