@@ -38,7 +38,7 @@ export default function LoginRoute() {
   });
 
   return (
-    <div className="w-full space-y-1">
+    <div className="mt-5">
       {actionData?.submission.error.login && (
         <div className="p-3 bg-red-200 text-red-600 rounded-md">
           {actionData.submission.error.login}

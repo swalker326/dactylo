@@ -1,6 +1,6 @@
 import { VoteType, Vote } from "@prisma/client";
 import { Link, useFetcher } from "@remix-run/react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { updateVoteCount } from "~/utils/votes";
 import { VideoWithVotes } from "~/utils/votes.server";
@@ -23,7 +23,7 @@ export function VideoCard({
           className="w-full object-contain"
         />
       </Link>
-      <div className="w-full py-3 bg-gray-700">
+      <div className="w-full py-3 bg-white dark:bg-gray-700 rounded-b-lg">
         <VoteButtons
           //TODO: there will always be a signId, but it's not typed
           signId={video.signId as string}
@@ -51,6 +51,10 @@ function VoteButtons({
   const [intent, setIntent] = useState<VoteType>(
     currentVote?.voteType || "NO_VOTE"
   );
+  const baseButtonStyle =
+    "group rounded-xl p-1 h-full md:px-4 transition-colors duration-300 ease-in-out";
+  const iconBaseStyle =
+    "md:group-hover:-translate-y-1 ease-in-out transition-transform duration-300";
   if (fetcher.formData?.has("intent")) {
     let intent = fetcher.formData.get("intent") as VoteType;
     const origianlVoteType = currentVote?.voteType;
@@ -92,41 +96,47 @@ function VoteButtons({
     <fetcher.Form
       method="POST"
       action={`/sign/${signId}`}
-      className="h-full flex  justify-between items-center text-white px-1 md:px-6"
+      className="h-full flex  justify-between items-center text-black dark:text-white px-1 md:px-4"
     >
       <input type="hidden" name="videoId" value={videoId} />
       <input type="hidden" name="intent" value={intent} />
-      <button
-        value="UPVOTE"
-        type="submit"
-        onClick={handleUpdateIntent}
-        className={`group rounded-xl text-white md:hover:text-white h-full md:px-4 md:hover:bg-blue-600 transition-colors duration-300 ease-in-out ${
-          currentVote?.voteType === "UPVOTE" ? `bg-blue-300 text-black` : ""
-        } `}
-      >
-        <span>
-          <ChevronUp
-            size={32}
-            className={`md:group-hover:-translate-y-1 ease-in-out transition-transform duration-300 `}
-          />
+      <div className="flex gap-x-1 bg-gray-300 dark:bg-gray-800 rounded-xl py-4 px-2 items-center">
+        <button
+          value="UPVOTE"
+          type="submit"
+          onClick={handleUpdateIntent}
+          className={`
+          ${
+            currentVote?.voteType === "UPVOTE"
+              ? `text-blue-500 dark:text-blue-300`
+              : ""
+          } 
+          ${baseButtonStyle} `}
+        >
+          <span>
+            <ThumbsUp size={24} className={iconBaseStyle} />
+          </span>
+        </button>
+        <span className="text-xl font-bold w-[3ch] text-center">
+          {String(count).padStart(2, " ")}
         </span>
-      </button>
-      {count}
-      <button
-        type="submit"
-        value="DOWNVOTE"
-        onClick={handleUpdateIntent}
-        className={` rounded-xl group  text-white md:hover:text-white md:px-4 h-full md:hover:bg-orange-600 transition-colors duration-300 ease-in-out  ${
-          currentVote?.voteType === "DOWNVOTE" ? `bg-orange-300 text-black` : ""
-        } `}
-      >
-        <span>
-          <ChevronDown
-            size={32}
-            className={`md:group-hover:translate-y-1 ease-in-out transition-transform duration-300 `}
-          />
-        </span>
-      </button>
+        <button
+          type="submit"
+          value="DOWNVOTE"
+          onClick={handleUpdateIntent}
+          className={`
+          ${currentVote?.voteType === "DOWNVOTE" ? `text-orange-500 ` : ""}
+          ${baseButtonStyle}
+          `}
+        >
+          <span>
+            <ThumbsDown size={24} className={iconBaseStyle} />
+          </span>
+        </button>
+      </div>
+      <div>
+        <MoreVertical size={24} />
+      </div>
     </fetcher.Form>
   );
 }

@@ -1,11 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
-} from "~/components/ui/carousel";
+import { Input } from "~/components/ui/input";
 import { VideoCard } from "~/components/video-card";
 import { prisma } from "~/db.server";
 import { getUserId } from "~/services/auth.server";
@@ -32,21 +26,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Index() {
   const { videos, userId } = useSuperLoaderData<typeof loader>();
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <div className="container px-4 flex justify-center max-w-[100%] overflow-hidden">
-        <Carousel className="w-[80%]">
-          <CarouselContent>
-            {videos.map((video) => (
-              <CarouselItem key={video.id} className=" sm:basis-1/2 relative">
-                <h2 className="text-xl bold">{video.sign?.term}</h2>
-                <VideoCard userId={userId || null} video={video} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      </div>
+    <div className="flex flex-col gap-4 pt-4">
+      <Input className="h-20 text-2xl" placeholder="Find a Sign..." />
+      {videos.map((video) => (
+        <div
+          key={video.id}
+          className="bg-white dark:bg-gray-700 dark:text-white rounded-lg "
+        >
+          <h2 className="text-6xl extra-bold py-4 uppercase text-center">
+            {video.sign?.term}
+          </h2>
+          <VideoCard userId={userId || null} video={video} />
+        </div>
+      ))}
     </div>
   );
 }
