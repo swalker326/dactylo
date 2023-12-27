@@ -3,7 +3,7 @@ import { ZodError, z } from "zod";
 import { prisma } from "~/db.server";
 
 const videoWithVotes = Prisma.validator<Prisma.VideoDefaultArgs>()({
-  include: { votes: true }
+  include: { votes: true, favorites: true }
 });
 export type VideoWithVotes = Prisma.VideoGetPayload<typeof videoWithVotes>;
 

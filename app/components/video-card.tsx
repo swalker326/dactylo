@@ -1,4 +1,4 @@
-import { VoteType, Vote } from "@prisma/client";
+import { VoteType, Vote, Favorite } from "@prisma/client";
 import { Link, useFetcher } from "@remix-run/react";
 import { ThumbsUp, ThumbsDown, Heart } from "lucide-react";
 import { useState } from "react";
@@ -15,6 +15,9 @@ export function VideoCard({
   variant?: "default" | "compact";
 }) {
   const currentVote = video.votes?.find((vote) => vote.userId === userId);
+  const favorite = video.favorites?.find(
+    (favorite) => favorite.userId === userId
+  );
 
   return (
     <div>
@@ -33,6 +36,8 @@ export function VideoCard({
           videoId={video.id}
           currentVote={currentVote}
           variant={variant}
+          userId={userId}
+          favorite={favorite}
         />
       </div>
     </div>
@@ -44,18 +49,30 @@ function VoteButtons({
   videoId,
   currentVote,
   signId,
-  variant = "default"
+  variant = "default",
+  userId,
+  favorite
 }: {
   signId: string;
   count: number;
   videoId: string;
   currentVote: Vote | undefined;
+  userId: string | null;
   variant?: "default" | "compact";
+  favorite: Favorite | undefined;
 }) {
   const fetcher = useFetcher();
+  const favoriteFetcher = useFetcher();
   const [intent, setIntent] = useState<VoteType>(
     currentVote?.voteType || "NO_VOTE"
   );
+  if (favoriteFetcher.formData?.has("userId")) {
+    if (!favorite) {
+      favorite = { id: "1", userId: "1", videoId: videoId };
+    } else {
+      favorite = undefined;
+    }
+  }
   const baseButtonStyle =
     "group rounded-xl p-1 h-full md:px-4 transition-colors duration-300 ease-in-out";
   const iconBaseStyle =
@@ -100,54 +117,60 @@ function VoteButtons({
     variant === "compact" ? "justify-center" : "justify-between";
 
   return (
-    <fetcher.Form
-      method="POST"
-      action={`/sign/${signId}`}
-      className={`flex items-center dark:text-white ${variantClassName}`}
-    >
-      <input type="hidden" name="videoId" value={videoId} />
-      <input type="hidden" name="intent" value={intent} />
-      <div className="flex gap-x-1 bg-gray-300 dark:bg-gray-800 rounded-xl py-4 px-2 items-center">
-        <button
-          value="UPVOTE"
-          type="submit"
-          onClick={handleUpdateIntent}
-          className={`
+    <div className="flex justify-between items-center">
+      <fetcher.Form
+        method="POST"
+        action={`/sign/${signId}`}
+        className={`flex items-center dark:text-white ${variantClassName}`}
+      >
+        <input type="hidden" name="videoId" value={videoId} />
+        <input type="hidden" name="intent" value={intent} />
+        <div className="flex gap-x-1 bg-gray-300 dark:bg-gray-800 rounded-xl py-4 px-2 items-center">
+          <button
+            value="UPVOTE"
+            type="submit"
+            onClick={handleUpdateIntent}
+            className={`
           ${
             currentVote?.voteType === "UPVOTE"
               ? `text-blue-500 dark:text-blue-300`
               : ""
           } 
           ${baseButtonStyle} `}
-        >
-          <span>
-            <ThumbsUp size={24} className={iconBaseStyle} />
+          >
+            <span>
+              <ThumbsUp size={24} className={iconBaseStyle} />
+            </span>
+          </button>
+          <span className="text-xl font-bold w-[3ch] text-center">
+            {String(count).padStart(2, " ")}
           </span>
-        </button>
-        <span className="text-xl font-bold w-[3ch] text-center">
-          {String(count).padStart(2, " ")}
-        </span>
-        <button
-          type="submit"
-          value="DOWNVOTE"
-          onClick={handleUpdateIntent}
-          className={`
+          <button
+            type="submit"
+            value="DOWNVOTE"
+            onClick={handleUpdateIntent}
+            className={`
           ${currentVote?.voteType === "DOWNVOTE" ? `text-orange-500 ` : ""}
           ${baseButtonStyle}
           `}
-        >
-          <span>
-            <ThumbsDown size={24} className={iconBaseStyle} />
-          </span>
-        </button>
-      </div>
-      {variant === "default" && (
-        <div>
-          <button>
-            <Heart size={24} />
+          >
+            <span>
+              <ThumbsDown size={24} className={iconBaseStyle} />
+            </span>
           </button>
         </div>
+      </fetcher.Form>
+      {variant === "default" && (
+        <div>
+          <favoriteFetcher.Form method="POST" action="/sign/favorite">
+            <input type="hidden" name="videoId" value={videoId} />
+            <input type="hidden" name="userId" value={userId || ""} />
+            <button className={`${favorite ? "text-red-500" : ""}`}>
+              <Heart size={24} />
+            </button>
+          </favoriteFetcher.Form>
+        </div>
       )}
-    </fetcher.Form>
+    </div>
   );
 }

@@ -23,7 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         status: "ACTIVE",
         sign: { term: { contains: searchTerm } }
       },
-      include: { sign: true, votes: true },
+      include: { sign: true, votes: true, favorites: true },
       take: 10,
       orderBy: { uploadDate: "desc" }
     });
@@ -31,7 +31,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   const videos = await prisma.video.findMany({
     where: { status: "ACTIVE" },
-    include: { sign: true, votes: true },
+    include: { sign: true, votes: true, favorites: true },
     take: 10,
     orderBy: { uploadDate: "desc" }
   });
