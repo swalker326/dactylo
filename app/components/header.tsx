@@ -1,7 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { Input } from "./ui/input";
 import { Form, Link, NavLink, useFetcher, useLocation } from "@remix-run/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { User } from "@prisma/client";
 import { Button } from "./ui/button";
 import {
@@ -51,10 +50,7 @@ const NAV_LINKS: Record<
 
 export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
   const [open, setOpen] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const isLoggedIn = Boolean(user);
-  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  const searchFetcher = useFetcher();
   const loc = useLocation();
   return (
     <header className="flex justify-between items-center p-2 bg-white">
@@ -102,32 +98,13 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
             </Dialog.Trigger>
             <Dialog.Portal>
               <Dialog.Overlay className="bg-gray-800 opacity-70 data-[state=open]:animate-overlayShow fixed inset-0" />
-              <Dialog.Content
-                onOpenAutoFocus={() => {
-                  // wait for the dialog to be in the DOM
-                  // then focus the input, super weird but it works
-                  wait(1).then(() => {
-                    searchInputRef.current?.focus();
-                  });
-                }}
-                className="data-[state=open]:animate-contentShow fixed w-screen h-[100svh] top-0 bg-white p-4 focus:outline-none"
-              >
+              <Dialog.Content className="data-[state=open]:animate-contentShow fixed w-screen h-[100svh] top-0 bg-white p-4 focus:outline-none">
                 <div className="h-full relative ">
                   <div className="flex justify-between items-center pb-2">
                     <h2 className="text-2xl font-bold">Menu</h2>
                     <Dialog.Close className="border-2 m-2 border-gray-900 rounded-full">
                       <X size={22} />
                     </Dialog.Close>
-                  </div>
-                  <div>
-                    <searchFetcher.Form method="GET" action="/sign/search">
-                      <Input
-                        ref={searchInputRef}
-                        placeholder="Search"
-                        className="order-1"
-                        name="q"
-                      />
-                    </searchFetcher.Form>
                   </div>
                   <div className="py-2">
                     <ul className="flex flex-col space-y-3">
