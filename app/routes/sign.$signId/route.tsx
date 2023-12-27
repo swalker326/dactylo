@@ -11,9 +11,9 @@ import { prisma } from "~/db.server";
 import { parse } from "@conform-to/zod";
 import { getUserId, requireUserId } from "~/services/auth.server";
 import { addVote } from "~/utils/votes.server";
-import { superjson, useSuperLoaderData } from "~/utils/data";
 import { VideoCard } from "~/components/video-card";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const { signId } = params;
@@ -30,7 +30,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     }
   });
   invariant(sign, "sign not found");
-  return superjson({ sign, userId });
+  return typedjson({ sign, userId });
 }
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const term =
@@ -62,7 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function SignIdRoute() {
-  const { sign, userId } = useSuperLoaderData<typeof loader>();
+  const { sign, userId } = useTypedLoaderData<typeof loader>();
   const { videos } = sign;
   const topVideo = videos[0];
 

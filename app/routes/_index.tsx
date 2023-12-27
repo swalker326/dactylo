@@ -1,11 +1,11 @@
 import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
 import { Form, useSearchParams, useSubmit } from "@remix-run/react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Input } from "~/components/ui/input";
 import { VideoCard } from "~/components/video-card";
 import { prisma } from "~/db.server";
 import { useDebounce } from "~/hooks/useDebounce";
 import { getUserId } from "~/services/auth.server";
-import { superjson, useSuperLoaderData } from "~/utils/data";
 
 export const meta: MetaFunction = () => {
   return [
@@ -27,7 +27,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       take: 10,
       orderBy: { uploadDate: "desc" }
     });
-    return superjson({ videos, userId: maybeUser });
+    return typedjson({ videos, userId: maybeUser });
   }
   const videos = await prisma.video.findMany({
     where: { status: "ACTIVE" },
@@ -35,13 +35,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     take: 10,
     orderBy: { uploadDate: "desc" }
   });
-  return superjson({ videos, userId: maybeUser });
+  return typedjson({ videos, userId: maybeUser });
 }
 
 export default function Index() {
   const [searchParams] = useSearchParams();
   const submit = useSubmit();
-  const { videos, userId } = useSuperLoaderData<typeof loader>();
+  const { videos, userId } = useTypedLoaderData<typeof loader>();
   const handleFormChange = useDebounce((form: HTMLFormElement) => {
     submit(form, { replace: true });
   }, 500);

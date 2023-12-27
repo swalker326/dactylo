@@ -1,8 +1,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Form, Link, NavLink, useFetcher, useLocation } from "@remix-run/react";
 import { useState } from "react";
-import { User } from "@prisma/client";
 import { Button } from "./ui/button";
+import { type loader as rootLoader } from "~/root";
 import {
   Home,
   LayoutDashboard,
@@ -19,6 +19,10 @@ import {
 } from "./ui/dropdown-menu";
 import { SearchInput } from "~/components/search";
 
+export type RootUser = Awaited<
+  ReturnType<Awaited<ReturnType<typeof rootLoader>>["json"]>
+>["user"];
+
 // const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const NAV_LINKS: Record<
@@ -26,7 +30,7 @@ const NAV_LINKS: Record<
   {
     title: string;
     icon: React.ReactNode;
-    condition?: (user: Pick<User, "email" | "id"> | null) => boolean;
+    condition?: (user: RootUser | null) => boolean;
   }
 > = {
   "/": {
@@ -42,14 +46,13 @@ const NAV_LINKS: Record<
     icon: <TrendingUp size={24} />
   },
   "/dashboard": {
-    condition: (user: Pick<User, "email" | "id"> | null | null) =>
-      Boolean(user),
+    condition: (user) => Boolean(user),
     title: "Dashboard",
     icon: <UserIcon size={24} />
   }
 };
 
-export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
+export function Header({ user }: { user: RootUser | null }) {
   const [open, setOpen] = useState(false);
   const isLoggedIn = Boolean(user);
   const loc = useLocation();
@@ -198,11 +201,7 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
   );
 }
 
-const UserDropdown = ({
-  user
-}: {
-  user: Pick<User, "email" | "id"> | null;
-}) => {
+const UserDropdown = ({ user }: { user: RootUser | null }) => {
   const fetcher = useFetcher();
   if (!user) {
     return (

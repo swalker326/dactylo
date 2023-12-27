@@ -107,15 +107,12 @@ dependencies:
   remix-auth-form:
     specifier: ^1.4.0
     version: 1.4.0(@remix-run/server-runtime@2.4.1)(remix-auth@3.6.0)
-  remix-superjson:
-    specifier: ^0.0.0
-    version: 0.0.0
+  remix-typedjson:
+    specifier: ^0.4.1
+    version: 0.4.1(@remix-run/react@2.4.1)(@remix-run/server-runtime@2.4.1)(react@18.2.0)
   remix-utils:
     specifier: ^7.3.0
     version: 7.4.0(@remix-run/node@2.4.1)(@remix-run/react@2.4.1)(crypto-js@4.2.0)(intl-parse-accept-language@1.0.0)(is-ip@5.0.1)(react@18.2.0)(zod@3.22.4)
-  superjson:
-    specifier: ^2.2.1
-    version: 2.2.1
   tailwind-merge:
     specifier: ^2.1.0
     version: 2.2.0
@@ -4964,13 +4961,6 @@ packages:
     resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
     engines: {node: '>= 0.6'}
 
-  /copy-anything@3.0.5:
-    resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
-    engines: {node: '>=12.13'}
-    dependencies:
-      is-what: 4.1.16
-    dev: false
-
   /core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: true
@@ -6779,11 +6769,6 @@ packages:
       call-bind: 1.0.5
       get-intrinsic: 1.2.2
     dev: true
-
-  /is-what@4.1.16:
-    resolution: {integrity: sha512-ZhMwEosbFJkA0YhFnNDgTM4ZxDRsS6HqTo7qsZM08fehyRYIYa0yHu5R6mgo1n/8MgaPBXiPimPD77baVFYg+A==}
-    engines: {node: '>=12.13'}
-    dev: false
 
   /is-whitespace@0.3.0:
     resolution: {integrity: sha512-RydPhl4S6JwAyj0JJjshWJEFG6hNye3pZFBRZaTUfZFwGHxzppNaNOVgQuS/E/SlhrApuMXrpnK1EEIXfdo3Dg==}
@@ -8621,8 +8606,16 @@ packages:
       - utf-8-validate
     dev: true
 
-  /remix-superjson@0.0.0:
-    resolution: {integrity: sha512-bCQteU2nY9XhJirs2PXgKLMmdTFqz7bg2yP5KwnCPdGhPCzqto11rOJolT8ecq9ot6C2tYbI6+PpWurcbbmQ9A==}
+  /remix-typedjson@0.4.1(@remix-run/react@2.4.1)(@remix-run/server-runtime@2.4.1)(react@18.2.0):
+    resolution: {integrity: sha512-AL6LdNajqce1Exy6aB1bD6GYMk90S6H31e8kDCi6jLgBi4K82Ph604lqGGzalswaPPYckYK+NZzgvhWEY7JCDw==}
+    peerDependencies:
+      '@remix-run/react': ^1.16.0 || ^2.0
+      '@remix-run/server-runtime': ^1.16.0 || ^2.0
+      react: ^17.0.2 || ^18.0.0
+    dependencies:
+      '@remix-run/react': 2.4.1(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)
+      '@remix-run/server-runtime': 2.4.1(typescript@5.3.3)
+      react: 18.2.0
     dev: false
 
   /remix-utils@7.4.0(@remix-run/node@2.4.1)(@remix-run/react@2.4.1)(crypto-js@4.2.0)(intl-parse-accept-language@1.0.0)(is-ip@5.0.1)(react@18.2.0)(zod@3.22.4):
@@ -9150,13 +9143,6 @@ packages:
       clone-regexp: 3.0.0
       function-timeout: 0.1.1
       time-span: 5.1.0
-    dev: false
-
-  /superjson@2.2.1:
-    resolution: {integrity: sha512-8iGv75BYOa0xRJHK5vRLEjE2H/i4lulTjzpUXic3Eg8akftYjkmQDa8JARQ42rlczXyFR3IeRoeFCc7RxHsYZA==}
-    engines: {node: '>=16'}
-    dependencies:
-      copy-anything: 3.0.5
     dev: false
 
   /supports-color@5.5.0:
