@@ -27,16 +27,21 @@ export default function Index() {
   const { videos, userId } = useSuperLoaderData<typeof loader>();
   return (
     <div className="flex flex-col gap-4 pt-4">
-      <Input className="h-20 text-2xl" placeholder="Find a Sign..." />
+      <Input
+        className="h-16 text-2xl md:h-20 md:text-2xl"
+        placeholder="Find a Sign..."
+      />
       {videos.map((video) => (
         <div
           key={video.id}
           className="bg-white dark:bg-gray-700 dark:text-white rounded-lg "
         >
-          <h2 className="text-6xl extra-bold py-4 uppercase text-center">
+          <h2 className="text-6xl extra-bold py-4 text-center capitalize">
             {video.sign?.term}
           </h2>
-          <VideoCard userId={userId || null} video={video} />
+          <div className="bg-white px-4 rounded-md">
+            <VideoCard userId={userId || null} video={video} />
+          </div>
         </div>
       ))}
     </div>

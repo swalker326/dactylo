@@ -17,6 +17,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger
 } from "./ui/dropdown-menu";
+import { SearchInput } from "~/components/search";
 
 // const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -53,7 +54,7 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
   const isLoggedIn = Boolean(user);
   const loc = useLocation();
   return (
-    <header className="flex justify-between items-center p-2 bg-white">
+    <header className="flex justify-between items-center p-2 bg-white fixed w-full z-10">
       <div className="flex justify-between w-full items-center">
         <NavLink to="/">
           <h1 className="text-6xl">
@@ -62,7 +63,7 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
         </NavLink>
         <div className="hidden sm:flex">
           <div>
-            <ul className="flex gap-6">
+            <ul className="flex gap-6 items-center">
               {Object.entries(NAV_LINKS).map(([path, values]) => {
                 const { icon } = values;
                 if (values.condition && values.condition(user) === false) {
@@ -85,6 +86,9 @@ export function Header({ user }: { user: Pick<User, "email" | "id"> | null }) {
                   </li>
                 );
               })}
+              <li>
+                <SearchInput />
+              </li>
             </ul>
           </div>
         </div>
