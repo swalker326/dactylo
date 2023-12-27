@@ -31,54 +31,64 @@ export async function addGifToVideo({
   video: File;
   videoId: string;
   name: string;
-}) {
+}): Promise<void> {
   const key = uuidv4();
   const extension = video.name.split(".")[1];
   const videoPath = join(tmpdir(), `${name}-${key}.${extension}`);
   const gifPath = join(tmpdir(), `${name}-${key}.gif`);
   const readableVideo = await convertToReadable(video);
   await writeFile(videoPath, readableVideo);
+
   const cleanUp = async () => {
     await unlink(videoPath);
     await unlink(gifPath);
   };
 
-  ffmpeg(videoPath)
-    .outputOption(
-      "-filter_complex",
-      "[0:v] fps=12,scale=480:-1,split [a][b];[a] palettegen [p];[b][p] paletteuse"
-    )
-    .save(gifPath)
-    .on("end", async () => {
-      const gif = await readFile(gifPath);
-      const gifFile = new File([gif], `${name}.gif`, { type: "image/gif" });
-      const uploadResponse = await uploadHandler({
-        filename: name,
-        data: gifFile,
-        contentType: "image/gif",
-        prefix: "gif"
-      });
-      const parseResponse = FileUploadResponseSchema.safeParse(
-        JSON.parse(uploadResponse)
-      );
-      if (!parseResponse.success) {
-        throw new Error("Failed to upload gif");
-      }
-      await prisma.video.update({
-        where: {
-          id: videoId
-        },
-        data: {
-          gifUrl: `https://dactylo.io/${parseResponse.data.filename}`
+  // Wrap FFmpeg conversion in a Promise
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .outputOption(
+        "-filter_complex",
+        "[0:v] fps=12,scale=480:-1,split [a][b];[a] palettegen [p];[b][p] paletteuse"
+      )
+      .save(gifPath)
+      .on("end", async () => {
+        try {
+          const gif = await readFile(gifPath);
+          const gifFile = new File([gif], `${name}.gif`, { type: "image/gif" });
+          const uploadResponse = await uploadHandler({
+            filename: name,
+            data: gifFile,
+            contentType: "image/gif",
+            prefix: "gif"
+          });
+          const parseResponse = FileUploadResponseSchema.safeParse(
+            JSON.parse(uploadResponse)
+          );
+          if (!parseResponse.success) {
+            throw new Error("Failed to upload gif");
+          }
+          await prisma.video.update({
+            where: {
+              id: videoId
+            },
+            data: {
+              gifUrl: `https://dactylo.io/${parseResponse.data.filename}`
+            }
+          });
+          await cleanUp();
+          resolve();
+        } catch (error) {
+          await cleanUp();
+          reject(error);
         }
+      })
+      .on("error", async (err) => {
+        console.log(err);
+        await cleanUp();
+        reject(new Error("Failed to convert video to gif"));
       });
-      await cleanUp();
-    })
-    .on("error", async (err) => {
-      console.log(err);
-      await cleanUp();
-      throw new Error("Failed to convert video to gif");
-    });
+  });
 }
 
 // Function to convert File to GIF
