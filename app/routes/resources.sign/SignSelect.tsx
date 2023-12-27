@@ -1,20 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { useFetcher } from "@remix-run/react";
-import { FieldConfig, conform, useInputEvent } from "@conform-to/react";
 import { loader as resouceLoader } from "~/routes/resources.sign/route";
 
-export function SignSelect(config: FieldConfig<string>) {
+export function SignSelect({ name }: { name: string }) {
   const signFetcher = useFetcher<typeof resouceLoader>();
   const signs = signFetcher.data?.signs;
   const [selectedSign, setSelectedSign] = useState<string>("");
   const [query, setQuery] = useState("");
-  const shadowInputRef = useRef<HTMLInputElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const control = useInputEvent({
-    ref: shadowInputRef,
-    onReset: () => setSelectedSign(config.defaultValue || "")
-  });
 
   useEffect(() => {
     signFetcher.submit(
@@ -31,19 +24,7 @@ export function SignSelect(config: FieldConfig<string>) {
         });
 
   return (
-    <Combobox value={selectedSign} onChange={control.change}>
-      <input
-        ref={shadowInputRef}
-        {...conform.input(config, { hidden: true })}
-        onChange={(e) => {
-          const si = filteredSigns?.find((s) => s.id === e.target.value);
-          if (!si) {
-            throw new Error("Sign not found");
-          }
-          setSelectedSign(si.id);
-        }}
-        onFocus={() => inputRef.current?.focus()}
-      />
+    <Combobox name={name} value={selectedSign} onChange={setSelectedSign}>
       <div className="relative">
         <Combobox.Input
           className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"`}

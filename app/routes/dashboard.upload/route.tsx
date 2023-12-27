@@ -95,7 +95,6 @@ export default function DashboardRoute() {
   const navigation = useNavigation();
   const fetcher = useFetcher<typeof action>();
   const isSubmitting = fetcher.formData?.has("intent");
-  console.log(isSubmitting);
   const [form, { file, sign }] = useForm({
     constraint: getFieldsetConstraint(UploadFormSchema),
     // defaultValue: { redirectTo },

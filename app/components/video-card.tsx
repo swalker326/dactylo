@@ -1,16 +1,18 @@
 import { VoteType, Vote } from "@prisma/client";
 import { Link, useFetcher } from "@remix-run/react";
-import { ThumbsUp, ThumbsDown, MoreVertical } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Heart } from "lucide-react";
 import { useState } from "react";
 import { updateVoteCount } from "~/utils/votes";
 import { VideoWithVotes } from "~/utils/votes.server";
 
 export function VideoCard({
   video,
-  userId
+  userId,
+  variant = "default"
 }: {
   video: VideoWithVotes;
   userId: string | null;
+  variant?: "default" | "compact";
 }) {
   const currentVote = video.votes?.find((vote) => vote.userId === userId);
 
@@ -20,7 +22,7 @@ export function VideoCard({
         <img
           src={video.gifUrl || ""}
           alt="sign video"
-          className="w-full object-contain"
+          className="w-full object-contain overflow-hidden rounded-lg"
         />
       </Link>
       <div className="w-full py-3 bg-white dark:bg-gray-700 rounded-b-lg">
@@ -30,6 +32,7 @@ export function VideoCard({
           count={video.voteCount}
           videoId={video.id}
           currentVote={currentVote}
+          variant={variant}
         />
       </div>
     </div>
@@ -40,12 +43,14 @@ function VoteButtons({
   count,
   videoId,
   currentVote,
-  signId
+  signId,
+  variant = "default"
 }: {
   signId: string;
   count: number;
   videoId: string;
   currentVote: Vote | undefined;
+  variant?: "default" | "compact";
 }) {
   const fetcher = useFetcher();
   const [intent, setIntent] = useState<VoteType>(
@@ -91,12 +96,14 @@ function VoteButtons({
       setIntent(intent);
     }
   };
+  const variantClassName =
+    variant === "compact" ? "justify-center" : "justify-between";
 
   return (
     <fetcher.Form
       method="POST"
       action={`/sign/${signId}`}
-      className="h-full flex  justify-between items-center text-black dark:text-white px-1 md:px-4"
+      className={`flex items-center dark:text-white ${variantClassName}`}
     >
       <input type="hidden" name="videoId" value={videoId} />
       <input type="hidden" name="intent" value={intent} />
@@ -134,9 +141,13 @@ function VoteButtons({
           </span>
         </button>
       </div>
-      <div>
-        <MoreVertical size={24} />
-      </div>
+      {variant === "default" && (
+        <div>
+          <button>
+            <Heart size={24} />
+          </button>
+        </div>
+      )}
     </fetcher.Form>
   );
 }

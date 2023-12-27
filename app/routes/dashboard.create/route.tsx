@@ -3,32 +3,30 @@ import { useRef, useState } from "react";
 import CameraComponent from "~/components/camera";
 import { Input } from "~/components/ui/input";
 import { SignSelect } from "../resources.sign/SignSelect";
-import { useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { z } from "zod";
-import { CameraIcon } from "lucide-react";
+import { CameraIcon, X } from "lucide-react";
 import { Button } from "~/components/ui/button";
+// import { getErrorMessage, parseFormData } from "~/utils/data";
+import { useZodErrors } from "~/hooks/useZodErrors";
 
 const UploadFormSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file" }),
-  sign: z.string({
-    required_error: "Please select a sign",
-    invalid_type_error: "That's not a sign"
-  })
+  sign: z
+    .string({
+      required_error: "Please select a sign",
+      invalid_type_error: "That's not a sign"
+    })
+    .min(8, { message: "That's not a sign" })
 });
+// type UploadFormData = z.infer<typeof UploadFormSchema>;
 
 export default function CreateRoute() {
   const fetcher = useFetcher();
+  const isSubmitting = fetcher.formData?.has("sign");
   const [videoUrl, setVideoUrl] = useState<string | null>(null); // [1
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [form, { file, sign }] = useForm({
-    constraint: getFieldsetConstraint(UploadFormSchema),
-    // defaultValue: { redirectTo },
-    // lastSubmission: fetcher.data?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: UploadFormSchema });
-    }
-  });
+  const { parse, errorMessages, error } = useZodErrors(UploadFormSchema);
+
   const handleRecordingCompleted = async (blobUrl: string) => {
     if (fileInputRef.current) {
       try {
@@ -52,35 +50,103 @@ export default function CreateRoute() {
       }
     }
   };
+  console.log("ERRORS: ", errorMessages);
+  console.log("ERROR: ", error);
 
   return (
     <div className="flex flex-col gap-y-3">
       <h2 className="text-4xl">Create</h2>
       <fetcher.Form
-        {...form.props}
         method="POST"
         encType="multipart/form-data"
         action="/dashboard/upload"
         className="flex flex-col gap-y-2"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          if (fetcher.state !== "idle") return;
+          const formData = new FormData(event.currentTarget);
+          const success = await parse(formData);
+          console.log("SUCCESS??", success);
+          if (success) {
+            fetcher.submit(formData, {
+              method: "POST",
+              action: "/dashboard/upload",
+              navigate: false,
+              encType: "multipart/form-data"
+            });
+          } else {
+            console.log("error");
+          }
+        }}
       >
-        <SignSelect {...sign} />
-        <CameraComponent
-          onRecordingComplete={handleRecordingCompleted}
-          label={<CameraIcon size={32} />}
-        />
-        <Input
-          className="hidden"
-          type="file"
-          name={file.name}
-          ref={fileInputRef}
-        />
-        {videoUrl && (
-          <video controls>
-            <source src={videoUrl} />
-            <track kind="captions" />
-          </video>
+        <SignSelect name="sign" />
+        {errorMessages?.sign && (
+          <p className="bg-red-300 rounded-sm w-full p-2">
+            {errorMessages["sign"]}
+          </p>
         )}
-        <Button type="submit">Upload</Button>
+        <div className="w-full space-y-3 flex flex-col items-center">
+          <CameraComponent
+            onRecordingComplete={handleRecordingCompleted}
+            label={<CameraIcon size={32} />}
+          />
+          <h6>OR</h6>
+          <div className="flex w-full">
+            <Input
+              className={`${
+                fileInputRef.current?.files?.length &&
+                fileInputRef.current?.files?.length > 0
+                  ? "rounded-r-none"
+                  : ""
+              }`}
+              type="file"
+              accept="video/*"
+              name="file"
+              ref={fileInputRef}
+            />
+            {fileInputRef.current?.files?.length &&
+            fileInputRef.current?.files?.length > 0 ? (
+              <button
+                className="bg-primary text-white  p-1 rounded-r-md "
+                onClick={() => {
+                  fileInputRef.current?.value &&
+                    (fileInputRef.current.value = "");
+                  setVideoUrl(null);
+                }}
+              >
+                <X size={22} />
+              </button>
+            ) : null}
+          </div>
+          {errorMessages?.file && (
+            <p className="bg-red-300 rounded-sm w-full p-2">
+              {errorMessages.file}
+            </p>
+          )}
+        </div>
+        {videoUrl && (
+          <div className="relative">
+            <button
+              className="absolute top-2 right-2 bg-primary text-white rounded-full p-1 z-10"
+              onClick={() => {
+                fileInputRef.current?.value &&
+                  (fileInputRef.current.value = "");
+                setVideoUrl(null);
+              }}
+            >
+              <X size={22} />
+            </button>
+            <video controls>
+              <source src={videoUrl} />
+              <track kind="captions" />
+            </video>
+          </div>
+        )}
+        <div className="pt-6">
+          <Button className="float-right" type="submit" disabled={isSubmitting}>
+            Upload
+          </Button>
+        </div>
       </fetcher.Form>
     </div>
   );
