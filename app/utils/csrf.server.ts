@@ -1,7 +1,5 @@
 import { createCookie } from "@remix-run/node";
 import { CSRF, CSRFError } from "remix-utils/csrf/server";
-const secrets = process.env.CSRF_SECRETS?.split(",") ?? [];
-console.log(secrets);
 const cookie = createCookie("csrf", {
   path: "/",
   httpOnly: true,

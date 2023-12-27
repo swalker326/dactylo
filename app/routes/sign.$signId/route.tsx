@@ -18,7 +18,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const { signId } = params;
   const userId = await getUserId(request);
-  console.log({ userId });
   invariant(signId, "sign-id is required");
   const sign = await prisma.sign.findUnique({
     where: { id: signId },
@@ -26,7 +25,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       videos: {
         // where: { status: "ACTIVE" },
         orderBy: { voteCount: "desc" },
-        include: { votes: true }
+        include: { votes: true, favorites: true }
       }
     }
   });
@@ -34,7 +33,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   return superjson({ sign, userId });
 }
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  console.log(data);
   const term =
     data.json.sign.term.charAt(0).toLocaleUpperCase() +
     data.json.sign.term.slice(1);

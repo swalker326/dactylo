@@ -69,7 +69,6 @@ function VoteButtons({
   const [intent, setIntent] = useState<VoteType>(
     currentVote?.voteType || "NO_VOTE"
   );
-  console.log(animate);
   if (favoriteFetcher.formData?.has("userId")) {
     if (!favorite) {
       animate = true;
@@ -120,7 +119,6 @@ function VoteButtons({
   };
   const variantClassName =
     variant === "compact" ? "justify-center" : "justify-between";
-  console.log("favorite", favorite);
   return (
     <div className="flex justify-between items-center">
       <fetcher.Form

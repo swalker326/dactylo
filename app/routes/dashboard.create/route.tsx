@@ -37,7 +37,6 @@ export default function CreateRoute() {
         const file = new File([blob], "recorded-video.webm", {
           type: "video/webm"
         });
-        console.log(file);
 
         // Use DataTransfer to correctly set the file to the input
         const dataTransfer = new DataTransfer();
@@ -49,8 +48,6 @@ export default function CreateRoute() {
       }
     }
   };
-  console.log("ERRORS: ", errorMessages);
-  console.log("ERROR: ", error);
 
   return (
     <div className="flex flex-col gap-y-3">
@@ -72,8 +69,6 @@ export default function CreateRoute() {
               navigate: false,
               encType: "multipart/form-data"
             });
-          } else {
-            console.log("error");
           }
         }}
       >
