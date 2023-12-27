@@ -10,6 +10,7 @@ export declare type SuperTypedResponse<T> = Response & {
   superjson(): Promise<T>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AppData = any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DataFunction = (...args: any[]) => unknown; // matches any function
