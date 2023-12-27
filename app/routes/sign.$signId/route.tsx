@@ -1,5 +1,10 @@
 import { invariant } from "@epic-web/invariant";
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+  json
+} from "@remix-run/node";
 import { Link } from "@remix-run/react";
 import { z } from "zod";
 import { prisma } from "~/db.server";
@@ -28,6 +33,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   invariant(sign, "sign not found");
   return superjson({ sign, userId });
 }
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  console.log(data);
+  const term =
+    data.json.sign.term.charAt(0).toLocaleUpperCase() +
+    data.json.sign.term.slice(1);
+  return [{ title: term }];
+};
 
 const SignActionSchema = z.object({
   intent: z.enum(["UPVOTE", "DOWNVOTE", "NO_VOTE"]),
@@ -72,9 +84,7 @@ export default function SignIdRoute() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle>
-                  {sign.term.charAt(0).toLocaleUpperCase() + sign.term.slice(1)}
-                </CardTitle>
+                <CardTitle className="capitalize">{sign.term}</CardTitle>
                 <ul className="flex flex-col space-y-2">
                   <li>
                     <span className="font-bold">Definition</span>:{" "}
