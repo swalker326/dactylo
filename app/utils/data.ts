@@ -39,12 +39,14 @@ export const superjson: SuperJsonFunction = (data, init = {}) => {
 
 export function useSuperLoaderData<T = AppData>(): UseDataFunctionReturn<T> {
   const data = useLoaderData<T>();
+  //@ts-expect-error superjson types are wrong
   return _superjson.deserialize(data);
 }
 export function useSuperActionData<
   T = AppData
 >(): UseDataFunctionReturn<T> | null {
   const data = useActionData();
+  //@ts-expect-error superjson types are wrong
   return data ? _superjson.deserialize(data) : null;
 }
 
