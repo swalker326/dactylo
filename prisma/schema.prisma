@@ -19,28 +19,43 @@ model Sign {
   relatedSigns Sign[]     @relation("RelatedSigns")
   relatedTo    Sign[]     @relation("RelatedSigns")
 
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+  createdAt DateTime  @default(now())
 }
 
 model Video {
   id           String      @id @default(cuid())
   name         String
-  signId       String?
+  signId       String
   userId       String
   uploaderInfo String
   uploadDate   DateTime    @default(now())
   voteCount    Int         @default(0)
   url          String
-  gifUrl       String?
+  gifUrl       String
   user         User        @relation(fields: [userId], references: [id])
   status       VideoStatus
-  sign         Sign?       @relation(fields: [signId], references: [id])
+  sign         Sign        @relation(fields: [signId], references: [id])
   votes        Vote[]
   favorites    Favorite[]
+  reports      Report[]
 
   @@index([userId])
   @@index([signId])
+}
+
+model Report {
+  id      String @id @default(cuid())
+  videoId String
+  userId  String
+  reason  String
+
+  video     Video    @relation(fields: [videoId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([videoId])
 }
 
 model Favorite {
@@ -64,12 +79,13 @@ model User {
   image    UserImage?
   password Password?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 
   sessions    Session[]
   connections Connection[]
   Favorite    Favorite[]
+  Report      Report[]
 }
 
 model Vote {
