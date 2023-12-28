@@ -1,5 +1,7 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import { Config } from "tailwindcss";
+import { extendedTheme } from "./app/utils/extended-theme";
+
+export default {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -16,6 +18,7 @@ module.exports = {
       }
     },
     extend: {
+      ...extendedTheme,
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -58,7 +61,7 @@ module.exports = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: 0 },
+          from: { outerHeight: "0" },
           to: { height: "var(--radix-accordion-content-height)" }
         },
         zoomy: {
@@ -67,7 +70,7 @@ module.exports = {
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 }
+          to: { height: "0" }
         }
       },
       animation: {
@@ -78,4 +81,4 @@ module.exports = {
     }
   },
   plugins: [require("tailwindcss-animate"), require("@headlessui/tailwindcss")]
-};
+} satisfies Config;
