@@ -7,8 +7,5 @@ export default defineConfig({
   server: {
     port: 3000
   },
-  define: {
-    "process.env.FLUENTFFMPEG_COV": false
-  },
   plugins: [remixDevTools(), remix(), tsconfigPaths()]
 });

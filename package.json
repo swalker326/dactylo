@@ -87,5 +87,10 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "fluent-ffmpeg@2.1.2": "patches/fluent-ffmpeg@2.1.2.patch"
+    }
   }
 }
