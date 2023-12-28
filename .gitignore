@@ -1,5 +1,5 @@
 node_modules
-
+/other/cache.db
 /.cache
 **/build
 .env*
