@@ -34,9 +34,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const term =
-    data.json.sign.term.charAt(0).toLocaleUpperCase() +
-    data.json.sign.term.slice(1);
-  return [{ title: term }];
+    data?.sign?.term?.charAt(0).toLocaleUpperCase() + data.sign.term.slice(1);
+  return [{ title: term || "Sign" }];
 };
 
 const SignActionSchema = z.object({
