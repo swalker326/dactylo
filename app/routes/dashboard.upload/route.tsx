@@ -3,7 +3,6 @@ import { ActionFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useNavigation } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-// import { prisma } from "~/db.server";
 import { requireUserId } from "~/services/auth.server";
 import {
   FileUploadResponseSchema,

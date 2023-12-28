@@ -28,7 +28,6 @@ const LoginFormSchema = z.object({
 export default function LoginRoute() {
   const actionData = useActionData<typeof action>();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo");
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getFieldsetConstraint(LoginFormSchema),
@@ -39,43 +38,50 @@ export default function LoginRoute() {
     },
     shouldRevalidate: "onBlur"
   });
+  const redirectTo = searchParams.get("redirectTo");
 
   return (
-    <div className="mt-5">
-      {actionData?.submission.error.login && (
-        <div className="p-3 bg-red-200 text-red-600 rounded-md">
-          {actionData.submission.error.login}
+    <div className="mt-5 flex justify-center">
+      <div className=" w-full md:w-1/2 md:p-4 rounded-md">
+        {actionData?.submission.error.login && (
+          <div className="p-3 bg-red-200 text-red-600 rounded-md">
+            {actionData.submission.error.login}
+          </div>
+        )}
+        <Form method="POST" className="max-w-3xl" {...form.props}>
+          <AuthenticityTokenInput />
+          <div className="flex flex-col gap-y-2 w-full">
+            <Input placeholder="email" type="email" name="email" required />
+            {fields.email.error && (
+              <p className="text-red-500">{fields.email.error}</p>
+            )}
+            <Input
+              placeholder="password"
+              type="password"
+              name="password"
+              autoComplete="current-password"
+              required
+            />
+            {fields.email.error && (
+              <p className="text-red-500">{fields.password.error}</p>
+            )}
+            <Button>Sign In</Button>
+          </div>
+        </Form>
+        <div className="flex flex-col gap-2">
+          <h3 className="py-2 text-xl">Login Methods</h3>
+          <div className="p-4 border border-gray-400 rounded-md flex gap-2 flex-wrap justify-center">
+            {providerNames.map((providerName) => (
+              <ProviderConnectionForm
+                key={providerName}
+                type="Login"
+                providerName={providerName}
+                redirectTo={redirectTo}
+              />
+            ))}
+          </div>
         </div>
-      )}
-      <Form method="POST" className="max-w-3xl" {...form.props}>
-        <AuthenticityTokenInput />
-        <div className="flex flex-col gap-y-2 w-full">
-          <Input placeholder="email" type="email" name="email" required />
-          {fields.email.error && (
-            <p className="text-red-500">{fields.email.error}</p>
-          )}
-          <Input
-            placeholder="password"
-            type="password"
-            name="password"
-            autoComplete="current-password"
-            required
-          />
-          {fields.email.error && (
-            <p className="text-red-500">{fields.password.error}</p>
-          )}
-          <Button>Sign In</Button>
-        </div>
-      </Form>
-      {providerNames.map((providerName) => (
-        <li key={providerName}>
-          <ProviderConnectionForm
-            type="Login"
-            providerName={providerName}
-            redirectTo={redirectTo}
-          />
-        </li>
-      ))}
+      </div>
     </div>
   );
 }
