@@ -18,6 +18,9 @@ model Sign {
   categories   Category[] @relation("SignCategories")
   relatedSigns Sign[]     @relation("RelatedSigns")
   relatedTo    Sign[]     @relation("RelatedSigns")
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
 
 model Video {
@@ -34,7 +37,7 @@ model Video {
   status       VideoStatus
   sign         Sign?       @relation(fields: [signId], references: [id])
   votes        Vote[]
-  favorites     Favorite[]
+  favorites    Favorite[]
 
   @@index([userId])
   @@index([signId])

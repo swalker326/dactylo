@@ -26,8 +26,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
       }
     );
   const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true, email: true }
+    select: {
+      id: true,
+      email: true,
+      image: { select: { id: true } },
+      roles: {
+        select: {
+          name: true,
+          permissions: {
+            select: { entity: true, action: true, access: true }
+          }
+        }
+      }
+    },
+    where: { id: userId }
   });
   const response = json(
     { csrfToken, user },

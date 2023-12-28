@@ -1,7 +1,7 @@
 // import { Prisma, User } from "@prisma/client";
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
-import { CameraIcon, Home, Settings } from "lucide-react";
+import { CameraIcon, Home, Settings, ShieldEllipsis } from "lucide-react";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/services/auth.server";
 import { userHasRole } from "~/utils/permissions.server";
@@ -52,7 +52,7 @@ const NAV_LINKS: Record<
   "/dashboard/settings": { name: "Settings", icon: <Settings /> },
   "/dashboard/admin": {
     name: "Admin",
-    icon: "Admin",
+    icon: <ShieldEllipsis />,
     condition: (isAdmin) => isAdmin
   }
 };
