@@ -2,6 +2,18 @@ import { prisma } from "~/db.server";
 import sampleWords from "../app/sampleWords";
 
 async function seed() {
+  console.time("🔑 Created permissions...");
+  const entities = ["user", "sign", "video"];
+  const actions = ["create", "read", "update", "delete"];
+  const accesses = ["own", "any"] as const;
+  for (const entity of entities) {
+    for (const action of actions) {
+      for (const access of accesses) {
+        await prisma.permission.create({ data: { entity, action, access } });
+      }
+    }
+  }
+  console.timeEnd("🔑 Created permissions...");
   console.time("👑 Created roles...");
   await prisma.role.create({
     data: {
