@@ -5,7 +5,6 @@ import { tmpdir } from "os";
 import { unlink, writeFile, readFile } from "fs/promises";
 import { join } from "path";
 import { FileUploadResponseSchema, uploadHandler } from "./storage.server";
-import { prisma } from "~/db.server";
 
 async function convertToReadable(blob: Blob): Promise<Readable> {
   const reader = blob.stream().getReader();
@@ -23,15 +22,13 @@ async function convertToReadable(blob: Blob): Promise<Readable> {
   return nodeReadable;
 }
 
-export async function addGifToVideo({
+export async function uploadGif({
   video,
-  videoId,
   name
 }: {
   video: File;
-  videoId: string;
   name: string;
-}): Promise<void> {
+}): Promise<{ gifUrl: string }> {
   const key = uuidv4();
   const extension = video.name.split(".")[1];
   const videoPath = join(tmpdir(), `${name}-${key}.${extension}`);
@@ -68,16 +65,11 @@ export async function addGifToVideo({
           if (!parseResponse.success) {
             throw new Error("Failed to upload gif");
           }
-          await prisma.video.update({
-            where: {
-              id: videoId
-            },
-            data: {
-              gifUrl: `https://dactylo.io/${parseResponse.data.filename}`
-            }
-          });
+
           await cleanUp();
-          resolve();
+          resolve({
+            gifUrl: `https://media.dactylo.io/${parseResponse.data.filename}`
+          });
         } catch (error) {
           await cleanUp();
           reject(error);

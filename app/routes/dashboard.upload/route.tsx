@@ -15,7 +15,7 @@ import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { invariant } from "@epic-web/invariant";
 import { prisma } from "~/db.server";
 import { sendEmail } from "~/utils/email.server";
-import { addGifToVideo } from "~/utils/gif.server";
+import { uploadGif } from "~/utils/gif.server";
 import { SignSelect } from "../resources.sign/SignSelect";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -48,6 +48,10 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!parsedUploadResponse.success) {
     throw new Error("Invalid video");
   }
+  const { gifUrl } = await uploadGif({
+    video: file,
+    name: sign.term
+  });
   const dbVideo = await prisma.video.create({
     data: {
       name: encodeURIComponent(parsedUploadResponse.data.filename),
@@ -56,14 +60,12 @@ export async function action({ request }: ActionFunctionArgs) {
         encodeURIComponent(parsedUploadResponse.data.filename),
       status: "UNDER_REVIEW",
       uploaderInfo: JSON.stringify({}),
-      user: { connect: { id: userId } }
+      gifUrl,
+      user: { connect: { id: userId } },
+      sign: { connect: { id: signId as string } }
     }
   });
-  await addGifToVideo({
-    video: file,
-    videoId: dbVideo.id,
-    name: sign.term
-  });
+
   const updatedSign = await prisma.sign.update({
     where: { id: signId as string },
     data: {

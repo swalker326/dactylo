@@ -1,14 +1,19 @@
 // app/services/auth.server.ts
-import { type User, type Password } from "@prisma/client";
+import { type User, type Password, Connection } from "@prisma/client";
 import { Authenticator, AuthorizationError } from "remix-auth";
 import { authSessionStorage } from "~/services/session.server";
+import {
+  connectionSessionStorage,
+  providers
+} from "~/utils/connections.server";
 import { FormStrategy } from "remix-auth-form";
 import { prisma } from "~/db.server";
 import bcrypt from "bcryptjs";
 import { redirect } from "@remix-run/node";
-import { combineHeaders } from "~/utils/misc";
+import { combineHeaders, downloadFile } from "~/utils/misc";
+import { ProviderUser } from "~/utils/providers/provider";
 
-export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30;
+export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30; // 30 days
 export const getSessionExpirationDate = () =>
   new Date(Date.now() + SESSION_EXPIRATION_TIME);
 
@@ -100,6 +105,35 @@ export async function resetUserPassword({
   });
 }
 
+export async function signupWithConnection({
+  email,
+  providerId,
+  providerName,
+  imageUrl
+}: {
+  email: User["email"];
+  providerId: Connection["providerId"];
+  providerName: Connection["providerName"];
+  imageUrl?: string;
+}) {
+  const session = await prisma.session.create({
+    data: {
+      expirationDate: getSessionExpirationDate(),
+      user: {
+        create: {
+          email: email.toLowerCase(),
+          roles: { connect: { name: "user" } },
+          connections: { create: { providerId, providerName } },
+          image: imageUrl ? { create: await downloadFile(imageUrl) } : undefined
+        }
+      }
+    },
+    select: { id: true, expirationDate: true }
+  });
+
+  return session;
+}
+
 export async function signup({
   email,
   password
@@ -186,7 +220,12 @@ export async function verifyUserPassword(
   return { id: userWithPassword.id };
 }
 
-export const authenticator = new Authenticator<User>(authSessionStorage);
+export const authenticator = new Authenticator<ProviderUser>(
+  connectionSessionStorage
+);
+for (const [providerName, provider] of Object.entries(providers)) {
+  authenticator.use(provider.getAuthStrategy(), providerName);
+}
 
 authenticator.use(
   new FormStrategy(async ({ form }) => {

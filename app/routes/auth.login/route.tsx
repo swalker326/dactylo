@@ -5,7 +5,7 @@ import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs
 } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useSearchParams } from "@remix-run/react";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
@@ -14,6 +14,7 @@ import { login, requireAnonymous } from "~/services/auth.server";
 import { validateCSRF } from "~/utils/csrf.server";
 import { PasswordSchema } from "~/utils/user-validation";
 import { handleNewSession } from "./login";
+import { ProviderConnectionForm, providerNames } from "~/utils/connections";
 
 const LoginFormSchema = z.object({
   email: z.string().email(),
@@ -26,6 +27,8 @@ const LoginFormSchema = z.object({
 // names we are going to use in the strategy
 export default function LoginRoute() {
   const actionData = useActionData<typeof action>();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getFieldsetConstraint(LoginFormSchema),
@@ -64,6 +67,15 @@ export default function LoginRoute() {
           <Button>Sign In</Button>
         </div>
       </Form>
+      {providerNames.map((providerName) => (
+        <li key={providerName}>
+          <ProviderConnectionForm
+            type="Login"
+            providerName={providerName}
+            redirectTo={redirectTo}
+          />
+        </li>
+      ))}
     </div>
   );
 }
