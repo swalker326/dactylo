@@ -1,21 +1,35 @@
-# templates/unstable-vite
-
-⚠️ Remix support for Vite is unstable and not recommended for production.
-
 📖 See the [Remix Vite docs][remix-vite-docs] for details on supported features.
+
+## About
+
+Dactylo is a crowd sourced sign language dictionary. Users upload videos and once approved other users vote on the best video for a word or phrase.
 
 ## Setup
 
-```shellscript
-npx create-remix@latest --template remix-run/remix/templates/unstable-vite
+This project uses pnpm to install in your local system follow [these](https://pnpm.io/installation) directions, once installed run the following commands
+
+_This project was built with node v21. Currently there is no lts version for 21 at the time of writing this we were using v21.5.0_
+
+```shell
+nvm use 21
 ```
 
-## Run
+```shell
+pnpm install
+```
 
-Spin up the Vite dev server:
+### Environment Variables
+
+```shell
+mv env-example ./.env
+```
+
+Once you have a .env in your root directory you can fill out all of the required variables.
+
+## Running
 
 ```shellscript
-npm run dev
+pnpm run dev
 ```
 
 Or build your app for production and run it:
@@ -29,19 +43,37 @@ npm run start
 
 ## Local DB
 
-to start a local postgres db instance run: 
-
-```bash 
-docker run --name local-postgres -e POSTGRES_USER=local -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=dactylo-db -p 5432:5432 -d postgres
+```shell
+docker pull mysql
 ```
 
-If the DB is fresh, you need to run the migration:
-
 ```shell
-npx prisma migrate dev
+docker run --name mysql-planetscale -e MYSQL_ROOT_PASSWORD=your_password -d mysql
 ```
 
-You can check if you instance is running with:
 ```shell
-docker ps
+docker exec -it mysql-planetscale mysql -uroot -pyour_password
+```
+
+Get the ip address of your docker image for the `DATABASE_URL` in your .env
+
+```shell
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mysql-planetscale
+```
+
+it should end up looking something like this
+
+```shell
+## Replace USER, PASSWORD, HOST, PORT, and DATABASE with your specific details
+mysql://USER:PASSWORD@HOST:PORT/DATABASE
+```
+
+## Local Deployment Testing:
+
+```shell
+docker build -t dact-local .
+```
+
+```shell
+docker run -d -p 3000:3000 --name dact-container dact-local
 ```
