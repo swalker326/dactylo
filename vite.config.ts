@@ -3,6 +3,9 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { remixDevTools } from "remix-development-tools/vite";
 import svgr from "vite-plugin-svgr";
+import { installGlobals } from "@remix-run/node";
+
+installGlobals();
 
 export default defineConfig({
   server: {

@@ -14,6 +14,7 @@ import { AuthenticityTokenProvider } from "remix-utils/csrf/react";
 import { Header } from "./components/header";
 import { getUserId } from "./services/auth.server";
 import { prisma } from "./db.server";
+import { NavProgress } from "./components/progress-bar";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const [csrfToken, csrfCookieHeader] = await csrf.commitToken();
@@ -72,7 +73,7 @@ export default function App() {
         <AuthenticityTokenProvider token={data.csrfToken}>
           <div className="min-h-[100svh] flex flex-col">
             <Header user={data.user || null} />
-            <div className="flex flex-col container p-2 sm:p-4 mt-16 max-w-full md:max-w-5xl flex-grow ">
+            <div className="flex flex-col container p-2 sm:p-4 mt-20 max-w-full md:max-w-3xl flex-grow ">
               <Outlet />
             </div>
             <footer className=" hidden md:flex  justify-between items-center px-2 mt-2">
@@ -84,6 +85,7 @@ export default function App() {
           <LiveReload />
         </AuthenticityTokenProvider>
         <div id="camera-root"></div>
+        <NavProgress />
       </body>
     </html>
   );

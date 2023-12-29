@@ -5,16 +5,22 @@ import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs
 } from "@remix-run/node";
-import { Form, useActionData, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useNavigation,
+  useSearchParams
+} from "@remix-run/react";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { z } from "zod";
-import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { login, requireAnonymous } from "~/services/auth.server";
 import { validateCSRF } from "~/utils/csrf.server";
 import { PasswordSchema } from "~/utils/user-validation";
 import { handleNewSession } from "./login";
 import { ProviderConnectionForm, providerNames } from "~/utils/connections";
+import { StatusButton } from "~/components/ui/status-button";
+import Spinner from "~/icons/spinner.svg?react";
 
 const LoginFormSchema = z.object({
   email: z.string().email(),
@@ -39,6 +45,7 @@ export default function LoginRoute() {
     shouldRevalidate: "onBlur"
   });
   const redirectTo = searchParams.get("redirectTo");
+  const navigation = useNavigation();
 
   return (
     <div className="mt-5 flex justify-center">
@@ -65,7 +72,14 @@ export default function LoginRoute() {
             {fields.email.error && (
               <p className="text-red-500">{fields.password.error}</p>
             )}
-            <Button>Sign In</Button>
+            <StatusButton
+              type="submit"
+              status={navigation.state}
+              className="flex gap-1"
+              message="Logging in..."
+            >
+              Sign In
+            </StatusButton>
           </div>
         </Form>
         <div className="flex flex-col gap-2">

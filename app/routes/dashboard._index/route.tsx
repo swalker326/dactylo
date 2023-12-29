@@ -1,6 +1,7 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { Link } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import ImageWithPlaceholder from "~/components/image-placeholder";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/services/auth.server";
@@ -28,26 +29,35 @@ export default function DashboardIndex() {
   return (
     <div className="flex flex-col pb-12">
       <h2 className="text-4xl">Your Videos</h2>
-      <div className="flex gap-3 flex-wrap">
+      <div className="flex flex-wrap">
         {videos.map(({ id, gifUrl, sign: { id: signId, term } }) => (
-          <Card key={id}>
-            <div className="w-full">
-              <CardHeader>
-                <Link to={`/sign/${signId}`}>
-                  <CardTitle className="underline capitalize">{term}</CardTitle>
-                </Link>
-              </CardHeader>
-              <CardContent>
-                <Link to={`/sign/${signId}`}>
-                  <img
+          <div key={id} className="p-4 w-full md:w-1/2">
+            <Card>
+              <div className="w-full">
+                <CardHeader>
+                  <Link to={`/sign/${signId}`}>
+                    <CardTitle className="underline capitalize">
+                      {term}
+                    </CardTitle>
+                  </Link>
+                </CardHeader>
+                <CardContent>
+                  <Link to={`/sign/${signId}`}>
+                    <ImageWithPlaceholder
+                      src={gifUrl}
+                      alt="sign video"
+                      className="aspect-square w-full object-cover overflow-hidden rounded-lg"
+                    />
+                    {/* <img
                     src={gifUrl || ""}
                     alt="sign video"
                     className="w-full object-contain"
-                  />
-                </Link>
-              </CardContent>
-            </div>
-          </Card>
+                  /> */}
+                  </Link>
+                </CardContent>
+              </div>
+            </Card>
+          </div>
         ))}
       </div>
     </div>

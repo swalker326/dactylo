@@ -109,7 +109,7 @@ function SignupEmail({
     <E.Html lang="en" dir="ltr">
       <E.Container>
         <h1>
-          <E.Text>Welcome to Epic Notes!</E.Text>
+          <E.Text>Welcome to Dactylo!</E.Text>
         </h1>
         <p>
           <E.Text>

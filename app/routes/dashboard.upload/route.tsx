@@ -1,4 +1,5 @@
 import * as E from "@react-email/components";
+import { v4 as uuidv4 } from "uuid";
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useNavigation } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
@@ -34,10 +35,12 @@ export async function action({ request }: ActionFunctionArgs) {
     where: { id: signId as string }
   });
   invariant(sign, `No sign found matching id ${signId}`);
+  const key = uuidv4();
   const videoUploadResponse = await uploadHandler({
     data: file,
     filename: sign.term,
-    contentType: file.type
+    contentType: file.type,
+    key
   });
   invariant(videoUploadResponse, "No video returned");
   invariant(signId, "No sign selected");
@@ -49,7 +52,8 @@ export async function action({ request }: ActionFunctionArgs) {
   }
   const { gifUrl } = await uploadGif({
     video: file,
-    name: sign.term
+    name: sign.term,
+    key
   });
   const dbVideo = await prisma.video.create({
     data: {

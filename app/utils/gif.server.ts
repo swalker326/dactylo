@@ -1,5 +1,4 @@
 import ffmpeg from "fluent-ffmpeg";
-import { v4 as uuidv4 } from "uuid";
 import { Readable } from "stream";
 import { tmpdir } from "os";
 import { unlink, writeFile, readFile } from "fs/promises";
@@ -21,15 +20,43 @@ async function convertToReadable(blob: Blob): Promise<Readable> {
 
   return nodeReadable;
 }
-
+export async function generatePlaceholderImage(
+  videoPath: string,
+  key: string,
+  name: string
+) {
+  const placeholderPath = join(tmpdir(), `${name}-${key}.jpg`);
+  new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .outputOption("-ss", "00:00:01")
+      .outputOption("-frames:v", "1")
+      .outputOption("-s", "120x68")
+      .outputOption("-f", "image2")
+      .save(placeholderPath)
+      .on("end", async () => {
+        const placeholder = await readFile(placeholderPath);
+        uploadHandler({
+          filename: name,
+          data: new File([placeholder], `${name}.jpg`, { type: "image/jpeg" }),
+          contentType: "image/jpeg",
+          prefix: "placeholder",
+          key: key
+        });
+        resolve(null);
+      })
+      .on("error", (err) => reject(err));
+  });
+  //ffmpeg -i test.mp4 -ss 00:00:01 -frames:v 1 -s 120x68 -f image2 output_placeholder.jpg
+}
 export async function uploadGif({
   video,
-  name
+  name,
+  key
 }: {
   video: File;
   name: string;
+  key: string;
 }): Promise<{ gifUrl: string }> {
-  const key = uuidv4();
   const extension = video.name.split(".")[1];
   const videoPath = join(tmpdir(), `${name}-${key}.${extension}`);
   const gifPath = join(tmpdir(), `${name}-${key}.gif`);
@@ -40,6 +67,7 @@ export async function uploadGif({
     await unlink(videoPath);
     await unlink(gifPath);
   };
+  await generatePlaceholderImage(videoPath, key, name);
 
   // Wrap FFmpeg conversion in a Promise
   return new Promise((resolve, reject) => {
@@ -57,7 +85,8 @@ export async function uploadGif({
             filename: name,
             data: gifFile,
             contentType: "image/gif",
-            prefix: "gif"
+            prefix: "gif",
+            key: key
           });
           const parseResponse = FileUploadResponseSchema.safeParse(
             JSON.parse(uploadResponse)

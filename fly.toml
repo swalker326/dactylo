@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for dactylo on 2023-12-23T07:39:23-06:00
+# fly.toml app configuration file generated for dactylo-staging on 2023-12-28T22:50:01-06:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -7,9 +7,6 @@ app = "dactylo-staging"
 primary_region = "ord"
 
 [build]
-
-[deploy]
-  release_command = "npx prisma migrate deploy"
 
 [http_service]
   internal_port = 3000
@@ -21,5 +18,5 @@ primary_region = "ord"
 
 [[vm]]
   cpu_kind = "shared"
-  cpus = 2
+  cpus = 1
   memory_mb = 1024

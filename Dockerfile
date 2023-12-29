@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1
 
 # Adjust NODE_VERSION as desired
-ARG NODE_VERSION=20.9.0
+ARG NODE_VERSION=21.5.0
 FROM node:${NODE_VERSION}-slim as base
 
 LABEL fly_launch_runtime="Remix/Prisma"
@@ -26,6 +26,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp openssl pkg-config python-is-python3
 
 # Install node modules
+COPY --link patches patches/
 COPY --link package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod=false
 
@@ -36,9 +37,6 @@ RUN npx prisma generate
 # Copy application code
 COPY --link . .
 
-# Set production environment
-ENV NODE_ENV="production"
-
 # Build application
 RUN pnpm run build
 
@@ -48,6 +46,12 @@ RUN pnpm prune --prod
 # Final stage for app image
 FROM base
 
+# Set production environment
+ENV NODE_ENV="production"
+ENV LITEFS_DIR="/litefs/data"
+ENV CACHE_DATABASE_FILENAME="cache.db"
+ENV CACHE_DATABASE_PATH="/$LITEFS_DIR/$CACHE_DATABASE_FILENAME"
+
 # Install packages needed for deployment
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y openssl && \
@@ -55,6 +59,12 @@ RUN apt-get update -qq && \
 
 # Copy built application
 COPY --from=build /app /app
+RUN ls
+
+# prepare for litefs
+COPY --from=flyio/litefs:0.5.8 /usr/local/bin/litefs /usr/local/bin/litefs
+ADD other/litefs.yml /etc/litefs.yml
+RUN mkdir -p /data ${LITEFS_DIR}
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000

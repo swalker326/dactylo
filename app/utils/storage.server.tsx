@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { S3Client } from "@aws-sdk/client-s3";
 
 import { Upload } from "@aws-sdk/lib-storage";
@@ -55,17 +54,19 @@ export const uploadHandler = async ({
   data,
   filename,
   contentType,
-  prefix = "sign"
+  prefix = "sign",
+  key
 }: {
   filename?: string;
   contentType: string;
   data: File;
   prefix?: string;
+  key: string;
 }) => {
   if (!filename) {
     return "no filename";
   }
-  const sanatizedFileName = generateFileName(filename, prefix);
+  const sanatizedFileName = generateFileName(filename, prefix, key);
   const upload = await uploadStreamToSpaces(
     data,
     sanatizedFileName,
@@ -92,19 +93,9 @@ function sanitizeWord(word: string) {
   return sanitizedWord;
 }
 
-function generateFileName(word: string, prefix: string) {
-  const now = new Date();
-  const dateString = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}${String(now.getDate()).padStart(2, "0")}${String(now.getHours()).padStart(
-    2,
-    "0"
-  )}${String(now.getMinutes()).padStart(2, "0")}${String(
-    now.getSeconds()
-  ).padStart(2, "0")}`;
-  const id = uuidv4();
+function generateFileName(word: string, prefix: string, id: string) {
+  const key = id;
   const sanitizedWord = sanitizeWord(word);
 
-  return `${prefix}-${sanitizedWord}-${id}-${dateString}`;
+  return `${prefix}-${sanitizedWord}-${key}`;
 }

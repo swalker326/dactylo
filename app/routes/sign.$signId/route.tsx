@@ -102,12 +102,18 @@ export default function SignIdRoute() {
           </div>
         </div>
       )}
-      <div className="grid grid-cols-3 gap-1 pt-3">
-        {videos.slice(1).map((video) => (
-          <div key={video.id} className="rounded-md">
-            <VideoCard variant="compact" video={video} userId={userId} />
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+        <h3 className="text-xl">More Videos...</h3>
+        {[...videos, ...videos, ...videos, ...videos, ...videos]
+          .slice(1)
+          .map((video) => (
+            <VideoCard
+              key={video.id}
+              variant="compact"
+              video={video}
+              userId={userId}
+            />
+          ))}
       </div>
     </div>
   );

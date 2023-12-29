@@ -15,7 +15,7 @@ import { z } from "zod";
 
 import { getInstanceInfo, getInstanceInfoSync } from "~/utils/litefs.server";
 import { cachifiedTimingReporter, type Timings } from "~/utils/timing.server";
-import { updatePrimaryCacheValue } from "~/routes/admin.cache_.sqlite/route";
+import { updatePrimaryCacheValue } from "~/routes/admin.cache_.sqlite/cache.sqlite";
 
 const CACHE_DATABASE_PATH = process.env.CACHE_DATABASE_PATH;
 

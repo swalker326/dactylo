@@ -18,5 +18,6 @@
     "titleBar.inactiveBackground": "#5f724799",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#5f7247"
+  "peacock.color": "#5f7247",
+  "cSpell.words": ["Dactylo", "DOWNVOTE", "typedjson", "UPVOTE"]
 }
