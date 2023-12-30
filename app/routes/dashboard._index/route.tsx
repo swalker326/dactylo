@@ -36,15 +36,28 @@ export default function DashboardIndex() {
           <div key={video.id} className="w-full">
             <div className="w-full" key={video.id}>
               <div className="bg-white dark:bg-gray-700 dark:text-white rounded-lg overflow-hidden">
-                <div className="flex items-center px-1.5">
+                <div className="flex items-center justify-between px-1.5">
                   <Link to={`/sign/${video.sign.id}`}>
-                    <h2 className="text-4xl extra-bold py-4 text-center capitalize">
+                    <h2 className="text-4xl extra-bold py-2 capitalize">
                       {video.sign?.term}
                     </h2>
                   </Link>
+                  {video.status === "UNDER_REVIEW" ? (
+                    <span className="text-orange-500 text-xl font-bold">
+                      Pending
+                    </span>
+                  ) : video.status === "REMOVED" ? (
+                    <span className="text-red-500 text-xl font-bold">
+                      Removed
+                    </span>
+                  ) : (
+                    <span className="text-green-500 text-xl font-bold">
+                      Approved
+                    </span>
+                  )}
                   <Popover>
-                    <PopoverTrigger asChild>
-                      <InfoIcon className="ml-auto" size={24} />
+                    <PopoverTrigger asChild className="m-0">
+                      <InfoIcon size={24} />
                       {/* <Button variant="outline">Open popover</Button> */}
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
