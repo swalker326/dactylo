@@ -20,7 +20,6 @@ import { PasswordSchema } from "~/utils/user-validation";
 import { handleNewSession } from "./login";
 import { ProviderConnectionForm, providerNames } from "~/utils/connections";
 import { StatusButton } from "~/components/ui/status-button";
-import Spinner from "~/icons/spinner.svg?react";
 
 const LoginFormSchema = z.object({
   email: z.string().email(),
@@ -74,11 +73,13 @@ export default function LoginRoute() {
             )}
             <StatusButton
               type="submit"
-              status={navigation.state}
+              status={
+                navigation.formAction === "/auth/login" ? "loading" : "idle"
+              }
               className="flex gap-1"
               message="Logging in..."
             >
-              Sign In
+              <text>Sign In</text>
             </StatusButton>
           </div>
         </Form>
