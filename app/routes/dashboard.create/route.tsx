@@ -1,5 +1,4 @@
-import { useFetcher } from "@remix-run/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CameraComponent from "~/components/camera";
 import { Input } from "~/components/ui/input";
 import { SignSelect } from "../resources.sign/SignSelect";
@@ -7,6 +6,10 @@ import { z } from "zod";
 import { CameraIcon, X } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useZodErrors } from "~/hooks/useZodErrors";
+import { action as uploadAction } from "~/routes/dashboard.upload/route";
+import { useTypedFetcher } from "remix-typedjson";
+import { toast } from "sonner";
+import { useNavigate } from "@remix-run/react";
 
 const UploadFormSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file" }),
@@ -20,11 +23,29 @@ const UploadFormSchema = z.object({
 // type UploadFormData = z.infer<typeof UploadFormSchema>;
 
 export default function CreateRoute() {
-  const fetcher = useFetcher();
+  const fetcher = useTypedFetcher<typeof uploadAction>();
+  const navigate = useNavigate();
   const isSubmitting = fetcher.formData?.has("sign");
   const [videoUrl, setVideoUrl] = useState<string | null>(null); // [1
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const { parse, errorMessages } = useZodErrors(UploadFormSchema);
+  useEffect(() => {
+    if (!isSubmitting && fetcher.data?.sign) {
+      formRef.current?.reset();
+      setVideoUrl(null);
+      toast(`Sign video added for ${fetcher.data.sign.term}`, {
+        description: "Once approved, it will be available for others to see",
+        duration: 10000,
+        dismissible: true,
+        position: "bottom-right",
+        action: {
+          label: "View in Dashboard",
+          onClick: () => navigate("/dashboard")
+        }
+      });
+    }
+  }, [isSubmitting]);
 
   const handleRecordingCompleted = async (blobUrl: string) => {
     if (fileInputRef.current) {
@@ -52,10 +73,11 @@ export default function CreateRoute() {
   return (
     <div className="flex flex-col">
       <fetcher.Form
+        ref={formRef}
         method="POST"
         encType="multipart/form-data"
         action="/dashboard/upload"
-        className="flex flex-col gap-y-2"
+        className="flex flex-col gap-y-2 py-4 bg-white rounded-md shadow-md sm:px-2.5"
         onSubmit={async (event) => {
           event.preventDefault();
           if (fetcher.state !== "idle") return;
@@ -71,7 +93,8 @@ export default function CreateRoute() {
           }
         }}
       >
-        <div className="border bg-white p-4 rounded-md">
+        <div className="rounded-md px-1.5">
+          <h4 className="text-xl pb-2">Sign</h4>
           <SignSelect name="sign" />
           {errorMessages?.sign && (
             <p className="bg-red-300 rounded-sm w-full p-2">
@@ -79,9 +102,9 @@ export default function CreateRoute() {
             </p>
           )}
         </div>
-        <div className="w-full space-y-3 bg-white p-4 rounded-md">
+        <div className="w-full space-y-3 rounded-md px-1.5">
           <h4 className="text-xl">Video</h4>
-          <div className="flex-col flex justify-between gap-x-4 md:items-center md:flex-row border rounded-sm p-6">
+          <div className="flex-col flex justify-between gap-x-4 md:items-center md:flex-row ">
             <div>
               <div className="flex">
                 <Input
@@ -131,33 +154,29 @@ export default function CreateRoute() {
               />
             </div>
           </div>
-          {videoUrl && (
-            <div className="relative">
-              <button
-                className="absolute top-2 right-2 bg-primary text-white rounded-full p-1 z-10"
-                onClick={() => {
-                  fileInputRef.current?.value &&
-                    (fileInputRef.current.value = "");
-                  setVideoUrl(null);
-                }}
-              >
-                <X size={22} />
-              </button>
-              <video controls className="w-full max-h-[20rem]">
-                <source src={videoUrl} />
-                <track kind="captions" />
-              </video>
-            </div>
-          )}
-          <div className="pt-6">
-            <Button
-              className="float-right"
-              type="submit"
-              disabled={isSubmitting}
+        </div>
+        {videoUrl && (
+          <div className="relative">
+            <button
+              className="absolute top-2 right-2 bg-primary text-white rounded-full p-1 z-10"
+              onClick={() => {
+                fileInputRef.current?.value &&
+                  (fileInputRef.current.value = "");
+                setVideoUrl(null);
+              }}
             >
-              Upload
-            </Button>
+              <X size={22} />
+            </button>
+            <video controls className="w-full aspect-square">
+              <source src={videoUrl} />
+              <track kind="captions" />
+            </video>
           </div>
+        )}
+        <div className="pt-6 flex justify-end pr-1.5">
+          <Button type="submit" disabled={isSubmitting}>
+            Upload
+          </Button>
         </div>
       </fetcher.Form>
     </div>

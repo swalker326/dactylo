@@ -15,6 +15,7 @@ import { Header } from "./components/header";
 import { getUserId } from "./services/auth.server";
 import { prisma } from "./db.server";
 import { NavProgress } from "./components/progress-bar";
+import { Toaster } from "sonner";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const [csrfToken, csrfCookieHeader] = await csrf.commitToken();
@@ -73,13 +74,14 @@ export default function App() {
         <AuthenticityTokenProvider token={data.csrfToken}>
           <div className="min-h-[100svh] flex flex-col">
             <Header user={data.user || null} />
-            <div className="flex flex-col container p-0 sm:p-4 max-w-full md:max-w-3xl flex-grow mt-16">
+            <div className="flex flex-col container p-0 sm:p-4 max-w-full md:max-w-3xl flex-grow mt-12">
               <Outlet />
             </div>
             <footer className=" hidden md:flex  justify-between items-center px-2 mt-2">
               <p>© 2024 Dactylo</p>
             </footer>
           </div>
+          <Toaster />
           <ScrollRestoration />
           <Scripts />
           <LiveReload />

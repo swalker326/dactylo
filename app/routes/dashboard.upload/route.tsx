@@ -1,22 +1,16 @@
 import * as E from "@react-email/components";
 import { v4 as uuidv4 } from "uuid";
-import { ActionFunctionArgs, json } from "@remix-run/node";
-import { useFetcher, useNavigation } from "@remix-run/react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import { ActionFunctionArgs } from "@remix-run/node";
 import { requireUserId } from "~/services/auth.server";
 import {
   FileUploadResponseSchema,
   uploadHandler
 } from "~/utils/storage.server";
-import { z } from "zod";
-import { useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { invariant } from "@epic-web/invariant";
 import { prisma } from "~/db.server";
 import { sendEmail } from "~/utils/email.server";
 import { uploadGif } from "~/utils/gif.server";
-import { SignSelect } from "../resources.sign/SignSelect";
+import { typedjson } from "remix-typedjson";
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
@@ -85,57 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
     )
   });
 
-  return json({ sign: updatedSign });
-}
-
-const UploadFormSchema = z.object({
-  file: z.instanceof(File, { message: "Please upload a file" }),
-  sign: z.string({
-    required_error: "Please select a sign",
-    invalid_type_error: "That's not a sign"
-  })
-});
-
-export default function DashboardRoute() {
-  const navigation = useNavigation();
-  const fetcher = useFetcher<typeof action>();
-  const isSubmitting = fetcher.formData?.has("intent");
-  const [form, { file, sign }] = useForm({
-    constraint: getFieldsetConstraint(UploadFormSchema),
-    // defaultValue: { redirectTo },
-    // lastSubmission: fetcher.data?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: UploadFormSchema });
-    }
-  });
-
-  return (
-    <div className="flex flex-col gap-y-4">
-      <h2 className="text-3xl">Upload a New Video</h2>
-
-      <fetcher.Form
-        {...form.props}
-        action="/dashboard/upload"
-        className="flex flex-col gap-y-2"
-        method="POST"
-        encType="multipart/form-data"
-      >
-        {/* {sign.error && <p>{sign.error}</p>} */}
-        <SignSelect {...sign} />
-        {/* <input readOnly name={sign.name} value="clqgq33v500004w8jgjuivbxh" /> */}
-
-        <div className="flex flex-col gap-y-2">
-          {file.error && <p>{file.error}</p>}
-          <Input type="file" accept="video/*" name={file.name} />
-          <Button className="float-right" type="submit" disabled={isSubmitting}>
-            {navigation.formAction === "/dashboard/upload"
-              ? "Uploading..."
-              : "Upload"}
-          </Button>
-        </div>
-      </fetcher.Form>
-    </div>
-  );
+  return typedjson({ sign: updatedSign });
 }
 
 function NewUploadEmailTemplate({
@@ -163,3 +107,55 @@ function NewUploadEmailTemplate({
     </E.Html>
   );
 }
+
+/*
+  No longer using a component here, just the endpoint
+*/
+
+// const UploadFormSchema = z.object({
+//   file: z.instanceof(File, { message: "Please upload a file" }),
+//   sign: z.string({
+//     required_error: "Please select a sign",
+//     invalid_type_error: "That's not a sign"
+//   })
+// });
+
+// export default function DashboardRoute() {
+//   const navigation = useNavigation();
+//   const fetcher = useFetcher<typeof action>();
+//   const isSubmitting = fetcher.formData?.has("intent");
+//   const [form, { file, sign }] = useForm({
+//     constraint: getFieldsetConstraint(UploadFormSchema),
+//     onValidate({ formData }) {
+//       return parse(formData, { schema: UploadFormSchema });
+//     }
+//   });
+
+//   return (
+//     <div className="flex flex-col gap-y-4">
+//       <h2 className="text-3xl">Upload a New Video</h2>
+
+//       <fetcher.Form
+//         {...form.props}
+//         action="/dashboard/upload"
+//         className="flex flex-col gap-y-2"
+//         method="POST"
+//         encType="multipart/form-data"
+//       >
+//         <SignSelect {...sign} />
+//         <h1>Hello</h1>
+//         <div className="flex flex-col gap-y-2">
+//           {file.error && <p>{file.error}</p>}
+//           <Input type="file" accept="video/*" name={file.name} />
+//           <div className="flex justify-end w-full px-5">
+//             <Button type="submit" disabled={isSubmitting}>
+//               {navigation.formAction === "/dashboard/upload"
+//                 ? "Uploading..."
+//                 : "Upload"}
+//             </Button>
+//           </div>
+//         </div>
+//       </fetcher.Form>
+//     </div>
+//   );
+// }

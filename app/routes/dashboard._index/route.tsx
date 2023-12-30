@@ -29,11 +29,11 @@ export default function DashboardIndex() {
   const { videos, userId } = useTypedLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col pb-12">
-      <h2 className="text-4xl">Your Videos</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2">
+    <div className="flex flex-col">
+      <h2 className="text-4xl py-6">Your Videos</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {videos.map((video) => (
-          <div key={video.id} className="p-4 w-full">
+          <div key={video.id} className="w-full">
             <Link to={`/sign/${video.sign.id}`}>
               <div className="w-full" key={video.id}>
                 <div className="bg-white dark:bg-gray-700 dark:text-white rounded-lg overflow-hidden">

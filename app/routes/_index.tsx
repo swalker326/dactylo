@@ -57,7 +57,6 @@ export default function Index() {
   const submit = useSubmit();
   const { videos, userId } = useTypedLoaderData<typeof loader>();
   const isSearching = navigation.formAction?.includes("/?index");
-  console.log("FA: ", navigation.formAction);
   const handleFormChange = useDebounce((form: HTMLFormElement) => {
     submit(form);
   }, 500);
