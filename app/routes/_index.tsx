@@ -49,11 +49,13 @@ export default function Index() {
   const navigation = useNavigation();
   const submit = useSubmit();
   const { videos, userId } = useTypedLoaderData<typeof loader>();
+  const isSearching = navigation.formAction?.includes("/?index");
+  console.log("FA: ", navigation.formAction);
   const handleFormChange = useDebounce((form: HTMLFormElement) => {
     submit(form);
   }, 500);
   return (
-    <div className="flex flex-col gap-4 pt-4">
+    <div className="flex flex-col gap-4">
       <Form
         method="GET"
         onChange={(e) => handleFormChange(e.currentTarget)}
@@ -62,18 +64,21 @@ export default function Index() {
         <Input
           name="search"
           defaultValue={searchParams.get("search") || ""}
-          className="h-16 text-2xl md:h-20 md:text-2xl"
+          className="h-14 text-xl"
           placeholder="Find a Sign..."
         />
-        {navigation.state !== "idle" && (
-          <div className="absolute top-1/2 right-2 -translate-y-1/2">
-            <Spinner className=" animate-spin  -ml-1 mr-3 h-6 w-6 text-black" />
-          </div>
-        )}
+
+        <div
+          className={`absolute top-1/2 right-2 -translate-y-1/2 transition-all duration-400 ease-in-out ${
+            isSearching ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Spinner className=" animate-spin  -ml-1 mr-3 h-6 w-6 text-black" />
+        </div>
       </Form>
-      <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {videos.map((video) => (
-          <div className="w-full md:w-1/2 py-4" key={video.id}>
+          <div className="w-full pb-4" key={video.id}>
             <div className="bg-white dark:bg-gray-700 dark:text-white rounded-lg">
               <h2 className="text-6xl extra-bold py-4 text-center capitalize">
                 {video.sign?.term}

@@ -14,6 +14,7 @@ import { addVote } from "~/utils/votes.server";
 import { VideoCard } from "~/components/video-card";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { PlusCircleIcon } from "lucide-react";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const { signId } = params;
@@ -102,8 +103,15 @@ export default function SignIdRoute() {
           </div>
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-        <h3 className="text-xl">More Videos...</h3>
+      <h3 className="text-2xl py-4">More Videos...</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Link
+          to="/dashboard/create"
+          className="border border-primary rounded-lg p-2 flex flex-col items-center justify-center"
+        >
+          <h4 className="text-xl">Add a video</h4>
+          <PlusCircleIcon size={48} />
+        </Link>
         {[...videos, ...videos, ...videos, ...videos, ...videos]
           .slice(1)
           .map((video) => (

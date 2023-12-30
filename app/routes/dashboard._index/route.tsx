@@ -29,20 +29,18 @@ export default function DashboardIndex() {
   return (
     <div className="flex flex-col pb-12">
       <h2 className="text-4xl">Your Videos</h2>
-      <div className="flex flex-wrap">
+      <div className="grid grid-cols-1 sm:grid-cols-2">
         {videos.map(({ id, gifUrl, sign: { id: signId, term } }) => (
-          <div key={id} className="p-4 w-full md:w-1/2">
-            <Card>
-              <div className="w-full">
-                <CardHeader>
-                  <Link to={`/sign/${signId}`}>
+          <div key={id} className="p-4 w-full">
+            <Link to={`/sign/${signId}`}>
+              <Card>
+                <div>
+                  <CardHeader>
                     <CardTitle className="underline capitalize">
                       {term}
                     </CardTitle>
-                  </Link>
-                </CardHeader>
-                <CardContent>
-                  <Link to={`/sign/${signId}`}>
+                  </CardHeader>
+                  <CardContent>
                     <ImageWithPlaceholder
                       src={gifUrl}
                       alt="sign video"
@@ -53,10 +51,10 @@ export default function DashboardIndex() {
                     alt="sign video"
                     className="w-full object-contain"
                   /> */}
-                  </Link>
-                </CardContent>
-              </div>
-            </Card>
+                  </CardContent>
+                </div>
+              </Card>
+            </Link>
           </div>
         ))}
       </div>

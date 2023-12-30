@@ -68,7 +68,6 @@ function VoteButtons({
 }) {
   const fetcher = useFetcher();
   const favoriteFetcher = useFetcher();
-  // const [animating, setAnimating] = useState(false);
   const [intent, setIntent] = useState<VoteType>(
     currentVote?.voteType || "NO_VOTE"
   );
@@ -80,8 +79,6 @@ function VoteButtons({
       favorite = undefined;
     }
   }
-  // const baseButtonStyle =
-  //   "group rounded-xl p-1 h-full md:px-4 transition-colors duration-300 ease-in-out";
   const iconBaseStyle =
     "md:group-hover:-translate-y-1 ease-in-out transition-transform duration-300";
   if (fetcher.formData?.has("intent")) {
@@ -187,7 +184,7 @@ function VoteButtons({
               onAnimationEnd={() => (animate = false)}
               className={`${favorite ? "text-red-500" : ""}  ${
                 animate ? "animate-zoomy" : ""
-              } `}
+              } pr-2 `}
             >
               <Heart size={24} />
             </button>
