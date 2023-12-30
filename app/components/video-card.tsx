@@ -21,16 +21,16 @@ export function VideoCard({
   );
 
   return (
-    <div className={`w-full`}>
-      <div className="rounded-lg overflow-hidden">
+    <div className="w-full">
+      <div className="overflow-hidden">
         <Link to={`/sign/${video.signId}`}>
           <ImageWithPlaceholder
             src={video.gifUrl || ""}
             alt="sign video"
-            className="aspect-square w-full object-cover overflow-hidden rounded-t-lg"
+            className="aspect-square w-full object-cover overflow-hidden"
           />
         </Link>
-        <div className={`w-full bg-white dark:bg-gray-700 rounded-b-lg`}>
+        <div className={`w-full bg-white dark:bg-gray-700`}>
           <VoteButtons
             //TODO: there will always be a signId, but it's not typed
             signId={video.signId as string}
@@ -119,7 +119,7 @@ function VoteButtons({
   };
   return (
     <div
-      className={`flex items-center  ${
+      className={`flex items-center ${
         variant === "default" ? "justify-between" : "justify-center"
       } h-full w-full`}
     >
@@ -133,8 +133,8 @@ function VoteButtons({
         <input type="hidden" name="videoId" value={videoId} />
         <input type="hidden" name="intent" value={intent} />
         {variant === "default" ? (
-          <div className="py-4">
-            <div className="flex gap-x-1 rounded-2xl bg-gray-300 dark:bg-gray-800 py-4 px-2 items-center w-full justify-center">
+          <div className="py-4 px-1.5">
+            <div className="flex gap-x-1 rounded-xl bg-gray-300 dark:bg-gray-800 py-4 px-2 items-center w-full justify-center">
               <button
                 value="UPVOTE"
                 type="submit"

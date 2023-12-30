@@ -17,13 +17,10 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger
 } from "./ui/dropdown-menu";
-import { SearchInput } from "~/components/search";
 
 export type RootUser = Awaited<
   ReturnType<Awaited<ReturnType<typeof rootLoader>>["json"]>
 >["user"];
-
-// const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const NAV_LINKS: Record<
   string,
@@ -57,10 +54,10 @@ export function Header({ user }: { user: RootUser | null }) {
   const isLoggedIn = Boolean(user);
   const loc = useLocation();
   return (
-    <header className="flex justify-between items-center p-2 bg-white fixed w-full z-10">
+    <header className="flex justify-between items-center px-2 py-0.5 sm:py-2 bg-white fixed w-full z-10">
       <div className="flex justify-between w-full items-center">
         <NavLink to="/">
-          <h1 className="text-6xl">
+          <h1 className="text-3xl">
             <span className="font-bold text-blue-600">dact</span>ylo
           </h1>
         </NavLink>
@@ -89,9 +86,9 @@ export function Header({ user }: { user: RootUser | null }) {
                   </li>
                 );
               })}
-              <li>
+              {/* <li>
                 <SearchInput />
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>

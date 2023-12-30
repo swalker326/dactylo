@@ -24,7 +24,7 @@ export default function CreateRoute() {
   const isSubmitting = fetcher.formData?.has("sign");
   const [videoUrl, setVideoUrl] = useState<string | null>(null); // [1
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { parse, errorMessages, error } = useZodErrors(UploadFormSchema);
+  const { parse, errorMessages } = useZodErrors(UploadFormSchema);
 
   const handleRecordingCompleted = async (blobUrl: string) => {
     if (fileInputRef.current) {
@@ -35,7 +35,7 @@ export default function CreateRoute() {
 
         // Create a new File object from the blob
         const file = new File([blob], "recorded-video.webm", {
-          type: "video/webm"
+          type: "video/mp4"
         });
 
         // Use DataTransfer to correctly set the file to the input
@@ -50,8 +50,7 @@ export default function CreateRoute() {
   };
 
   return (
-    <div className="flex flex-col gap-y-3">
-      <h2 className="text-4xl">Add a Video</h2>
+    <div className="flex flex-col">
       <fetcher.Form
         method="POST"
         encType="multipart/form-data"
@@ -73,9 +72,6 @@ export default function CreateRoute() {
         }}
       >
         <div className="border bg-white p-4 rounded-md">
-          <label htmlFor="sign">
-            <h2 className="text-3xl pb-2">Select a Sign</h2>
-          </label>
           <SignSelect name="sign" />
           {errorMessages?.sign && (
             <p className="bg-red-300 rounded-sm w-full p-2">
@@ -84,12 +80,9 @@ export default function CreateRoute() {
           )}
         </div>
         <div className="w-full space-y-3 bg-white p-4 rounded-md">
-          <h2 className="text-3xl">Upload or Record</h2>
+          <h4 className="text-xl">Video</h4>
           <div className="flex-col flex justify-between gap-x-4 md:items-center md:flex-row border rounded-sm p-6">
-            <div className="px-2">
-              <label htmlFor="file" className="text-lg">
-                Upload
-              </label>
+            <div>
               <div className="flex">
                 <Input
                   className={`${videoUrl ? "rounded-r-none" : ""}`}
@@ -124,13 +117,10 @@ export default function CreateRoute() {
                 </p>
               )}
             </div>
-            <div className="w-full md:w-auto text-center pt-2">
-              <h3 className="text-2xl">OR</h3>
+            <div className="w-full md:w-auto text-center py-2">
+              <h3 className="text-xl">or</h3>
             </div>
-            <div className="px-2 flex-shrink">
-              <label htmlFor="file" className="text-lg">
-                Record
-              </label>
+            <div className="flex-shrink">
               <CameraComponent
                 onRecordingComplete={handleRecordingCompleted}
                 label={

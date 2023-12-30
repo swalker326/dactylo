@@ -60,8 +60,8 @@ const NAV_LINKS: Record<
 export default function DashboardRoute() {
   const { isAdmin } = useLoaderData<typeof loader>();
   return (
-    <div className="flex flex-col pb-5">
-      <div className="fixed bottom-0 flex border justify-evenly right-0 left-0 z-10 bg-white max-w-[100svw] h-[60px] ">
+    <div className="flex flex-col">
+      <div className="fixed bottom-0 flex justify-evenly right-0 left-0 z-10 bg-white max-w-[100svw] h-[60px] ">
         {Object.entries(NAV_LINKS).map(([path, values]) => {
           if (values.condition && values.condition(isAdmin) === false) {
             return null;
@@ -73,8 +73,8 @@ export default function DashboardRoute() {
               unstable_viewTransition
               end
               className={({ isActive }) => {
-                return `px-2 py-2 w-full flex justify-center items-center flex-1 ${
-                  isActive ? "bg-blue-400 text-gray-800" : ""
+                return `px-2 py-2 w-full flex justify-center items-center flex-1 text-black ${
+                  isActive ? "bg-blue-600 text-white" : ""
                 }`;
               }}
               to={path}

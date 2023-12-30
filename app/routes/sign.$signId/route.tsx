@@ -88,14 +88,13 @@ export default function SignIdRoute() {
                     <span className="font-bold">Definition</span>:{" "}
                     {sign.definition}
                   </li>
-                  {/* <li>Category: {sign.category}</li> */}
                   <li>
                     <span className="font-bold">Example:</span> {sign.example}
                   </li>
                 </ul>
               </CardHeader>
-              <CardContent>
-                <div className="relative ">
+              <CardContent className="p-0">
+                <div className="relative">
                   <VideoCard video={topVideo} userId={userId} />
                 </div>
               </CardContent>
@@ -103,15 +102,19 @@ export default function SignIdRoute() {
           </div>
         </div>
       )}
-      <h3 className="text-2xl py-4">More Videos...</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="flex flex-col gap-y-2 px-1.5 md:px-0 py-4">
+        <h3 className="text-3xl">More Videos...</h3>
         <Link
-          to="/dashboard/create"
-          className="border border-primary rounded-lg p-2 flex flex-col items-center justify-center"
+          to={`/dashboard/create?signId=${sign.id}`}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md py-1 px-8"
         >
-          <h4 className="text-xl">Add a video</h4>
-          <PlusCircleIcon size={48} />
+          <div className="flex justify-center items-center w-full h-full py-2 gap-2">
+            <text className="text-xl">Add a Video</text>
+            <PlusCircleIcon size={22} />
+          </div>
         </Link>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[...videos, ...videos, ...videos, ...videos, ...videos]
           .slice(1)
           .map((video) => (
