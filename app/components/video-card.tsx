@@ -38,7 +38,6 @@ export function VideoCard({
             videoId={video.id}
             currentVote={currentVote}
             variant={variant}
-            userId={userId}
             favorite={favorite}
           />
         </div>
@@ -53,7 +52,6 @@ function VoteButtons({
   currentVote,
   signId,
   variant = "default",
-  userId,
   favorite,
   animate = false
 }: {
@@ -61,7 +59,6 @@ function VoteButtons({
   count: number;
   videoId: string;
   currentVote: Vote | undefined;
-  userId: string | null;
   variant?: "default" | "compact";
   favorite: Favorite | undefined;
   animate?: boolean;
@@ -179,7 +176,6 @@ function VoteButtons({
         <div>
           <favoriteFetcher.Form method="POST" action="/sign/favorite">
             <input type="hidden" name="videoId" value={videoId} />
-            <input type="hidden" name="userId" value={userId || ""} />
             <button
               onAnimationEnd={() => (animate = false)}
               className={`${favorite ? "text-red-500" : ""}  ${

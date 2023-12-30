@@ -34,31 +34,31 @@ export default function DashboardIndex() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {videos.map((video) => (
           <div key={video.id} className="w-full">
-            <Link to={`/sign/${video.sign.id}`}>
-              <div className="w-full" key={video.id}>
-                <div className="bg-white dark:bg-gray-700 dark:text-white rounded-lg overflow-hidden">
-                  <div className="flex items-center px-1.5">
+            <div className="w-full" key={video.id}>
+              <div className="bg-white dark:bg-gray-700 dark:text-white rounded-lg overflow-hidden">
+                <div className="flex items-center px-1.5">
+                  <Link to={`/sign/${video.sign.id}`}>
                     <h2 className="text-4xl extra-bold py-4 text-center capitalize">
                       {video.sign?.term}
                     </h2>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <InfoIcon className="ml-auto" size={24} />
-                        {/* <Button variant="outline">Open popover</Button> */}
-                      </PopoverTrigger>
-                      <PopoverContent className="w-80">
-                        {video.sign?.definition}
-                        <h4 className="text-xl py-2 font-bold">Example</h4>
-                        {video.sign?.example}
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="bg-white rounded-md">
-                    <VideoCard userId={userId || null} video={video} />
-                  </div>
+                  </Link>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <InfoIcon className="ml-auto" size={24} />
+                      {/* <Button variant="outline">Open popover</Button> */}
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                      {video.sign?.definition}
+                      <h4 className="text-xl py-2 font-bold">Example</h4>
+                      {video.sign?.example}
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="bg-white rounded-md">
+                  <VideoCard userId={userId || null} video={video} />
                 </div>
               </div>
-            </Link>
+            </div>
           </div>
         ))}
       </div>
