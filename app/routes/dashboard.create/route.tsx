@@ -30,6 +30,7 @@ export default function CreateRoute() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const { parse, errorMessages } = useZodErrors(UploadFormSchema);
+
   useEffect(() => {
     if (!isSubmitting && fetcher.data?.sign) {
       formRef.current?.reset();

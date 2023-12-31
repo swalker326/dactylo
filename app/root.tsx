@@ -74,7 +74,7 @@ export default function App() {
         <AuthenticityTokenProvider token={data.csrfToken}>
           <div className="min-h-[100svh] flex flex-col">
             <Header user={data.user || null} />
-            <div className="flex flex-col container p-0 sm:p-4 max-w-full md:max-w-3xl flex-grow mt-12">
+            <div className="flex flex-col container p-0 sm:p-4 max-w-full md:max-w-3xl flex-grow mt-16">
               <Outlet />
             </div>
             <footer className=" hidden md:flex  justify-between items-center px-2 mt-2">

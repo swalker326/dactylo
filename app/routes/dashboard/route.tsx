@@ -84,7 +84,7 @@ export default function DashboardRoute() {
           );
         })}
       </div>
-      <div className="min-h-screen pb-12">
+      <div className="pb-12">
         <Outlet />
       </div>
     </div>

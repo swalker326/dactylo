@@ -30,7 +30,7 @@ export default function DashboardIndex() {
 
   return (
     <div className="flex flex-col">
-      <h2 className="text-4xl py-6">Your Videos</h2>
+      <h2 className="text-4xl pb-3">Your Videos</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {videos.map((video) => (
           <div key={video.id} className="w-full">
