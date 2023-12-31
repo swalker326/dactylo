@@ -73,7 +73,7 @@ export default function SignIdRoute() {
           <p>No videos yet </p>
           <p>
             Be the first to
-            <Link to="/dashboard/upload">Upload one</Link>
+            <Link to="/dashboard/create">Upload one</Link>
           </p>
         </div>
       )}

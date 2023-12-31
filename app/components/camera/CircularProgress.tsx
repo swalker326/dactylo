@@ -35,7 +35,6 @@ const CircularProgress = ({
   const strokeDashArray = `${
     (circumference * progress) / 100
   } ${circumference}`;
-  console.log(radius);
 
   return (
     <div className="relative">

@@ -76,7 +76,6 @@ function VoteButtons({
       favorite = undefined;
     }
   }
-  console.log("favorite", favorite);
   const iconBaseStyle =
     "md:group-hover:-translate-y-1 ease-in-out transition-transform duration-300";
   if (fetcher.formData?.has("intent")) {

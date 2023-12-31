@@ -9,7 +9,7 @@ import { useZodErrors } from "~/hooks/useZodErrors";
 import { action as uploadAction } from "~/routes/dashboard.upload/route";
 import { useTypedFetcher } from "remix-typedjson";
 import { toast } from "sonner";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate, useSearchParams } from "@remix-run/react";
 
 const UploadFormSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file" }),
@@ -23,6 +23,7 @@ const UploadFormSchema = z.object({
 // type UploadFormData = z.infer<typeof UploadFormSchema>;
 
 export default function CreateRoute() {
+  const [searchParams] = useSearchParams();
   const fetcher = useTypedFetcher<typeof uploadAction>();
   const navigate = useNavigate();
   const isSubmitting = fetcher.formData?.has("sign");
@@ -96,7 +97,10 @@ export default function CreateRoute() {
       >
         <div className="rounded-md px-1.5">
           <h4 className="text-xl pb-2">Sign</h4>
-          <SignSelect name="sign" />
+          <SignSelect
+            name="sign"
+            defaultValue={(searchParams.get("signId") as string) || undefined}
+          />
           {errorMessages?.sign && (
             <p className="bg-red-300 rounded-sm w-full p-2">
               {errorMessages["sign"]}

@@ -54,7 +54,6 @@ export const CameraComponent = ({
     }
   }, [stream, mediaBlobUrl, cameraActive]);
 
-  console.log(devices);
   // denied access to camera
   if (error) {
     if (error instanceof DOMException && error.name === "NotAllowedError") {
