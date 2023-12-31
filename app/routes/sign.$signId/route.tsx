@@ -24,7 +24,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     where: { id: signId },
     include: {
       videos: {
-        // where: { status: "ACTIVE" },
+        where: { status: "ACTIVE" },
         orderBy: { voteCount: "desc" },
         include: { votes: true, favorites: true }
       }
@@ -115,14 +115,17 @@ export default function SignIdRoute() {
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {videos.slice(1).map((video) => (
-          <VideoCard
-            key={video.id}
-            variant="compact"
-            video={video}
-            userId={userId}
-          />
-        ))}
+        {videos
+          .slice(1)
+          .sort((vA, vB) => (vA.voteCount >= vB.voteCount ? -1 : 1))
+          .map((video) => (
+            <VideoCard
+              key={video.id}
+              variant="compact"
+              video={video}
+              userId={userId}
+            />
+          ))}
       </div>
     </div>
   );
