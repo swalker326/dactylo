@@ -109,7 +109,7 @@ export default function SignIdRoute() {
           className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md py-1 px-8"
         >
           <div className="flex justify-center items-center w-full h-full py-2 gap-2">
-            <text className="text-xl">Add a Video</text>
+            <p className="text-xl">Add a Video</p>
             <PlusCircleIcon size={22} />
           </div>
         </Link>

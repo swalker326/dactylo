@@ -79,7 +79,7 @@ export default function LoginRoute() {
               className="flex gap-1"
               message="Logging in..."
             >
-              <text>Sign In</text>
+              <p>Sign In</p>
             </StatusButton>
           </div>
         </Form>

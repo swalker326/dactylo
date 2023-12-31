@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import CameraComponent from "~/components/camera";
+import { CameraComponent } from "~/components/camera/Camera";
 import { Input } from "~/components/ui/input";
 import { SignSelect } from "../resources.sign/SignSelect";
 import { z } from "zod";

@@ -5,7 +5,6 @@ interface CameraRecorderHook {
   stopRecording: () => void;
   mediaBlobUrl: string | null;
   isRecording: boolean;
-  error: Error | null;
   setMediaBlobUrl: Dispatch<SetStateAction<string | null>>;
 }
 
@@ -15,7 +14,6 @@ function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
   );
   const [mediaBlobUrl, setMediaBlobUrl] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (stream) {
@@ -55,8 +53,7 @@ function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
     startRecording,
     stopRecording,
     mediaBlobUrl,
-    isRecording,
-    error
+    isRecording
   };
 }
 
