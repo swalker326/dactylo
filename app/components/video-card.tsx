@@ -4,7 +4,6 @@ import { ThumbsUp, ThumbsDown, Heart } from "lucide-react";
 import { useState } from "react";
 import { updateVoteCount } from "~/utils/votes";
 import { VideoWithVotes } from "~/utils/votes.server";
-import ImageWithPlaceholder from "./image-placeholder";
 
 export function VideoCard({
   video,
@@ -23,12 +22,18 @@ export function VideoCard({
   return (
     <div className="w-full">
       <div className="overflow-hidden">
-        <Link to={`/sign/${video.signId}`}>
-          <ImageWithPlaceholder
-            src={video.gifUrl || ""}
-            alt="sign video"
-            className="aspect-square w-full object-cover overflow-hidden"
-          />
+        <Link to={`/sign/${video.signId}`} title={`${video.signId}-video`}>
+          <video
+            className="w-full"
+            controls={false}
+            muted
+            loop
+            autoPlay
+            playsInline
+            src={`${video.url}.mp4`}
+          >
+            <track kind="captions" />
+          </video>
         </Link>
         <div className={`w-full bg-white dark:bg-gray-700`}>
           <VoteButtons
@@ -133,6 +138,7 @@ function VoteButtons({
           <div className="py-4 px-1.5">
             <div className="flex gap-x-1 rounded-xl bg-gray-300 dark:bg-gray-800 py-4 px-2 items-center w-full justify-center">
               <button
+                aria-label="upvote"
                 value="UPVOTE"
                 type="submit"
                 onClick={handleUpdateIntent}
@@ -150,6 +156,7 @@ function VoteButtons({
                 {String(count).padStart(2, " ")}
               </span>
               <button
+                aria-label="downvote"
                 type="submit"
                 value="DOWNVOTE"
                 onClick={handleUpdateIntent}
@@ -177,6 +184,7 @@ function VoteButtons({
           <favoriteFetcher.Form method="POST" action="/sign/favorite">
             <input type="hidden" name="videoId" value={videoId} />
             <button
+              aria-label="favorite"
               onAnimationEnd={() => (animate = false)}
               className={`${favorite ? "text-red-500" : ""}  ${
                 animate ? "animate-zoomy" : ""

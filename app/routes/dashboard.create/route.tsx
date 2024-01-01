@@ -57,7 +57,7 @@ export default function CreateRoute() {
         const blob = await response.blob();
 
         // Create a new File object from the blob
-        const file = new File([blob], "recorded-video.webm", {
+        const file = new File([blob], "recorded-video.mp4", {
           type: "video/mp4"
         });
 
@@ -172,8 +172,14 @@ export default function CreateRoute() {
             >
               <X size={22} />
             </button>
-            <video controls className="w-full aspect-square">
-              <source src={videoUrl} />
+            <video
+              autoPlay
+              playsInline
+              muted
+              loop
+              className="w-full aspect-square"
+              src={videoUrl}
+            >
               <track kind="captions" />
             </video>
           </div>

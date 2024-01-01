@@ -110,10 +110,8 @@ export const CameraComponent = ({
               <AlertDialogCancel>
                 {mediaBlobUrl ? "Keep My Recording" : "Stay Here"}
               </AlertDialogCancel>
-              <AlertDialogAction>
-                <button type="button" onClick={handleCloseCamera}>
-                  {mediaBlobUrl ? "Discard" : "Yes, Leave"}
-                </button>
+              <AlertDialogAction type="button" onClick={handleCloseCamera}>
+                {mediaBlobUrl ? "Discard" : "Yes, Leave"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

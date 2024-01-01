@@ -9,16 +9,11 @@ import {
 import Spinner from "~/icons/spinner.svg?react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Input } from "~/components/ui/input";
-import { VideoCard } from "~/components/video-card";
 import { prisma } from "~/db.server";
 import { useDebounce } from "~/hooks/useDebounce";
 import { getUserId } from "~/services/auth.server";
-import { Image, InfoIcon, PlusCircleIcon } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "~/components/ui/popover";
+import { Image, PlusCircleIcon } from "lucide-react";
+import { SignVideoCarousel } from "~/components/SignVideoCarousel";
 
 export const meta: MetaFunction = () => {
   return [
@@ -65,7 +60,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return typedjson({ signs, userId: maybeUser });
   }
   const signs = await prisma.sign.findMany({
-    where: {},
+    where: {
+      videos: { some: { status: "ACTIVE" } }
+    },
     include: {
       videos: {
         where: { status: "ACTIVE" },
@@ -129,36 +126,12 @@ export default function Index() {
           </Link>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {signs.map((sign) =>
-          sign.videos.map((video) => (
-            <div key={video.id} className="w-full">
-              <div className="bg-white dark:bg-gray-700 dark:text-white rounded-lg overflow-hidden">
-                <div className="flex items-center px-1.5">
-                  <Link
-                    to={`/sign/${sign.id}`}
-                    className="text-4xl extra-bold py-4 text-center capitalize"
-                  >
-                    {sign?.term}
-                  </Link>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <InfoIcon className="ml-auto" size={24} />
-                      {/* <Button variant="outline">Open popover</Button> */}
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                      {sign?.definition}
-                      <h4 className="text-xl py-2 font-bold">Example</h4>
-                      {sign?.example}
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="bg-white rounded-md">
-                  <VideoCard userId={userId || null} video={video} />
-                </div>
-              </div>
-            </div>
-          ))
+      <div className="grid grid-cols-1 gap-4">
+        {signs.map(
+          (sign) =>
+            sign.videos.length > 0 && (
+              <SignVideoCarousel key={sign.id} sign={sign} userId={userId} />
+            )
         )}
       </div>
     </div>

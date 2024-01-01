@@ -22,7 +22,6 @@ export async function action({ request }: ActionFunctionArgs) {
       data: { status: "ACTIVE" }
     });
   }
-  console.log({ videoId, approved, removed });
   return null;
 }
 
@@ -32,7 +31,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     select: {
       id: true,
       signId: true,
-      gifUrl: true,
       url: true,
       sign: true,
       uploadDate: true,
@@ -61,11 +59,16 @@ export default function AdminRoute() {
               key={video.id}
               className="bg-white rounded-md p-2 flex flex-col md:flex-row gap-3 h-full shadow-md"
             >
-              <img
-                src={video.gifUrl as string}
-                alt="sign video"
-                className="rounded-md order-last md:order-first"
-              />
+              <video
+                loop
+                muted
+                autoPlay
+                playsInline
+                src={`${video.url}.mp4`}
+                className="rounded-md order-last md:order-first w-1/2"
+              >
+                <track kind="captions" />
+              </video>
               <div className="w-full">
                 <div className="flex flex-col justify-between h-full p-4 rounded-md">
                   <div>

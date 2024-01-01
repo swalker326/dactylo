@@ -67,15 +67,18 @@ export const uploadHandler = async ({
     return "no filename";
   }
   const sanatizedFileName = generateFileName(filename, prefix, key);
+  const pathExtension = contentType.split("/")[1];
+  const videoUrl = `https://media.dactylo.io/${sanatizedFileName}.${pathExtension}`;
+
   const upload = await uploadStreamToSpaces(
     data,
-    sanatizedFileName,
+    `${sanatizedFileName}.${pathExtension}`,
     contentType
   );
   if (upload.$metadata.httpStatusCode === 200) {
     return JSON.stringify({
       filename: sanatizedFileName,
-      url: upload.Location,
+      url: videoUrl,
       errors: []
     });
   }

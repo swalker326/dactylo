@@ -33,7 +33,7 @@ model Video {
   uploadDate   DateTime    @default(now())
   voteCount    Int         @default(0)
   url          String
-  gifUrl       String
+  thumbnailUrl String
   user         User        @relation(fields: [userId], references: [id])
   status       VideoStatus
   sign         Sign        @relation(fields: [signId], references: [id])

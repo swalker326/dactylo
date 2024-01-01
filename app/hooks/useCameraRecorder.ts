@@ -17,7 +17,7 @@ function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
 
   useEffect(() => {
     if (stream) {
-      const recorder = new MediaRecorder(stream);
+      const recorder = new MediaRecorder(stream, { mimeType: "video/mp4" });
       setMediaRecorder(recorder);
 
       const chunks: BlobPart[] = [];
@@ -28,7 +28,7 @@ function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
       };
 
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: "video/webm" });
+        const blob = new Blob(chunks, { type: "video/mp4" });
         setMediaBlobUrl(URL.createObjectURL(blob));
       };
     }

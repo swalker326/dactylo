@@ -2,14 +2,10 @@ import * as E from "@react-email/components";
 import { v4 as uuidv4 } from "uuid";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { requireUserId } from "~/services/auth.server";
-import {
-  FileUploadResponseSchema,
-  uploadHandler
-} from "~/utils/storage.server";
 import { invariant } from "@epic-web/invariant";
 import { prisma } from "~/db.server";
 import { sendEmail } from "~/utils/email.server";
-import { uploadGif } from "~/utils/gif.server";
+import { convertToMp4, uploadThumbnail } from "~/utils/gif.server";
 import { typedjson } from "remix-typedjson";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -30,34 +26,26 @@ export async function action({ request }: ActionFunctionArgs) {
   });
   invariant(sign, `No sign found matching id ${signId}`);
   const key = uuidv4();
-  const videoUploadResponse = await uploadHandler({
-    data: file,
-    filename: sign.term,
-    contentType: file.type,
-    key
+  const { videoUrl, name } = await convertToMp4({
+    video: file,
+    key,
+    name: sign.term
   });
-  invariant(videoUploadResponse, "No video returned");
+  invariant(videoUrl, "No video returned");
   invariant(signId, "No sign selected");
-  const parsedUploadResponse = FileUploadResponseSchema.safeParse(
-    JSON.parse(videoUploadResponse)
-  );
-  if (!parsedUploadResponse.success) {
-    throw new Error("Invalid video");
-  }
-  const { gifUrl } = await uploadGif({
+
+  const { thumbnailUrl } = await uploadThumbnail({
     video: file,
     name: sign.term,
     key
   });
   const dbVideo = await prisma.video.create({
     data: {
-      name: encodeURIComponent(parsedUploadResponse.data.filename),
-      url:
-        process.env.STORAGE_ACCESS_URL +
-        encodeURIComponent(parsedUploadResponse.data.filename),
+      name,
+      url: videoUrl,
       status: "UNDER_REVIEW",
       uploaderInfo: JSON.stringify({}),
-      gifUrl,
+      thumbnailUrl,
       user: { connect: { id: userId } },
       sign: { connect: { id: signId as string } }
     }
