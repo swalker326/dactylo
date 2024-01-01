@@ -30,7 +30,7 @@ export function VideoCard({
             loop
             autoPlay
             playsInline
-            src={`${video.url}.mp4`}
+            src={`${video.url}`}
           >
             <track kind="captions" />
           </video>

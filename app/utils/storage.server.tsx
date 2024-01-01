@@ -53,52 +53,26 @@ export async function uploadStreamToSpaces(
 export const uploadHandler = async ({
   data,
   filename,
-  contentType,
-  prefix = "sign",
-  key
+  contentType
 }: {
-  filename?: string;
-  contentType: string;
   data: File;
-  prefix?: string;
-  key: string;
+  filename: string;
+  contentType: string;
 }) => {
-  if (!filename) {
-    return "no filename";
-  }
-  const sanatizedFileName = generateFileName(filename, prefix, key);
   const pathExtension = contentType.split("/")[1];
-  const videoUrl = `https://media.dactylo.io/${sanatizedFileName}.${pathExtension}`;
+  const videoUrl = `https://media.dactylo.io/${filename}.${pathExtension}`;
 
   const upload = await uploadStreamToSpaces(
     data,
-    `${sanatizedFileName}.${pathExtension}`,
+    `${filename}.${pathExtension}`,
     contentType
   );
   if (upload.$metadata.httpStatusCode === 200) {
-    return JSON.stringify({
-      filename: sanatizedFileName,
+    return {
       url: videoUrl,
       errors: []
-    });
+    };
   }
 
-  return JSON.stringify({ errors: ["Upload failed"] });
+  return { errors: ["Upload failed"] };
 };
-
-function sanitizeWord(word: string) {
-  // Converts to lowercase
-  // Replace spaces with underscores
-  // Removes special characters except for underscore
-  let sanitizedWord = word.toLowerCase();
-  sanitizedWord = sanitizedWord.replace(/\s+/g, "_");
-  sanitizedWord = sanitizedWord.replace(/[^a-z0-9_]/g, "");
-  return sanitizedWord;
-}
-
-function generateFileName(word: string, prefix: string, id: string) {
-  const key = id;
-  const sanitizedWord = sanitizeWord(word);
-
-  return `${prefix}-${sanitizedWord}-${key}`;
-}

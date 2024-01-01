@@ -45,8 +45,8 @@ export function SignVideoCarousel({
           "--swiper-pagination-color": "#000"
         }}
         navigation
+        autoHeight
         pagination={{ clickable: true }}
-        className="mySwiper"
       >
         {sign.videos
           .sort((vA, vB) => (vB.voteCount > vA.voteCount ? 1 : -1))

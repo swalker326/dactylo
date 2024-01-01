@@ -1,12 +1,13 @@
 import * as E from "@react-email/components";
-import { v4 as uuidv4 } from "uuid";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { requireUserId } from "~/services/auth.server";
 import { invariant } from "@epic-web/invariant";
 import { prisma } from "~/db.server";
 import { sendEmail } from "~/utils/email.server";
-import { convertToMp4, uploadThumbnail } from "~/utils/gif.server";
+import { convertToMp4, generateFileName } from "~/utils/video.server";
 import { typedjson } from "remix-typedjson";
+import { uploadHandler } from "~/utils/storage.server";
+import { uploadThumbnail } from "~/utils/gif.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
@@ -16,23 +17,35 @@ export async function action({ request }: ActionFunctionArgs) {
   const user = await prisma.user.findUnique({
     where: { id: userId }
   });
+
   const formData = await request.formData();
+
+  //CONSTRUCTOR IS FILE
   const file = formData.get("file");
+  console.log("FILE:: ", file?.constructor.name);
+
   invariant(file instanceof File, "No file uploaded");
   invariant(user, "No user found");
+
   const signId = formData.get("sign");
   const sign = await prisma.sign.findUnique({
     where: { id: signId as string }
   });
   invariant(sign, `No sign found matching id ${signId}`);
-  const key = uuidv4();
-  const { videoUrl, name } = await convertToMp4({
+  const { name, key } = generateFileName({ name: sign.term, prefix: "video" });
+  const { mp4File } = await convertToMp4({
     video: file,
-    key,
     name: sign.term
   });
-  invariant(videoUrl, "No video returned");
-  invariant(signId, "No sign selected");
+
+  const { url: videoUrl } = await uploadHandler({
+    data: mp4File,
+    contentType: "video/mp4",
+    filename: name
+  });
+  if (!videoUrl) {
+    throw new Error("Failed to upload video");
+  }
 
   const { thumbnailUrl } = await uploadThumbnail({
     video: file,
