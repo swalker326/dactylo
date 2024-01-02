@@ -68,13 +68,19 @@ export async function convertToMp4({
     await unlink(outputPath);
   };
   return new Promise((resolve, reject) => {
+    //ffmpeg -i input -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart output.mp4
+
     ffmpeg(inputPath)
       .outputOption("-c:v", "libx264")
+      .outputOption("-profile:v", "main")
+      .outputOption("-vf", "format=yuv420p")
+      .outputOption("-movflags", "+faststart")
       .outputOption("-c:a", "aac")
       .save(outputPath)
       .on("end", async () => {
         const mp4 = await readFile(outputPath);
-        const mp4File = new File([mp4], outputPathName, { type: "video/mp4" });
+        const mp4File = new File([mp4], outputPathName);
+        console.log("mp4", mp4File);
         await cleanUp();
         resolve({
           mp4File,

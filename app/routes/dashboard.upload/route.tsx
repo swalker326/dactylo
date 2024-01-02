@@ -22,7 +22,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
   //CONSTRUCTOR IS FILE
   const file = formData.get("file");
-  console.log("FILE:: ", file?.constructor.name);
+
+  console.log("FILE:: ", file);
 
   invariant(file instanceof File, "No file uploaded");
   invariant(user, "No user found");
@@ -33,10 +34,11 @@ export async function action({ request }: ActionFunctionArgs) {
   });
   invariant(sign, `No sign found matching id ${signId}`);
   const { name, key } = generateFileName({ name: sign.term, prefix: "video" });
-  const { mp4File } = await convertToMp4({
+  const { mp4File, message } = await convertToMp4({
     video: file,
     name: sign.term
   });
+  console.log("MP4 CONVERT RESULT: ", message);
 
   const { url: videoUrl } = await uploadHandler({
     data: mp4File,

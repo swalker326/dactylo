@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "../ui/alert-dialog";
+import { useCameraContext } from "./CameraProvider";
 
 export const CameraComponent = ({
   onRecordingComplete,
@@ -26,18 +27,14 @@ export const CameraComponent = ({
   onRecordingComplete: (blobUrl: string) => void;
 }) => {
   const { stream, devices, updateStream, error, initCamera } = useCamera();
-  const {
-    startRecording,
-    stopRecording,
-    mediaBlobUrl,
-    isRecording,
-    setMediaBlobUrl
-  } = useCameraRecorder(stream);
+  const { startRecording, stopRecording, isRecording } =
+    useCameraRecorder(stream);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [cameraPortal, setCameraPortal] = useState<HTMLElement | null>(null);
+  const { mediaBlobURL, setMediaBlobURL } = useCameraContext();
 
   useEffect(() => {
     setIsClient(true);
@@ -46,13 +43,13 @@ export const CameraComponent = ({
 
   useEffect(() => {
     if (videoRef.current) {
-      if (mediaBlobUrl) {
+      if (mediaBlobURL) {
         videoRef.current.srcObject = null;
       } else {
         videoRef.current.srcObject = stream;
       }
     }
-  }, [stream, mediaBlobUrl, cameraActive]);
+  }, [stream, mediaBlobURL, cameraActive]);
 
   // denied access to camera
   if (error) {
@@ -81,8 +78,8 @@ export const CameraComponent = ({
     );
   }
   const handleCloseCamera = () => {
-    if (mediaBlobUrl) {
-      setMediaBlobUrl(null);
+    if (mediaBlobURL) {
+      setMediaBlobURL(undefined);
     } else {
       setCameraActive(false);
     }
@@ -101,36 +98,36 @@ export const CameraComponent = ({
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                {mediaBlobUrl
+                {mediaBlobURL
                   ? "You will lose your recording are you sure?"
                   : "You have not recorded anything yet, would you like to go back?"}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>
-                {mediaBlobUrl ? "Keep My Recording" : "Stay Here"}
+                {mediaBlobURL ? "Keep My Recording" : "Stay Here"}
               </AlertDialogCancel>
               <AlertDialogAction type="button" onClick={handleCloseCamera}>
-                {mediaBlobUrl ? "Discard" : "Yes, Leave"}
+                {mediaBlobURL ? "Discard" : "Yes, Leave"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
         <video
           autoPlay={true}
-          loop={!!mediaBlobUrl}
+          loop={!!mediaBlobURL}
           playsInline
           ref={videoRef}
           className="w-[100svw] h-[100svh] object-contain"
           controls={false}
-          src={mediaBlobUrl ? mediaBlobUrl : ""}
+          src={mediaBlobURL ? mediaBlobURL : ""}
         >
           <track kind="captions" />
         </video>
         <div className="fixed bottom-0 z-10 w-full p-1.5 flex justify-between text-white min-h-20">
           <CameraSelector devices={devices} onSelect={updateStream} />
           <div>
-            {stream && !isRecording && !mediaBlobUrl && (
+            {stream && !isRecording && !mediaBlobURL && (
               <button className="text-red-500" onClick={startRecording}>
                 <Circle size={66} />
               </button>
@@ -145,12 +142,12 @@ export const CameraComponent = ({
             )}
           </div>
           <div className="w-20 flex items-center justify-center">
-            {mediaBlobUrl && (
+            {mediaBlobURL && (
               <button
                 type="button"
                 onClick={() => {
                   setCameraActive(false);
-                  onRecordingComplete(mediaBlobUrl);
+                  onRecordingComplete(mediaBlobURL);
                 }}
               >
                 <Check size={24} />

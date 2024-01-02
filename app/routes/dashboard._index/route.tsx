@@ -20,7 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       favorites: true,
       sign: true
     },
-    take: 10
+    take: 20
   });
   return typedjson({ videos, userId });
 }

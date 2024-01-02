@@ -1,23 +1,25 @@
-import { useState, useEffect, SetStateAction, Dispatch } from "react";
+import { useState, useEffect } from "react";
+import { useCameraContext } from "~/components/camera/CameraProvider";
 
 interface CameraRecorderHook {
   startRecording: () => void;
   stopRecording: () => void;
-  mediaBlobUrl: string | null;
+  // mediaBlobUrl: string | null;
   isRecording: boolean;
-  setMediaBlobUrl: Dispatch<SetStateAction<string | null>>;
+  // setMediaBlobUrl: Dispatch<SetStateAction<string | null>>;
+  // videoBlob: Blob | null;
 }
 
 function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-  const [mediaBlobUrl, setMediaBlobUrl] = useState<string | null>(null);
+  const { setMediaBlobURL } = useCameraContext();
   const [isRecording, setIsRecording] = useState<boolean>(false);
 
   useEffect(() => {
     if (stream) {
-      const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+      const recorder = new MediaRecorder(stream);
       setMediaRecorder(recorder);
 
       const chunks: BlobPart[] = [];
@@ -28,8 +30,9 @@ function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
       };
 
       recorder.onstop = () => {
+        console.log("mimeType: ", mediaRecorder?.mimeType);
         const blob = new Blob(chunks, { type: "video/mp4" });
-        setMediaBlobUrl(URL.createObjectURL(blob));
+        setMediaBlobURL(URL.createObjectURL(blob));
       };
     }
   }, [stream]);
@@ -49,10 +52,8 @@ function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
   };
 
   return {
-    setMediaBlobUrl,
     startRecording,
     stopRecording,
-    mediaBlobUrl,
     isRecording
   };
 }
