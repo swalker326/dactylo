@@ -1,5 +1,3 @@
 node_modules
-/other/cache.db
-/.cache
-**/build
-.env*
+**/tmp-dir/*
+.DS_Store
