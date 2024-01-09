@@ -30,12 +30,12 @@ export function VideoCard({
             loop
             autoPlay
             playsInline
-            src={`${video.url}`}
+            src={`${video.url.replace("<quality>", "720ws")}`}
           >
             <track kind="captions" />
           </video>
         </Link>
-        <div className={`w-full bg-white dark:bg-gray-700`}>
+        <div className="w-full bg-white dark:bg-gray-700">
           <VoteButtons
             //TODO: there will always be a signId, but it's not typed
             signId={video.signId as string}
@@ -144,7 +144,7 @@ function VoteButtons({
                 onClick={handleUpdateIntent}
                 className={`${
                   currentVote?.voteType === "UPVOTE"
-                    ? `text-blue-500 dark:text-blue-300`
+                    ? "text-blue-500 dark:text-blue-300"
                     : ""
                 } `}
               >
@@ -161,7 +161,7 @@ function VoteButtons({
                 value="DOWNVOTE"
                 onClick={handleUpdateIntent}
                 className={`${
-                  currentVote?.voteType === "DOWNVOTE" ? `text-orange-500 ` : ""
+                  currentVote?.voteType === "DOWNVOTE" ? "text-orange-500 " : ""
                 }`}
               >
                 <span>
@@ -184,8 +184,11 @@ function VoteButtons({
           <favoriteFetcher.Form method="POST" action="/sign/favorite">
             <input type="hidden" name="videoId" value={videoId} />
             <button
+              type="submit"
               aria-label="favorite"
-              onAnimationEnd={() => (animate = false)}
+              onAnimationEnd={() => {
+                animate = false;
+              }}
               className={`${favorite ? "text-red-500" : ""}  ${
                 animate ? "animate-zoomy" : ""
               } pr-2`}
@@ -217,7 +220,7 @@ const CompactButtons = ({
         type="submit"
         onClick={handleUpdateIntent}
         className={`${
-          voteType === "UPVOTE" ? `text-blue-500 dark:text-blue-300` : ""
+          voteType === "UPVOTE" ? "text-blue-500 dark:text-blue-300" : ""
         } `}
       >
         <span>
@@ -232,7 +235,7 @@ const CompactButtons = ({
         value="DOWNVOTE"
         onClick={handleUpdateIntent}
         className={`
-          ${voteType === "DOWNVOTE" ? `text-orange-500 ` : ""}
+          ${voteType === "DOWNVOTE" ? "text-orange-500 " : ""}
           `}
       >
         <span>

@@ -1,47 +1,30 @@
 import { prisma } from "@dactylo/db";
-import { Route } from "src/Server";
+import { Route, createErrorResponse } from "src/Server";
 import { uploadHandler } from "src/storage";
 import { transcodeHandler } from "src/transcode";
 
-export default function PingRoute(): Route {
+export default function UploadRoute(): Route {
 	return {
 		path: "/upload",
 		method: "POST",
 		async handler(req) {
-			{
+			try {
 				// TODO: check if user is logged in
 
-				console.log("upload...");
+				console.log("Uploading file...");
+
 				const data = await req?.formData();
-				console.log("HELLO THERE!", data);
-				for (const [key, value] of data.entries()) {
-					console.log(key, value);
-				}
 				const file = data.get("file");
 				const signId = data.get("sign");
 
 				if (!file || !(file instanceof File)) {
-					console.log("no file", file);
-					const responseBody = { message: "File not found" };
-					const response = new Response(JSON.stringify(responseBody), {
-						status: 200, // Set the status code
-						headers: {
-							"Content-Type": "application/json", // Set the content type to JSON
-						},
-					});
-					return response;
+					console.error("no file", file);
+					return createErrorResponse("file not found", 400);
 				}
 				const filename = file.name;
 				if (!signId || Array.isArray(signId)) {
-					console.log("no signId", signId);
-					const responseBody = { message: "Sign ID not found" };
-					const response = new Response(JSON.stringify(responseBody), {
-						status: 200, // Set the status code
-						headers: {
-							"Content-Type": "application/json", // Set the content type to JSON
-						},
-					});
-					return response;
+					console.error("no signId", signId);
+					return createErrorResponse("signId not found", 400);
 				}
 				const sign = await prisma.sign.findUnique({
 					where: {
@@ -49,28 +32,21 @@ export default function PingRoute(): Route {
 					},
 				});
 				if (!sign) {
-					console.log("no sign found", signId);
-					const responseBody = { message: "Sign not found" };
-					const response = new Response(JSON.stringify(responseBody), {
-						status: 200, // Set the status code
-						headers: {
-							"Content-Type": "application/json", // Set the content type to JSON
-						},
-					});
-					return response;
+					console.error("no sign", sign);
+					return createErrorResponse("sign not found", 400);
 				}
 				const { files, id } = await transcodeHandler(file, filename, sign);
 				for (const file of files) {
 					await uploadHandler({ path: file, id });
 				}
-				const responseBody = { message: "success", id };
-				const response = new Response(JSON.stringify(responseBody), {
-					status: 200, // Set the status code
+				return new Response(JSON.stringify({ message: "success", id }), {
+					status: 200,
 					headers: {
-						"Content-Type": "application/json", // Set the content type to JSON
+						"Content-Type": "application/json",
 					},
 				});
-				return response;
+			} catch (error) {
+				return createErrorResponse("An unexpected error occurred", 500);
 			}
 		},
 	};

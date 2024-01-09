@@ -8,6 +8,15 @@ import { convertToMp4, generateFileName } from "~/utils/video.server";
 import { typedjson } from "remix-typedjson";
 import { uploadHandler } from "~/utils/storage.server";
 import { uploadThumbnail } from "~/utils/gif.server";
+import { z } from "zod";
+
+enum Status {
+  Success = "success",
+  Error = "error"
+}
+const ResponseSchema = z.object({
+  id: z.string()
+});
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
@@ -33,64 +42,45 @@ export async function action({ request }: ActionFunctionArgs) {
     where: { id: signId as string }
   });
   invariant(sign, `No sign found matching id ${signId}`);
-  const response = await fetch("https://transcoder.fly.dev/upload", {
+  const response = await fetch("http://localhost:8080/upload", {
     method: "POST",
     body: formData
   });
-  
-  const text = await response.text();
-  console.log("JSON: ", text);
-  // console.log(response)
-  // const json = await response.json();
-  // console.log("JSON: ", json);
-  // const { name, key } = generateFileName({ name: sign.term, prefix: "video" });
-  // const { mp4File, message } = await convertToMp4({
-  //   video: file,
-  //   name: sign.term
-  // });
-  // console.log("MP4 CONVERT RESULT: ", message);
+  if (!response.ok) {
+    throw new Error("Failed to upload video");
+  }
+  const rawResponseJson = await response.json();
+  const validatedResponse = ResponseSchema.safeParse(rawResponseJson);
+  if (validatedResponse.success === false) {
+    throw new Error("Failed to upload video");
+  }
+  const { id } = validatedResponse.data;
 
-  // const { url: videoUrl } = await uploadHandler({
-  //   data: mp4File,
-  //   contentType: "video/mp4",
-  //   filename: name
-  // });
-  // if (!videoUrl) {
-  //   throw new Error("Failed to upload video");
-  // }
+  const dbVideo = await prisma.video.create({
+    data: {
+      videoId: id,
+      url: `https://media.dactylo.io/sign-${id}/${id}_<quality>.mp4`,
+      status: "UNDER_REVIEW",
+      user: { connect: { id: userId } },
+      sign: { connect: { id: signId as string } }
+    }
+  });
 
-  // const { thumbnailUrl } = await uploadThumbnail({
-  //   video: file,
-  //   name: sign.term,
-  //   key
-  // });
-  // const dbVideo = await prisma.video.create({
-  //   data: {
-  //     name,
-  //     url: videoUrl,
-  //     status: "UNDER_REVIEW",
-  //     uploaderInfo: JSON.stringify({}),
-  //     thumbnailUrl,
-  //     user: { connect: { id: userId } },
-  //     sign: { connect: { id: signId as string } }
-  //   }
-  // });
-
-  // const updatedSign = await prisma.sign.update({
-  //   where: { id: signId as string },
-  //   data: {
-  //     videos: {
-  //       connect: [{ id: dbVideo.id }]
-  //     }
-  //   }
-  // });
-  // sendEmail({
-  //   to: "shane@swalker.dev",
-  //   subject: "New video uploaded for review",
-  //   react: (
-  //     <NewUploadEmailTemplate videoUrl={dbVideo.url} userEmail={user.email} />
-  //   )
-  // });
+  const updatedSign = await prisma.sign.update({
+    where: { id: signId as string },
+    data: {
+      videos: {
+        connect: [{ id: dbVideo.id }]
+      }
+    }
+  });
+  sendEmail({
+    to: "shane@swalker.dev",
+    subject: "New video uploaded for review",
+    react: (
+      <NewUploadEmailTemplate videoUrl={dbVideo.url} userEmail={user.email} />
+    )
+  });
 
   return typedjson({
     sign: {
@@ -100,31 +90,31 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 }
 
-// function NewUploadEmailTemplate({
-//   videoUrl,
-//   userEmail
-// }: {
-//   videoUrl: string;
-//   userEmail: string;
-// }) {
-//   return (
-//     <E.Html lang="en" dir="ltr">
-//       <E.Container>
-//         <h1>
-//           <E.Text>{userEmail} just uploaded a new video for review</E.Text>
-//         </h1>
-//         <p>
-//           <E.Text>
-//             Checkout the video and reivew it{" "}
-//             <strong>
-//               <E.Link href={videoUrl}>here</E.Link>
-//             </strong>
-//           </E.Text>
-//         </p>
-//       </E.Container>
-//     </E.Html>
-//   );
-// }
+function NewUploadEmailTemplate({
+  videoUrl,
+  userEmail
+}: {
+  videoUrl: string;
+  userEmail: string;
+}) {
+  return (
+    <E.Html lang="en" dir="ltr">
+      <E.Container>
+        <h1>
+          <E.Text>{userEmail} just uploaded a new video for review</E.Text>
+        </h1>
+        <p>
+          <E.Text>
+            Checkout the video and reivew it{" "}
+            <strong>
+              <E.Link href={videoUrl}>here</E.Link>
+            </strong>
+          </E.Text>
+        </p>
+      </E.Container>
+    </E.Html>
+  );
+}
 
 /*
   No longer using a component here, just the endpoint

@@ -86,7 +86,7 @@ export default function Index() {
   }, 500);
   return (
     <div className="flex flex-col gap-4">
-      <div className="bg-white w-full p-1.5 py-3">
+      <div className="bg-white w-full p-1.5 py-3 rounded-lg">
         <Form
           method="GET"
           onChange={(e) => handleFormChange(e.currentTarget)}

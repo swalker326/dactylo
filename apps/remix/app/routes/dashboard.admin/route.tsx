@@ -64,7 +64,7 @@ export default function AdminRoute() {
                 muted
                 autoPlay
                 playsInline
-                src={`${video.url}`}
+                src={`${video.url.replace("<quality>", "720ws")}`}
                 className="rounded-md order-last md:order-first w-1/2"
               >
                 <track kind="captions" />
