@@ -37,13 +37,15 @@ export class Server {
 
 				if (Boolean(route) && route.method === method) {
 					console.log("Found route", this.routes[path]);
-					return await this.routes[path].handler(req, {
+					const handlerResponse = await this.routes[path].handler(req, {
 						path,
 						method,
 						headers,
 						body,
 						query,
 					});
+					console.log("handlerResponse", handlerResponse)
+					return handlerResponse;
 				}
 				return new Response("Not found", { status: 404 });
 			},
@@ -85,3 +87,10 @@ const processRequest = (req: Request) => {
 	console.log("PATH::", path);
 	return { path, method, headers, body, query };
 };
+
+export function createErrorResponse(message: string, statusCode = 400) {
+	return new Response(JSON.stringify({ error: message }), {
+		status: statusCode,
+		headers: { "Content-Type": "application/json" },
+	});
+}
