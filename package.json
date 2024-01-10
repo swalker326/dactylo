@@ -11,6 +11,7 @@
     "dev": "turbo run dev",
     "start": "turbo run start",
     "typecheck": "turbo run typecheck",
+    "deploy:remix": "fly deploy --config ./apps/remix/fly.toml --dockerfile ./Dockerfile.remix",
     "deploy:transcoder": "fly deploy --config ./apps/transcoder/fly.toml --dockerfile ./Dockerfile.transcoder"
   },
   "keywords": [],
@@ -21,8 +22,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "fluent-ffmpeg@2.1.2": "patches/fluent-ffmpeg@2.1.2.patch",
-      "@remix-run/serve@2.4.1": "patches/@remix-run__serve@2.4.1.patch"
+      "fluent-ffmpeg@2.1.2": "patches/fluent-ffmpeg@2.1.2.patch"
     }
-  }
+  },
+  "dependencies": {}
 }

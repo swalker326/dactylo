@@ -4,14 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
-      ".": {
-        "require": "./dist/index.js",
-        "import": "./src/index.ts"
-      },
-      "./types": {
-        "require": "./dist/types.js",
-        "import": "./src/types.ts"
-      }
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./src/index.ts"
+    },
+    "./types": {
+      "require": "./dist/types.js",
+      "import": "./src/types.ts"
+    }
   },
   "typesVersions": {
     "*": {
@@ -38,17 +38,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@prisma/client": "^5.0.0"
+    "@prisma/client": "^5.0.0",
+    "typescript": "^5.1.6",
+    "prisma": "^5.0.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",
     "@types/node": "^20.4.2",
     "dotenv-cli": "^7.2.1",
     "eslint": "^8.45.0",
-    "prisma": "^5.0.0",
     "rollup": "^4.9.3",
-    "tsx": "^3.12.7",
-    "typescript": "^5.1.6"
+    "tsx": "^3.12.7"
   },
   "prisma": {
     "seed": "tsx ./seed.ts"

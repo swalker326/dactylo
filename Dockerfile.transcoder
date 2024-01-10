@@ -1,5 +1,6 @@
 
-FROM node:lts-slim as base
+ARG NODE_VERSION=21.5.0
+FROM node:${NODE_VERSION}-slim as base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -9,13 +10,11 @@ RUN corepack enable
 # Make sure you update this Dockerfile, the Dockerfile in the web workspace and copy that over to Dockerfile in the docs.
 
 FROM base AS builder
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apt update && apt install --no-install-recommends -y ffmpeg openssl
-# Set working directory
+RUN apt update --no-install-recommends
 WORKDIR /app
+
 RUN pnpm install turbo --global
 COPY . .
-ENV DATABASE_URL=mysql://6vtt5w9zpkpyd0jipy01:pscale_pw_aaX9FGRBiXnPyJHwhpmorU1z0T5tEmuW5SEiVwMePI9@aws.connect.psdb.cloud/dactylo?sslaccept=strict
 RUN turbo prune @dactylo/transcoder --docker
 
 # Add lockfile and package.json's of isolated subworkspace
@@ -47,7 +46,7 @@ RUN pnpm turbo build --filter=@dactylo/transcoder...
 
 FROM base AS runner
 
-RUN apt update && apt install --no-install-recommends -y ffmpeg openssl
+RUN apt update && apt install --no-install-recommends -y ffmpeg openssl libssl-dev ca-certificates
 
 WORKDIR /app
 RUN pnpm install bun --global
