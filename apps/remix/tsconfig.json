@@ -21,7 +21,9 @@
       "@/icon-name": [
         "./app/components/ui/icons/name.d.ts",
         "./types/icon-name.d.ts"
-      ]
+      ],
+      "@dactylo/db/*": ["../../packages/db/src/*"],
+      "@dactylo/db": ["../../packages/db/src/index.ts"],
     },
 
     // Remix takes care of building everything in `remix build`.
