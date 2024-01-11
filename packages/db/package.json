@@ -46,7 +46,6 @@
     "@faker-js/faker": "^8.0.2",
     "@types/node": "^20.4.2",
     "dotenv-cli": "^7.2.1",
-    "eslint": "^8.45.0",
     "rollup": "^4.9.3",
     "tsx": "^3.12.7"
   },
