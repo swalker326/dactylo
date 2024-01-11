@@ -19,8 +19,8 @@ import {
 } from "./ui/dropdown-menu";
 
 export type RootUser = Awaited<
-		ReturnType<Awaited<ReturnType<typeof rootLoader>>["json"]>
-	>["user"];
+	ReturnType<Awaited<ReturnType<typeof rootLoader>>["json"]>
+>["user"];
 
 const NAV_LINKS: Record<
 	string,

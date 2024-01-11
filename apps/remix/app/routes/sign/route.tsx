@@ -1,11 +1,11 @@
 import { Outlet } from "@remix-run/react";
 
 export async function loader() {
-  return { message: "Sign" };
+	return { message: "Sign" };
 }
 
 export async function action() {}
 
 export default function SignRoute() {
-  return <Outlet />;
+	return <Outlet />;
 }
