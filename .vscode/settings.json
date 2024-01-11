@@ -1,11 +1,5 @@
 {
-  "cSpell.words": [
-    "dactylo",
-    "fastify",
-    "hono",
-    "libx",
-    "uuidv"
-  ],
+  "cSpell.words": ["dactylo", "fastify", "hono", "libx", "typedjson", "uuidv"],
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#2badfa",
     "activityBar.background": "#2badfa",
