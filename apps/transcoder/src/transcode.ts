@@ -44,7 +44,8 @@ async function writeRawFile(
 
 	// Write the file
 	console.log(filename);
-	await writeFile(path.join(tempDir, id, filename), await file.arrayBuffer());
+	const readable = await convertToReadable(file);
+	await writeFile(path.join(tempDir, id, filename), readable);
 	filePaths.push(filePath);
 	return filePath;
 }
