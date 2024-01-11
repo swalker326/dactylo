@@ -55,16 +55,15 @@ export async function action({ request }: ActionFunctionArgs) {
 	});
 	const response = await sendEmail({
 		to: email,
-		subject: `Welcome to Dactylo!`,
+		subject: "Welcome to Dactylo!",
 		react: <SignupEmail onboardingUrl={verifyUrl.toString()} otp={otp} />,
 	});
 	if (response.status === "success") {
 		const path = redirectTo.pathname + redirectTo.search;
 		return redirect(path);
-	} else {
+	}
 		submission.error[""] = [response.error.message];
 		return json({ status: "error", submission } as const, { status: 500 });
-	}
 }
 
 export default function SignupRoute() {

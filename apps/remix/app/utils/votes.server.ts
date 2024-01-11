@@ -72,7 +72,7 @@ export const addVote = async ({
 	const newVoteCount = votes.reduce((acc, vote) => {
 		if (vote.voteType === "UPVOTE") {
 			return acc + 1;
-		} else if (vote.voteType === "DOWNVOTE") {
+		}if (vote.voteType === "DOWNVOTE") {
 			return acc - 1;
 		}
 		return acc;

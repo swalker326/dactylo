@@ -12,18 +12,18 @@ const { STORAGE_ACCESS_KEY, STORAGE_SECRET, STORAGE_ENDPOINT, STORAGE_BUCKET } =
 	process.env;
 
 if (!STORAGE_ENDPOINT) {
-	throw new Error(`STORAGE_ENDPOINT is missing required configuration.`);
+	throw new Error("STORAGE_ENDPOINT is missing required configuration.");
 }
 if (!STORAGE_BUCKET) {
-	throw new Error(`STORAGE_BUCKET is missing required configuration.`);
+	throw new Error("STORAGE_BUCKET is missing required configuration.");
 }
 
 if (!STORAGE_ACCESS_KEY) {
-	throw new Error(`STORAGE_ACCESS_KEY is missing required configuration.`);
+	throw new Error("STORAGE_ACCESS_KEY is missing required configuration.");
 }
 
 if (!STORAGE_SECRET) {
-	throw new Error(`STORAGE_SECRET is missing required configuration.`);
+	throw new Error("STORAGE_SECRET is missing required configuration.");
 }
 
 const storage = new S3Client({

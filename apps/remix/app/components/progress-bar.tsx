@@ -46,7 +46,7 @@ function NavProgress() {
 				)}
 			/>
 			{delayedPending && (
-				<div className="absolute flex items-center justify-center"></div>
+				<div className="absolute flex items-center justify-center" />
 			)}
 		</div>
 	);

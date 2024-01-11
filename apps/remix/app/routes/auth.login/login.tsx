@@ -54,7 +54,7 @@ export async function handleNewSession(
 				responseInit,
 			),
 		);
-	} else {
+	}
 		const authSession = await authSessionStorage.getSession(
 			request.headers.get("cookie"),
 		);
@@ -73,5 +73,4 @@ export async function handleNewSession(
 				responseInit,
 			),
 		);
-	}
 }

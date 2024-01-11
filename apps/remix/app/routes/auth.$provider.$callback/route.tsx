@@ -68,7 +68,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 				},
 				{ headers: destroyRedirectTo },
 			);
-		} else {
+		}
 			return redirectWithToast(
 				"/settings/profile/connections",
 				{
@@ -77,7 +77,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 				},
 				{ headers: destroyRedirectTo },
 			);
-		}
 	}
 
 	// If we're already logged in, then link the account

@@ -86,7 +86,7 @@ export default function App() {
 					<Scripts />
 					<LiveReload />
 				</AuthenticityTokenProvider>
-				<div id="camera-root"></div>
+				<div id="camera-root" />
 				<NavProgress />
 			</body>
 		</html>

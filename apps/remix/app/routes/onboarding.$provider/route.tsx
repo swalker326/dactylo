@@ -76,10 +76,9 @@ async function requireData({
 		.safeParse({ email, providerName: params.provider, providerId });
 	if (result.success) {
 		return result.data;
-	} else {
+	}
 		console.error(result.error);
 		throw redirect("/signup");
-	}
 }
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

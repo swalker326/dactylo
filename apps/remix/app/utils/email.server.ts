@@ -43,10 +43,10 @@ export async function sendEmail({
 	if (!process.env.RESEND_API_KEY && !process.env.MOCKS) {
 		console.error(`RESEND_API_KEY not set and we're not in mocks mode.`);
 		console.error(
-			`To send emails, set the RESEND_API_KEY environment variable.`,
+			"To send emails, set the RESEND_API_KEY environment variable.",
 		);
 		console.error(
-			`Would have sent the following email:`,
+			"Would have sent the following email:",
 			JSON.stringify(email),
 		);
 		return {
@@ -71,14 +71,14 @@ export async function sendEmail({
 			status: "success",
 			data: parsedData,
 		} as const;
-	} else {
+	}
 		const parseResult = resendErrorSchema.safeParse(data);
 		if (parseResult.success) {
 			return {
 				status: "error",
 				error: parseResult.data,
 			} as const;
-		} else {
+		}
 			return {
 				status: "error",
 				error: {
@@ -88,8 +88,6 @@ export async function sendEmail({
 					cause: data,
 				} satisfies ResendError,
 			} as const;
-		}
-	}
 }
 
 async function renderReactEmail(react: ReactElement) {

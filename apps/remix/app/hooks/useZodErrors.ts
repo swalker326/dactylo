@@ -10,7 +10,7 @@ export async function parseFormData<T>(
 	formData.forEach((value, key) => {
 		// Check if the key already exists
 		// eslint-disable-next-line no-prototype-builtins
-		if (object.hasOwnProperty(key)) {
+		if (Object.hasOwn(object, key)) {
 			// If the key exists and it's not an array, convert it into an array
 			if (!Array.isArray(object[key])) {
 				object[key] = [object[key]];
@@ -44,20 +44,19 @@ export function useZodErrors<T extends ZodSchema<any>>(schema: T) {
 			setErrorMessages({});
 			setHasError(false);
 			return response.success; // Return the parsed data
-		} else {
-			setErrors(response.error);
-			setErrorMessages(
-				response.error.issues.reduce(
-					(acc, issue) => {
-						acc[issue.path.join(".")] = issue.message;
-						return acc;
-					},
-					{} as Record<string, string>,
-				),
-			);
-			setHasError(true);
-			return null; // Return null to indicate a validation error
 		}
+		setErrors(response.error);
+		setErrorMessages(
+			response.error.issues.reduce(
+				(acc, issue) => {
+					acc[issue.path.join(".")] = issue.message;
+					return acc;
+				},
+				{} as Record<string, string>,
+			),
+		);
+		setHasError(true);
+		return null; // Return null to indicate a validation error
 	};
 
 	return { parse, hasError, error: errors, errorMessages };

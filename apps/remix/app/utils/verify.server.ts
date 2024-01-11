@@ -134,15 +134,15 @@ export async function validateRequest(
 	const submission = await parse(body, {
 		schema: VerifySchema.superRefine(async (data, ctx) => {
 			const codeIsValid = await isCodeValid({
-				code: data["code"],
-				target: data["target"],
-				type: data["type"],
+				code: data.code,
+				target: data.target,
+				type: data.type,
 			});
 			if (!codeIsValid) {
 				ctx.addIssue({
 					path: ["code"],
 					code: z.ZodIssueCode.custom,
-					message: `Invalid code`,
+					message: "Invalid code",
 				});
 				return;
 			}

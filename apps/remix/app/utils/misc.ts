@@ -37,9 +37,8 @@ export function getReferrerRoute(request: Request) {
 	const domain = getDomainUrl(request);
 	if (referrer?.startsWith(domain)) {
 		return referrer.slice(domain.length);
-	} else {
-		return "/";
 	}
+		return "/";
 }
 
 function formatColors() {
@@ -82,7 +81,7 @@ export function cn(...inputs: ClassValue[]) {
 	return customTwMerge(clsx(inputs));
 }
 
-export async function downloadFile(url: string, retries: number = 0) {
+export async function downloadFile(url: string, retries = 0) {
 	const MAX_RETRIES = 3;
 	try {
 		const response = await fetch(url);

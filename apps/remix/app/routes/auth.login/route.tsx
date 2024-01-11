@@ -125,7 +125,7 @@ export async function action({ request }: ActionFunctionArgs) {
 		async: true,
 	});
 
-	delete submission.payload.password;
+	submission.payload.password = undefined;
 	if (submission.intent !== "submit") {
 		// @ts-expect-error - conform should probably have support for doing this
 		delete submission.value?.password;

@@ -21,7 +21,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			where: { id: favoriteExists.id },
 		});
 		return json({ favorite: null }, { status: 200 });
-	} else {
+	}
 		const favorite = await prisma.favorite.create({
 			data: {
 				video: { connect: { id: videoId as string } },
@@ -29,5 +29,4 @@ export async function action({ request }: ActionFunctionArgs) {
 			},
 		});
 		return json({ favorite }, { status: 201 });
-	}
 }
