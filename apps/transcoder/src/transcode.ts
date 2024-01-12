@@ -2,7 +2,6 @@ import { type Sign } from "@dactylo/db/types";
 import { mkdir, writeFile } from "fs/promises";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
-import { Readable } from "stream";
 import ffmpeg from "fluent-ffmpeg";
 import * as dotenv from "dotenv";
 
@@ -11,24 +10,8 @@ dotenv.config({ path: ".env" });
 const filePaths: string[] = [];
 const tempDir = "tmp-dir/";
 
-export async function convertToReadable(blob: Blob): Promise<Readable> {
-	const reader = blob.stream().getReader();
-	const nodeReadable = new Readable({
-		async read() {
-			const { done, value } = await reader.read();
-			if (done) {
-				this.push(null);
-			} else {
-				this.push(Buffer.from(value));
-			}
-		},
-	});
-
-	return nodeReadable;
-}
-
 async function writeRawFile(
-	file: File,
+	file: Blob,
 	name: string,
 	id: string,
 ): Promise<string> {
@@ -43,16 +26,15 @@ async function writeRawFile(
 	const filePath = path.join(tempDir, id, filename);
 
 	// Write the file
-	console.log(filename);
-	const readable = await convertToReadable(file);
-	await writeFile(path.join(tempDir, id, filename), readable);
+	const buffer = Buffer.from(await file.arrayBuffer());
+	await writeFile(path.join(tempDir, id, filename), buffer);
 	filePaths.push(filePath);
 	return filePath;
 }
 
 function transcodeVideo(inputPath: string, id: string): Promise<string[]> {
 	return new Promise((resolve, reject) => {
-		const ffmpegCommand = ffmpeg(inputPath);
+		const ffmpegCommand = ffmpeg(path.resolve(inputPath));
 		const filePaths: string[] = [];
 
 		const resolutions = [
@@ -93,7 +75,7 @@ function transcodeVideo(inputPath: string, id: string): Promise<string[]> {
 }
 
 export async function transcodeHandler(
-	file: File,
+	file: Blob,
 	filename: string,
 	sign: Sign,
 ) {

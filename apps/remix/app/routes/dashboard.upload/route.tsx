@@ -61,7 +61,7 @@ export async function action({ request }: ActionFunctionArgs) {
 		},
 	});
 
-	const updatedSign = await prisma.sign.update({
+	await prisma.sign.update({
 		where: { id: signId as string },
 		data: {
 			videos: {

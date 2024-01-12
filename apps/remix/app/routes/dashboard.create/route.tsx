@@ -34,6 +34,7 @@ export default function CreateRoute() {
 	const formRef = useRef<HTMLFormElement>(null);
 	const { parse, errorMessages } = useZodErrors(UploadFormSchema);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (!isSubmitting && fetcher.data?.sign) {
 			formRef.current?.reset();
@@ -53,9 +54,10 @@ export default function CreateRoute() {
 
 	const handleRecordingCompleted = async () => {
 		if (fileInputRef.current) {
-			const response = await fetch(mediaBlobURL!);
+			if (!mediaBlobURL) return;
+			const response = await fetch(mediaBlobURL);
 			const blob = await response.blob();
-			const file = new File([blob], "video.wemb", { type: "video/webm" });
+			const file = new File([blob], "video.webm", { type: "video/webm" });
 			try {
 				const dataTransfer = new DataTransfer();
 				dataTransfer.items.add(file);
@@ -129,8 +131,9 @@ export default function CreateRoute() {
 											type="button"
 											className="bg-primary text-white  p-1 rounded-r-md "
 											onClick={() => {
-												fileInputRef.current?.value &&
-													(fileInputRef.current.value = "");
+												if (fileInputRef.current?.value) {
+													fileInputRef.current.value = "";
+												}
 												setMediaBlobURL(undefined);
 											}}
 										>
@@ -165,8 +168,9 @@ export default function CreateRoute() {
 								type="button"
 								className="absolute top-2 right-2 bg-primary text-white rounded-full p-1 z-10"
 								onClick={() => {
-									fileInputRef.current?.value &&
-										(fileInputRef.current.value = "");
+									if (fileInputRef.current?.value) {
+										fileInputRef.current.value = "";
+									}
 									setMediaBlobURL(undefined);
 								}}
 							>

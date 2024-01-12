@@ -17,7 +17,7 @@ export default function UploadRoute(): Route {
 				const file = data.get("file");
 				const signId = data.get("sign");
 
-				if (!file || !(file instanceof File)) {
+				if (!file || !(file instanceof Blob)) {
 					console.error("no file", file);
 					return createErrorResponse("file not found", 400);
 				}
