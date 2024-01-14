@@ -12,8 +12,7 @@ const ResponseSchema = z.object({
 	id: z.string(),
 });
 
-const transcoderUrl =
-	import.meta.env.TRANSCODER_URL || "http://localhost:8080/upload";
+const transcoderUrl = process.env.TRANSCODER_URL || "http://localhost:8080";
 
 export async function action({ request }: ActionFunctionArgs) {
 	const userId = await requireUserId(request);
@@ -37,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
 		where: { id: signId as string },
 	});
 	invariant(sign, `No sign found matching id ${signId}`);
-	const response = await fetch(transcoderUrl, {
+	const response = await fetch(`${transcoderUrl}/upload`, {
 		method: "POST",
 		body: formData,
 	});
@@ -54,7 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	const dbVideo = await prisma.video.create({
 		data: {
 			videoId: id,
-			url: `https://media.dactylo.io/sign-${id}/${id}_<quality>.mp4`,
+			url: `https://media.dactylo.io/${id}/sign-${id}-<quality>.mp4`,
 			status: "UNDER_REVIEW",
 			user: { connect: { id: userId } },
 			sign: { connect: { id: signId as string } },

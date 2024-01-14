@@ -2,6 +2,7 @@ import { VoteType, Vote, Favorite } from "@dactylo/db/types";
 import { Link, useFetcher } from "@remix-run/react";
 import { ThumbsUp, ThumbsDown, Heart } from "lucide-react";
 import { useState } from "react";
+import { getVideoUrl } from "~/utils/video";
 import { updateVoteCount } from "~/utils/votes";
 import { VideoWithVotes } from "~/utils/votes.server";
 
@@ -30,7 +31,7 @@ export function VideoCard({
 						loop
 						autoPlay
 						playsInline
-						src={`${video.url.replace("<quality>", "720ws")}`}
+						src={getVideoUrl(video.url, "720", "sq")}
 					>
 						<track kind="captions" />
 					</video>

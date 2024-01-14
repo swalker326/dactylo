@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { useFetcher } from "@remix-run/react";
-import { loader as resouceLoader } from "~/routes/resources.sign/route";
+import { loader as resourceLoader } from "~/routes/resources.sign/route";
 
 export function SignSelect({
 	name,
@@ -10,17 +10,10 @@ export function SignSelect({
 	name: string;
 	defaultValue?: string;
 }) {
-	const signFetcher = useFetcher<typeof resouceLoader>();
+	const signFetcher = useFetcher<typeof resourceLoader>();
 	const signs = signFetcher.data?.signs;
 	const [selectedSign, setSelectedSign] = useState<string>(defaultValue || "");
 	const [query, setQuery] = useState("");
-
-	useEffect(() => {
-		signFetcher.submit(
-			{ query: query ?? "" },
-			{ method: "GET", action: "/resources/sign" },
-		);
-	}, [query]);
 
 	const filteredSigns =
 		query === ""
@@ -49,23 +42,37 @@ export function SignSelect({
 					defaultValue={""}
 					placeholder={"Select a Sign"}
 					onChange={(event) => {
-						setQuery(event.target.value);
+						const value = event.target.value;
+						setQuery(value);
+						signFetcher.submit(
+							{ query: value ?? "" },
+							{ method: "GET", action: "/resources/sign" },
+						);
 					}}
 				/>
-				<Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-					{filteredSigns?.map((sign) => (
-						<Combobox.Option
-							className={({ active }) =>
-								`relative cursor-default select-none py-2 pl-10 pr-4 ${
-									active ? "bg-blue-200 text-white" : "text-gray-900"
-								}`
-							}
-							key={sign.id}
-							value={sign.id}
+				<Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-sm bg-gray-200 drop-shadow-2xl py-1 text-base ring-1 ring-black/5 focus:outline-none sm:text-sm">
+					{filteredSigns && filteredSigns.length > 0 ? (
+						filteredSigns.map((sign) => (
+							<Combobox.Option
+								className={({ active }) =>
+									`relative cursor-default select-none p-2 rounded-sm pl-10 pr-4 ${
+										active ? "bg-blue-600 text-white" : "text-gray-900"
+									}`
+								}
+								key={sign.id}
+								value={sign.id}
+							>
+								{sign.term}
+							</Combobox.Option>
+						))
+					) : (
+						<button
+							type="button"
+							className="relative cursor-default select-none p-2 rounded-sm pl-10 pr-4"
 						>
-							{sign.term}
-						</Combobox.Option>
-					))}
+							<h2>No Word Found - Request a new one?</h2>
+						</button>
+					)}
 				</Combobox.Options>
 			</div>
 		</Combobox>

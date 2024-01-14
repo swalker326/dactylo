@@ -97,7 +97,7 @@ export function Header({ user }: { user: RootUser | null }) {
 				</div>
 				<div className="flex sm:hidden">
 					<Dialog.Root open={open} onOpenChange={setOpen}>
-						<Dialog.Trigger className="w-12 h-12 text-gray-900">
+						<Dialog.Trigger name="menu-open" className="w-12 h-12 text-gray-900">
 							<Menu size={32} className="text-gray-900" />
 						</Dialog.Trigger>
 						<Dialog.Portal>

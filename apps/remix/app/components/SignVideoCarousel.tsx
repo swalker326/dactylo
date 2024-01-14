@@ -27,7 +27,7 @@ export function SignVideoCarousel({
 				</h2>
 				<Popover>
 					<PopoverTrigger asChild>
-						<InfoIcon className="ml-auto" size={24} />
+						<InfoIcon aria- className="ml-auto" size={24} />
 					</PopoverTrigger>
 					<PopoverContent className="w-80">
 						{sign?.definition}
