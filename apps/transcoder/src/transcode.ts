@@ -1,41 +1,54 @@
-import { type Sign } from "@dactylo/db/types";
-import { mkdir, writeFile } from "fs/promises";
-import { v4 as uuidv4 } from "uuid";
+import { mkdir, writeFile, rm } from "fs/promises";
 import path from "path";
 import ffmpeg from "fluent-ffmpeg";
 import * as dotenv from "dotenv";
+import { TranscodingJobArgs } from "./TranscoderQueue";
+import { uploadHandler } from "./storage";
 
 dotenv.config({ path: ".env" });
 
 const filePaths: string[] = [];
-const tempDir = "tmp-dir/";
 
 async function writeRawFile(
 	file: Blob,
 	name: string,
 	id: string,
+	tmpDir: string,
 ): Promise<string> {
-	const extension = name.split(".")[1];
-	const filename = `sign-${id}-raw.${extension}`;
+	try {
+		const extension = name.split(".").pop();
+		const filename = `sign-${id}-raw.${extension}`;
+		const dirPath = path.join(tmpDir, id);
 
-	// Ensure the directory exists
-	await mkdir(tempDir, { recursive: true });
-	await mkdir(path.join(tempDir, id), { recursive: true });
+		// Ensure the directory exists
+		await mkdir(dirPath, { recursive: true });
 
-	// Construct the full path for the file
-	const filePath = path.join(tempDir, id, filename);
+		// Construct the full path for the file
+		const filePath = path.join(dirPath, filename);
 
-	// Write the file
-	const buffer = Buffer.from(await file.arrayBuffer());
-	await writeFile(path.join(tempDir, id, filename), buffer);
-	filePaths.push(filePath);
-	return filePath;
+		// Write the file
+		const buffer = Buffer.from(await file.arrayBuffer());
+		await writeFile(filePath, buffer);
+		filePaths.push(filePath);
+		return filePath;
+	} catch (error) {
+		console.error("Error writing raw file:", error);
+		if (error instanceof Error && error.message) {
+			throw new Error(`Failed to write raw file: ${error.message}`);
+		}
+
+		throw new Error(`Failed to write raw file: ${error}`);
+	}
 }
 
-function transcodeVideo(inputPath: string, id: string): Promise<string[]> {
+export function transcodeVideo(
+	inputPath: string,
+	id: string,
+	tmpDir: string,
+): Promise<string[]> {
 	return new Promise((resolve, reject) => {
 		const ffmpegCommand = ffmpeg(path.resolve(inputPath));
-		const filePaths: string[] = [];
+		const outputFilePaths: string[] = [];
 
 		const resolutions = [
 			"480sq",
@@ -46,8 +59,9 @@ function transcodeVideo(inputPath: string, id: string): Promise<string[]> {
 			"1080ws",
 		];
 		for (const resolution of resolutions) {
-			const outputPath = `${tempDir}${id}/sign-${id}_${resolution}.mp4`;
-			filePaths.push(outputPath);
+			console.log("Transcoding:", resolution);
+			const outputPath = `${tmpDir}${id}/sign-${id}-${resolution}.mp4`;
+			outputFilePaths.push(outputPath);
 
 			ffmpegCommand
 				.output(outputPath)
@@ -63,32 +77,52 @@ function transcodeVideo(inputPath: string, id: string): Promise<string[]> {
 				"[0:v]scale=-2:720[720ws]",
 				"[0:v]scale=-2:1080[1080ws]",
 			])
-			.on("end", async () => {
-				resolve(filePaths);
+			.on("end", () => {
+				console.log("Transcoding complete");
+				return resolve(outputFilePaths);
 			})
 			.on("error", (err) => {
-				console.error("Error:", err);
-				reject(err);
+				console.error("Transcoding error:", err);
+				reject(new Error(`Transcoding failed: ${err.message}`));
 			})
 			.run();
 	});
 }
 
-export async function transcodeHandler(
-	file: Blob,
-	filename: string,
-	sign: Sign,
-) {
-	const id = uuidv4();
-	console.log("Transcoding Video...");
-
-	//write file to disk
-	const rawFilePath = await writeRawFile(file, filename, id);
-	//transcode video
-	const transcodedFilePaths = await transcodeVideo(rawFilePath, id);
-	return {
-		message: "success",
-		id,
-		files: [...filePaths, ...transcodedFilePaths],
-	};
+export async function transcodeHandler(args: TranscodingJobArgs) {
+	const { file, filename, tempDir: tmpDir, id } = args;
+	try {
+		const rawFilePath = await writeRawFile(file, filename, id, tmpDir);
+		const transcodedFilePaths = await transcodeVideo(rawFilePath, id, tmpDir);
+		const uploadPromises = transcodedFilePaths.map((file) => {
+			return uploadHandler({ path: file, id });
+		});
+		Promise.all(uploadPromises)
+			.then(() => {
+				console.log("Files Uploaded");
+				rm(`${tmpDir}${id}`, { recursive: true, force: true }).then(() => {
+					console.log(`${id} dir removed`);
+				});
+			})
+			.catch((err) => {
+				console.error("Error Uploading files:", err);
+			});
+		return {
+			message: "success",
+			id,
+			files: [rawFilePath, ...transcodedFilePaths],
+		};
+	} catch (error) {
+		console.error("Error in transcoding handler:", error);
+		if (error instanceof Error) {
+			return {
+				message: "error",
+				error: error.message,
+			};
+		}
+		return {
+			message: "error",
+			error: "unknown error",
+		};
+	}
 }
