@@ -90,7 +90,10 @@ export const CameraComponent = ({
 			<div ref={containerRef} className="relative flex justify-center">
 				<AlertDialog>
 					<AlertDialogTrigger asChild className="absolute top-4 right-4 z-20">
-						<button className="text-white rounded-full border p-2">
+						<button
+							type="button"
+							className="text-white rounded-full border p-2"
+						>
 							<X size={20} />
 						</button>
 					</AlertDialogTrigger>
@@ -128,12 +131,16 @@ export const CameraComponent = ({
 					<CameraSelector devices={devices} onSelect={updateStream} />
 					<div>
 						{stream && !isRecording && !mediaBlobURL && (
-							<button className="text-red-500" onClick={startRecording}>
+							<button
+								type="button"
+								className="text-red-500"
+								onClick={startRecording}
+							>
 								<Circle size={66} />
 							</button>
 						)}
 						{isRecording && (
-							<button onClick={stopRecording}>
+							<button type="button" onClick={stopRecording}>
 								<CircularProgress
 									duration={10000}
 									onEnd={() => stopRecording()}
