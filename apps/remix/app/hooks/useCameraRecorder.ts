@@ -22,7 +22,7 @@ function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
 			const recorder = new MediaRecorder(stream);
 			setMediaRecorder(recorder);
 
-			const chunks: BlobPart[] = [];
+			let chunks: BlobPart[] = [];
 			recorder.ondataavailable = (event) => {
 				if (event.data.size > 0) {
 					chunks.push(event.data);
@@ -33,6 +33,7 @@ function useCameraRecorder(stream: MediaStream | null): CameraRecorderHook {
 				console.log("mimeType: ", mediaRecorder?.mimeType);
 				const blob = new Blob(chunks, { type: "video/mp4" });
 				setMediaBlobURL(URL.createObjectURL(blob));
+				chunks = [];
 			};
 		}
 	}, [stream]);

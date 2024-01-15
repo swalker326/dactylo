@@ -45,7 +45,7 @@ export default function CreateRoute() {
 			setMediaBlobURL(undefined);
 			toast(`Sign video added for ${fetcher.data.sign.term}`, {
 				description: "Once approved, it will be available for others to see",
-				duration: 10000,
+				duration: 5000,
 				dismissible: true,
 				position: "bottom-right",
 				action: {
