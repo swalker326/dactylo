@@ -1,13 +1,13 @@
 import { prisma } from "@dactylo/db";
 import { Route, createErrorResponse } from "src/Server";
-import { uploadHandler } from "src/storage";
+import { v4 as uuidv4 } from "uuid";
 import { transcodeHandler } from "src/transcode";
 
 export default function UploadRoute(): Route {
 	return {
 		path: "/upload",
-		method: "POST",
-		async handler(req) {
+		async post(req, { queue }) {
+			const tempDir = "tmp-dir/";
 			try {
 				// TODO: check if user is logged in
 
@@ -16,7 +16,6 @@ export default function UploadRoute(): Route {
 				const data = await req?.formData();
 				const file = data.get("file");
 				const signId = data.get("sign");
-
 				if (!file || !(file instanceof Blob)) {
 					console.error("no file", file);
 					return createErrorResponse("file not found", 400);
@@ -35,10 +34,8 @@ export default function UploadRoute(): Route {
 					console.error("no sign", sign);
 					return createErrorResponse("sign not found", 400);
 				}
-				const { files, id } = await transcodeHandler(file, filename, sign);
-				for (const file of files) {
-					await uploadHandler({ path: file, id });
-				}
+				const id = uuidv4();
+				queue.add(transcodeHandler, { file, filename, tempDir, id });
 				return new Response(JSON.stringify({ message: "success", id }), {
 					status: 200,
 					headers: {
