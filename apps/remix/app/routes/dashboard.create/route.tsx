@@ -13,7 +13,11 @@ import { useNavigate, useSearchParams } from "@remix-run/react";
 import { CameraProvider } from "~/components/camera/CameraProvider";
 
 const UploadFormSchema = z.object({
-	file: z.instanceof(File, { message: "Please upload a file" }),
+	file: z
+		.instanceof(File, { message: "Please upload a file" })
+		.refine((file) => {
+			return file.type.startsWith("video/") && file.name !== "";
+		}),
 	sign: z
 		.string({
 			required_error: "Please select a sign",
