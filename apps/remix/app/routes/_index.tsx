@@ -111,7 +111,7 @@ export default function Index() {
 					<Link to="/dashboard/create">
 						<div className="text-blue-500">
 							<div className="flex items-center gap-2">
-								<PlusCircleIcon size={23} />
+								<PlusCircleIcon aria-label="view sign info" size={23} />
 								<p className="text-black dark:text-white">Create</p>
 							</div>
 						</div>

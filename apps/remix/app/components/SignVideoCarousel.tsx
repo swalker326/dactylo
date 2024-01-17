@@ -26,8 +26,16 @@ export function SignVideoCarousel({
 					{sign.term}
 				</h2>
 				<Popover>
-					<PopoverTrigger asChild>
-						<InfoIcon aria- className="ml-auto" size={24} />
+					<PopoverTrigger
+						asChild
+						aria-label="sign info"
+						title="more-info"
+						role="application"
+					>
+						<div className="flex flex-col items-center justify-center p-1.5">
+							<InfoIcon role="button" size={24} aria-label="sign info" />
+							{/* <span>info</span> */}
+						</div>
 					</PopoverTrigger>
 					<PopoverContent className="w-80">
 						{sign?.definition}

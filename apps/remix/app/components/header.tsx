@@ -97,8 +97,15 @@ export function Header({ user }: { user: RootUser | null }) {
 				</div>
 				<div className="flex sm:hidden">
 					<Dialog.Root open={open} onOpenChange={setOpen}>
-						<Dialog.Trigger name="menu-open" className="w-12 h-12 text-gray-900">
-							<Menu size={32} className="text-gray-900" />
+						<Dialog.Trigger
+							name="menu-open"
+							className="w-12 h-12 text-gray-900"
+						>
+							<Menu
+								size={32}
+								className="text-gray-900"
+								aria-label="navigation menu button"
+							/>
 						</Dialog.Trigger>
 						<Dialog.Portal>
 							<Dialog.Overlay className="bg-gray-800 opacity-70 data-[state=open]:animate-overlayShow fixed inset-0" />

@@ -128,6 +128,8 @@ export async function action({ request }: ActionFunctionArgs) {
 	submission.payload.password = undefined;
 	if (submission.intent !== "submit") {
 		// @ts-expect-error - conform should probably have support for doing this
+		//
+		// biome-ignore lint/performance/noDelete: I'm not sure of another way?
 		delete submission.value?.password;
 		return json({ status: "idle", submission } as const);
 	}
