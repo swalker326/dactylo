@@ -12,7 +12,7 @@ import { Input } from "~/components/ui/input";
 import { prisma } from "@dactylo/db";
 import { useDebounce } from "~/hooks/useDebounce";
 import { getUserId } from "~/services/auth.server";
-import { Image, PlusCircleIcon } from "lucide-react";
+import { Image, Plus, PlusCircleIcon } from "lucide-react";
 import { SignVideoCarousel } from "~/components/SignVideoCarousel";
 
 export const meta: MetaFunction = () => {
@@ -127,11 +127,27 @@ export default function Index() {
 				</div>
 			</div>
 			<div className="grid grid-cols-1 gap-4">
-				{signs.map(
-					(sign) =>
-						sign.videos.length > 0 && (
-							<SignVideoCarousel key={sign.id} sign={sign} userId={userId} />
-						),
+				{signs.length > 1 ? (
+					signs.map(
+						(sign) =>
+							sign.videos.length > 0 && (
+								<SignVideoCarousel key={sign.id} sign={sign} userId={userId} />
+							),
+					)
+				) : (
+					<div>
+						<h1 className="text-3xl font-bold text-center">
+							No Signs Found 😢
+						</h1>
+						<div className="flex items-center justify-center p-3">
+							<Link
+								className="w-1/2 items-center gap-1 flex justify-center p-3 text-xl font-bold  rounded-md hover:bg-blue-600 bg-blue-500 hover:text-white text-white"
+								to="/sign/create"
+							>
+								<span>Create One</span> <Plus />
+							</Link>
+						</div>
+					</div>
 				)}
 			</div>
 		</div>

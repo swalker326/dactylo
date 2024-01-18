@@ -16,6 +16,9 @@ import { getUserId } from "./services/auth.server";
 import { prisma } from "@dactylo/db";
 import { NavProgress } from "./components/progress-bar";
 import { Toaster } from "sonner";
+import { register } from "swiper/element/bundle";
+
+register();
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const [csrfToken, csrfCookieHeader] = await csrf.commitToken();

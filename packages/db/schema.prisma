@@ -26,20 +26,21 @@ model Sign {
 }
 
 model Video {
-  id           String      @id @default(cuid())
-  videoId         String
-  signId       String
-  userId       String
-  uploadDate   DateTime    @default(now())
-  voteCount    Int         @default(0)
-  url          String
-  user         User        @relation(fields: [userId], references: [id])
-  status       VideoStatus
-  sign         Sign        @relation(fields: [signId], references: [id])
-  votes        Vote[]
-  favorites    Favorite[]
-  reports      Report[]
+  id         String      @id @default(cuid())
+  videoId    String      @unique
+  signId     String
+  userId     String
+  uploadDate DateTime    @default(now())
+  voteCount  Int         @default(0)
+  url        String
+  user       User        @relation(fields: [userId], references: [id])
+  status     VideoStatus
+  sign       Sign        @relation(fields: [signId], references: [id])
+  votes      Vote[]
+  favorites  Favorite[]
+  reports    Report[]
 
+  @@index([videoId])
   @@index([userId])
   @@index([signId])
 }

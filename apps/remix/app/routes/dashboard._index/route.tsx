@@ -68,7 +68,11 @@ export default function DashboardIndex() {
 									</Popover>
 								</div>
 								<div className="bg-white rounded-md">
-									<VideoCard userId={userId || null} video={video} />
+									<VideoCard
+										link={`/video/${video.videoId}`}
+										userId={userId || null}
+										video={video}
+									/>
 								</div>
 							</div>
 						</div>

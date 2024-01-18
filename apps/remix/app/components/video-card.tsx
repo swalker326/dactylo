@@ -10,10 +10,12 @@ export function VideoCard({
 	video,
 	userId,
 	variant = "default",
+	link,
 }: {
 	video: VideoWithVotes;
 	userId: string | null;
 	variant?: "default" | "compact";
+	link?: string;
 }) {
 	const currentVote = video.votes?.find((vote) => vote.userId === userId);
 	const favorite = video.favorites?.find(
@@ -23,7 +25,10 @@ export function VideoCard({
 	return (
 		<div className="w-full">
 			<div className="overflow-hidden">
-				<Link to={`/sign/${video.signId}`} title={`${video.signId}-video`}>
+				<Link
+					to={link || `/sign/${video.signId}`}
+					title={`${video.signId}-video`}
+				>
 					<video
 						className="w-full"
 						controls={false}

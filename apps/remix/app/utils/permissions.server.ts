@@ -2,6 +2,12 @@ import { json } from "@remix-run/node";
 import { prisma } from "@dactylo/db";
 import { requireUserId } from "~/services/auth.server.js";
 import { useUser } from "~/utils/user.js";
+import { Prisma, User } from "@dactylo/db/types";
+
+const userWithRoles = Prisma.validator<Prisma.UserDefaultArgs>()({
+	include: { roles: true },
+});
+export type UserWithRoles = Prisma.UserGetPayload<typeof userWithRoles>;
 
 export async function requireUserWithPermission(
 	request: Request,
@@ -92,10 +98,8 @@ export function userHasPermission(
 	);
 }
 
-export function userHasRole(
-	user: Pick<ReturnType<typeof useUser>, "roles"> | null,
-	role: string,
-) {
+
+export function userHasRole(user: UserWithRoles | null, role: string) {
 	if (!user) return false;
 	return user.roles.some((r) => r.name === role);
 }
