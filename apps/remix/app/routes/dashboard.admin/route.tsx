@@ -35,6 +35,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			sign: true,
 			uploadDate: true,
 			user: true,
+			videoId: true,
 		},
 		where: { status: "UNDER_REVIEW" },
 	});
@@ -73,7 +74,7 @@ export default function AdminRoute() {
 								<div className="flex flex-col justify-between h-full p-4 rounded-md">
 									<div>
 										<Link
-											to={`/sign/${video.signId}`}
+											to={`/video/${video.videoId}`}
 											target="_blank"
 											rel="noreferrer"
 										>

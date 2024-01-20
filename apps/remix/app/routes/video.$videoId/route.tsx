@@ -39,12 +39,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 		return redirect("/");
 	}
 	const usersVideo = video.user.id === userId;
-
-	if (!isAdmin || !usersVideo) {
-		console.log("Not Admin or User");
-		return redirect("/");
+	if (isAdmin || usersVideo) {
+		return typedjson({ video, isAdmin });
 	}
-	return typedjson({ video, isAdmin });
+	return redirect("/");
 }
 export default function SignVideoRoute() {
 	const { video, isAdmin } = useTypedLoaderData<typeof loader>();
