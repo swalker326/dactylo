@@ -40,7 +40,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 				},
 			},
 		});
-
 		const search = await prisma.search.create({
 			data: {
 				term: searchTerm,
@@ -61,9 +60,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		return typedjson({ signs, userId: maybeUser });
 	}
 	const signs = await prisma.sign.findMany({
-		// where: {
-		// 	videos: { some: { status: "ACTIVE" } },
-		// },
+		//* Comment this 'where' out to see empty signs
+		where: {
+			videos: { some: { status: "ACTIVE" } },
+		},
 		include: {
 			term: true,
 			videos: {
@@ -129,7 +129,7 @@ export default function Index() {
 				</div>
 			</div>
 			<div className="grid grid-cols-1 gap-4">
-				{signs.length > 1 ? (
+				{signs.length > 0 ? (
 					signs.map((sign) =>
 						sign.videos.length > 0 ? (
 							<SignVideoCarousel key={sign.id} sign={sign} userId={userId} />
