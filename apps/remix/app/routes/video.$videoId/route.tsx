@@ -28,7 +28,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 		where: { videoId },
 		include: {
 			user: true,
-			sign: true,
+			sign: { include: { term: true } },
 			votes: true,
 			favorites: true,
 		},
@@ -49,6 +49,10 @@ export default function SignVideoRoute() {
 	const fetcher = useFetcher();
 	return (
 		<div>
+			<div className="space-y-1 p-1.5 pb-3">
+				<h1 className="text-6xl capitalize">{video.sign.term.word}</h1>
+				<h2 className="text-body-lg">{video.sign.definition}</h2>
+			</div>
 			<div className="relative ">
 				{video.status === "ACTIVE" ? (
 					<div className="px-3 rounded-md bg-blue-500 absolute top-1.5 right 1.5">
