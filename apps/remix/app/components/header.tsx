@@ -181,16 +181,6 @@ export function Header({ user }: { user: RootUser | null }) {
 													>
 														Login
 													</NavLink>{" "}
-													or{" "}
-													<NavLink
-														className="text-blue-400"
-														onClick={() => {
-															setOpen(false);
-														}}
-														to="/auth/signup"
-													>
-														Sign-up
-													</NavLink>
 												</p>
 											</div>
 										)}
