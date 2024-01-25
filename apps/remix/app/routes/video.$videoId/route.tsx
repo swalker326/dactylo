@@ -78,14 +78,14 @@ export default function SignVideoRoute() {
 								<input type="hidden" name="videoId" value={video.id} />
 								<Button
 									name="remove"
-									value="REMOVE"
+									value="REMOVED"
 									variant="outline"
 									className="border border-red-500 text-red-500 hover:bg-red-100 hover:text-red-500"
 								>
 									{video.status === "ACTIVE" ? "Remove" : "Deny"}
 								</Button>
 								{video.status === "ACTIVE" ? null : (
-									<Button value="APPROVE" name="approved">
+									<Button value="APPROVED" name="approve">
 										Approve
 									</Button>
 								)}

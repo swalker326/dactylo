@@ -7,24 +7,6 @@ import { requireUserWithRole } from "~/utils/permissions.server";
 import { Button } from "~/components/ui/button";
 import { invariant } from "@epic-web/invariant";
 
-export async function action({ request }: ActionFunctionArgs) {
-	const formData = await request.formData();
-	const { videoId, approved, removed } = Object.fromEntries(formData.entries());
-	invariant(videoId, "videoId is required");
-	if (videoId && removed === "REMOVED") {
-		await prisma.video.update({
-			where: { id: videoId as string },
-			data: { status: "REMOVED" },
-		});
-	} else if (videoId && approved === "APPROVED") {
-		await prisma.video.update({
-			where: { id: videoId as string },
-			data: { status: "ACTIVE" },
-		});
-	}
-	return null;
-}
-
 export async function loader({ request }: LoaderFunctionArgs) {
 	await requireUserWithRole(request, "admin");
 	const videos = await prisma.video.findMany({
@@ -40,6 +22,27 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		where: { status: "UNDER_REVIEW" },
 	});
 	return typedjson({ videos });
+}
+export async function action({ request }: ActionFunctionArgs) {
+	const formData = await request.formData();
+	console.log("FORM DATA: ");
+	for (const [key, value] of formData.entries()) {
+		console.log(key, value);
+	}
+	const { videoId, approve, remove } = Object.fromEntries(formData.entries());
+	invariant(videoId, "videoId is required");
+	if (videoId && remove === "REMOVED") {
+		await prisma.video.update({
+			where: { id: videoId as string },
+			data: { status: "REMOVED" },
+		});
+	} else if (videoId && approve === "APPROVED") {
+		await prisma.video.update({
+			where: { id: videoId as string },
+			data: { status: "ACTIVE" },
+		});
+	}
+	return null;
 }
 
 export default function AdminRoute() {
@@ -99,14 +102,14 @@ export default function AdminRoute() {
 									>
 										<input type="hidden" name="videoId" value={video.id} />
 										<Button
-											name="removed"
+											name="remove"
 											value="REMOVED"
 											variant="outline"
 											className="border border-red-500 text-red-500 hover:bg-red-100 hover:text-red-500"
 										>
 											Deny
 										</Button>
-										<Button value="APPROVED" name="approved">
+										<Button value="APPROVED" name="approve">
 											Approve
 										</Button>
 									</fetcher.Form>
