@@ -36,7 +36,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const term =
-		data?.sign?.term.charAt(0).toLocaleUpperCase() + data.sign.term.slice(1);
+		data?.sign?.term.word.charAt(0).toLocaleUpperCase() +
+		data.sign.term.word.slice(1);
 	return [{ title: term || "Sign" }];
 };
 
