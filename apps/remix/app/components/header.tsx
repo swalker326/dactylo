@@ -109,8 +109,8 @@ export function Header({ user }: { user: RootUser | null }) {
 						</Dialog.Trigger>
 						<Dialog.Portal>
 							<Dialog.Overlay className="bg-gray-800 opacity-70 data-[state=open]:animate-overlayShow fixed inset-0" />
-							<Dialog.Content className="data-[state=open]:animate-contentShow fixed w-screen h-[100svh] top-0 bg-white p-4 focus:outline-none">
-								<div className="h-full relative ">
+							<Dialog.Content className="z-10 data-[state=open]:animate-contentShow fixed w-screen h-[100svh] top-0 bg-white p-4 focus:outline-none">
+								<div className="h-full relative">
 									<div className="flex justify-between items-center pb-2">
 										<h2 className="text-2xl font-bold">Menu</h2>
 										<Dialog.Close className="border-2 m-2 border-gray-900 rounded-full">
