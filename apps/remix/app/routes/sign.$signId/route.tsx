@@ -23,6 +23,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const sign = await prisma.sign.findUnique({
 		where: { id: signId },
 		include: {
+			term: true,
 			videos: {
 				where: { status: "ACTIVE" },
 				orderBy: { voteCount: "desc" },
@@ -35,7 +36,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
 	const term =
-		data?.sign?.term?.charAt(0).toLocaleUpperCase() + data.sign.term.slice(1);
+		data?.sign?.term.charAt(0).toLocaleUpperCase() + data.sign.term.slice(1);
 	return [{ title: term || "Sign" }];
 };
 
@@ -82,7 +83,7 @@ export default function SignIdRoute() {
 					<div>
 						<Card>
 							<CardHeader>
-								<CardTitle className="capitalize">{sign.term}</CardTitle>
+								<CardTitle className="capitalize">{sign.term.word}</CardTitle>
 								<ul className="flex flex-col space-y-2">
 									<li>
 										<span className="font-bold">Definition</span>:{" "}

@@ -50,6 +50,6 @@
     "tsx": "^3.12.7"
   },
   "prisma": {
-    "seed": "tsx ./seed.ts"
+    "seed": "tsx ./seed/index.ts"
   }
 }

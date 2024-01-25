@@ -16,7 +16,7 @@ export function SignVideoCarousel({
 		<div className="bg-white rounded-lg">
 			<div className="flex justify-between px-1.5 items-center">
 				<h2 className="py-3 md:py-6 text-4xl capitalize font-bold">
-					{sign.term}
+					{sign.term.word}
 				</h2>
 				<Popover>
 					<PopoverTrigger
@@ -42,8 +42,8 @@ export function SignVideoCarousel({
 					"--swiper-pagination-color": "#000",
 				}}
 				slides-per-view="1"
-				navigation="true"
-				pagination="true"
+				navigation={true}
+				pagination={true}
 			>
 				{sign.videos
 					.sort((vA, vB) => (vB.voteCount > vA.voteCount ? 1 : -1))

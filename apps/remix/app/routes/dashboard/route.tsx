@@ -9,19 +9,7 @@ import { userHasRole } from "~/utils/permissions.server";
 export async function loader({ request }: LoaderFunctionArgs) {
 	const userId = await requireUserId(request);
 	const user = await prisma.user.findUnique({
-		select: {
-			id: true,
-			email: true,
-			image: { select: { id: true } },
-			roles: {
-				select: {
-					name: true,
-					permissions: {
-						select: { entity: true, action: true, access: true },
-					},
-				},
-			},
-		},
+		include: { roles: true },
 		where: { id: userId },
 	});
 	const isAdmin = userHasRole(user, "admin");

@@ -19,7 +19,7 @@ export function SignSelect({
 		query === ""
 			? signs
 			: signs?.filter((sign) => {
-					return sign.term.toLowerCase().includes(query.toLowerCase());
+					return sign.term.word.toLowerCase().includes(query.toLowerCase());
 			  });
 
 	return (
@@ -37,7 +37,7 @@ export function SignSelect({
 						if (!sign) {
 							return "";
 						}
-						return sign.term;
+						return sign.term.word;
 					}}
 					defaultValue={""}
 					placeholder={"Select a Sign"}
@@ -62,7 +62,7 @@ export function SignSelect({
 								key={sign.id}
 								value={sign.id}
 							>
-								{sign.term}
+								{sign.term.word}
 							</Combobox.Option>
 						))
 					) : (

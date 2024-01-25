@@ -29,13 +29,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	if (searchTerm) {
 		const signs = await prisma.sign.findMany({
 			where: {
-				term: { contains: searchTerm },
+				term: { word: { contains: searchTerm } },
 				videos: { some: { status: "ACTIVE" } },
 			},
 			include: {
+				term: true,
 				videos: {
 					where: { status: "ACTIVE" },
-					include: { sign: true, votes: true, favorites: true },
+					include: { votes: true, favorites: true },
 				},
 			},
 		});
@@ -60,10 +61,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		return typedjson({ signs, userId: maybeUser });
 	}
 	const signs = await prisma.sign.findMany({
-		where: {
-			videos: { some: { status: "ACTIVE" } },
-		},
+		// where: {
+		// 	videos: { some: { status: "ACTIVE" } },
+		// },
 		include: {
+			term: true,
 			videos: {
 				where: { status: "ACTIVE" },
 				include: { votes: true, favorites: true },
@@ -128,11 +130,19 @@ export default function Index() {
 			</div>
 			<div className="grid grid-cols-1 gap-4">
 				{signs.length > 1 ? (
-					signs.map(
-						(sign) =>
-							sign.videos.length > 0 && (
-								<SignVideoCarousel key={sign.id} sign={sign} userId={userId} />
-							),
+					signs.map((sign) =>
+						sign.videos.length > 0 ? (
+							<SignVideoCarousel key={sign.id} sign={sign} userId={userId} />
+						) : (
+							<div key={sign.id} className="rounded-sm px-1.5 py-3 bg-white">
+								<p className="text-body">
+									No videos for{" "}
+									<span className="text-body-xl">{sign.term.word} 😢</span>
+								</p>
+
+								<p>definition: {sign.definition}</p>
+							</div>
+						),
 					)
 				) : (
 					<div>

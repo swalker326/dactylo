@@ -9,15 +9,14 @@ declare module "react" {
 	}
 }
 
-
 declare global {
 	namespace JSX {
 		interface IntrinsicElements {
 			"swiper-container": React.DetailedHTMLProps<
 				React.HTMLAttributes<HTMLElement> &
 					SwiperProps & {
-						navigation?: "true" | "false";
-						pagination?: "true" | "false";
+						navigation?: boolean;
+						pagination?: boolean;
 						style?: React.CSSProperties;
 					},
 				HTMLElement

@@ -15,7 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "skipLibCheck": true,
-    "types": [],
+    "types": ["./swiper.d.ts"],
     "paths": {
       "~/*": ["./app/*"],
       "@/icon-name": [

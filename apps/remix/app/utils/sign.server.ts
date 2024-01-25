@@ -9,8 +9,12 @@ export function signSearch({
 }) {
 	const signs = prisma.sign.findMany({
 		where: {
-			OR: [{ term: { contains: query } }, { example: { contains: query } }],
+			OR: [
+				{ term: { word: { contains: query } } },
+				{ example: { contains: query } },
+			],
 		},
+		include: { term: true },
 		take: limit,
 	});
 	return signs;

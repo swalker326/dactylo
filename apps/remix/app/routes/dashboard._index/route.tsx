@@ -18,7 +18,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		include: {
 			votes: true,
 			favorites: true,
-			sign: true,
+			sign: { include: { term: true } },
 		},
 		take: 20,
 	});
@@ -39,7 +39,7 @@ export default function DashboardIndex() {
 								<div className="flex items-center justify-between px-1.5">
 									<Link to={`/sign/${video.sign.id}`}>
 										<h2 className="text-4xl extra-bold py-2 capitalize">
-											{video.sign?.term}
+											{video.sign?.term.word}
 										</h2>
 									</Link>
 									{video.status === "UNDER_REVIEW" ? (

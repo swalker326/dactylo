@@ -32,7 +32,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			id: true,
 			signId: true,
 			url: true,
-			sign: true,
+			sign: { include: { term: true } },
 			uploadDate: true,
 			user: true,
 			videoId: true,
@@ -79,7 +79,7 @@ export default function AdminRoute() {
 											rel="noreferrer"
 										>
 											<h4 className="capitalize text-3xl font-bold underline">
-												{video.sign?.term}
+												{video.sign?.term.word}
 											</h4>
 										</Link>
 										<div className="flex gap-x-2 justify-start items-center">

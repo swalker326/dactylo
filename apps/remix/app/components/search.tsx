@@ -11,6 +11,7 @@ export const SearchInput = () => {
 	return (
 		<div className="relative">
 			<button
+				type="button"
 				className={` ${
 					open ? "border-l-0 rounded-l-none" : ""
 				} border border-blue-500 text-blue-500 rounded-sm p-1 h-10 transition-all duration-75 ease-in-out z-10`}
@@ -40,6 +41,7 @@ export const SearchInput = () => {
 						placeholder="Find a Sign"
 					/>
 					<button
+						type="button"
 						onClick={() => {
 							setOpen(false);
 						}}

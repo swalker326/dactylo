@@ -19,7 +19,7 @@ export async function action({ request }: LoaderFunctionArgs) {
 	const formData = await request.formData();
 	const q = formData.get("q");
 	const signs = await prisma.sign.findMany({
-		where: { term: { contains: q as string } },
+		where: { term: { word: { contains: q as string } } },
 		select: { term: true, id: true },
 	});
 	return { signs };

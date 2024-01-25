@@ -10,9 +10,16 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
+model Term {
+  id        String   @id @default(cuid())
+  word      String
+  signs     Sign[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Sign {
   id           String       @id @default(cuid())
-  term         String
   example      String       @db.VarChar(2000)
   definition   String       @db.VarChar(2000)
   videos       Video[]
@@ -23,6 +30,10 @@ model Sign {
 
   updatedAt DateTime? @updatedAt
   createdAt DateTime  @default(now())
+  term      Term      @relation(fields: [termId], references: [id])
+  termId    String
+
+  @@index([termId])
 }
 
 model Video {
