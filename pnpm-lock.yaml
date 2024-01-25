@@ -213,7 +213,7 @@ importers:
         specifier: ^2.1.24
         version: 2.1.24
       '@types/react':
-        specifier: ^18.2.45
+        specifier: ^18.2.47
         version: 18.2.47
       '@types/react-dom':
         specifier: ^18.2.18
@@ -228,8 +228,8 @@ importers:
         specifier: ^8.4.32
         version: 8.4.33
       remix-development-tools:
-        specifier: ^3.7.2
-        version: 3.7.2(@remix-run/react@2.5.0)(@types/react-dom@18.2.18)(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^3.7.4
+        version: 3.7.4(@remix-run/react@2.5.0)(@types/react-dom@18.2.18)(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0)
       tailwindcss:
         specifier: ^3.4.0
         version: 3.4.1
@@ -8579,8 +8579,8 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /remix-development-tools@3.7.2(@remix-run/react@2.5.0)(@types/react-dom@18.2.18)(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-Yp++YN5isdCxlqMtjM5iewacushJd/xgmaK+BJAaoep03QGj/jGeg6sFg++o3/cfx7nM+LOAkiAAys7uxlcadA==}
+  /remix-development-tools@3.7.4(@remix-run/react@2.5.0)(@types/react-dom@18.2.18)(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-hjqL3WsqvJZRWaK57CjGKjIqwrUxUeCjuqpdVQf1OufdmWTXSM8Gs0ciHlq0Q3Fyer+wfoZoZEUK3HJ2v8KpYg==}
     hasBin: true
     peerDependencies:
       '@remix-run/react': '>=1.15'
