@@ -72,7 +72,10 @@ export async function action({ request }: ActionFunctionArgs) {
 		to: "shane@swalker.dev",
 		subject: "New video uploaded for review",
 		react: (
-			<NewUploadEmailTemplate videoUrl={dbVideo.url} userEmail={user.email} />
+			<NewUploadEmailTemplate
+				videoUrl={`https://staging.dactylo.io/video/${id}/`}
+				userEmail={user.email}
+			/>
 		),
 	});
 
