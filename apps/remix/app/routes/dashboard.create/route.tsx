@@ -71,6 +71,7 @@ export default function CreateRoute() {
 			}
 		}
 	};
+	console.log("SIGN ID", searchParams.get("signId"));
 
 	return (
 		<CameraProvider
