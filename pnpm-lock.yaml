@@ -20,11 +20,11 @@ importers:
   apps/remix:
     dependencies:
       '@conform-to/react':
-        specifier: ^0.9.1
-        version: 0.9.1(react@18.2.0)
+        specifier: ^1.0.0
+        version: 1.0.0(react@18.2.0)
       '@conform-to/zod':
-        specifier: ^0.9.1
-        version: 0.9.1(@conform-to/dom@0.9.1)(zod@3.22.4)
+        specifier: ^1.0.0
+        version: 1.0.0(zod@3.22.4)
       '@dactylo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -200,9 +200,6 @@ importers:
       '@flydotio/dockerfile':
         specifier: ^0.5.0
         version: 0.5.0
-      '@hookform/devtools':
-        specifier: ^4.3.1
-        version: 4.3.1(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0)
       '@remix-run/dev':
         specifier: 2.5.1
         version: 2.5.1(@remix-run/serve@2.5.1)(typescript@5.3.3)(vite@5.0.11)
@@ -1325,26 +1322,25 @@ packages:
     dev: true
     optional: true
 
-  /@conform-to/dom@0.9.1:
-    resolution: {integrity: sha512-+T6QgpLDPZ29j4y5nWW61WMe8qj0cQBymyzbi5sq1f3CcBO3wBbR0VPI7mbm+rLoErHWM3ghhdNlIkw0UPoLLA==}
+  /@conform-to/dom@1.0.0:
+    resolution: {integrity: sha512-KG0Ee2G9BcFLdqtpcexdht48QNM2F9ddAyJFSHNG4V3e2QOmVEAM7M6R/iWWykpTVQljWmKd2J7U4ep/7/XRrA==}
     dev: false
 
-  /@conform-to/react@0.9.1(react@18.2.0):
-    resolution: {integrity: sha512-SibYHk86IFh60LRPk4aJHJOgyLTgb3JYphKvG4vcemyuntdOwncd5YM/GDoccVzeCTmJi4Os/fDtOOAaDcSa9w==}
+  /@conform-to/react@1.0.0(react@18.2.0):
+    resolution: {integrity: sha512-TlMMmNDhYJhKJP9EOyV2RbUEqjwR68GTO1KaO3LOI4WeVLx7aZ78k73qIuFMRjjZgsWOL4edD1CZtkKBRztmqw==}
     peerDependencies:
-      react: '>=16.8'
+      react: '>=18'
     dependencies:
-      '@conform-to/dom': 0.9.1
+      '@conform-to/dom': 1.0.0
       react: 18.2.0
     dev: false
 
-  /@conform-to/zod@0.9.1(@conform-to/dom@0.9.1)(zod@3.22.4):
-    resolution: {integrity: sha512-4hWBGzRpSd4RrlBFRXjS6QQ2MWFpMZDbDwz8H/xiq38Xl5yaL1RSZMhOJ4pmsmy8CIKghs78qvaD8ltTFlrNvQ==}
+  /@conform-to/zod@1.0.0(zod@3.22.4):
+    resolution: {integrity: sha512-oWOfqEpCRZpOY7mxJe73oluy6Fvjbw8tYhXfDqZqFb0ePf+bFkF7g1Wzfkgz76LvWJHb0PNykn+o5f423aqb+w==}
     peerDependencies:
-      '@conform-to/dom': 0.9.1
       zod: ^3.21.0
     dependencies:
-      '@conform-to/dom': 0.9.1
+      '@conform-to/dom': 1.0.0
       zod: 3.22.4
     dev: false
 
@@ -1388,35 +1384,8 @@ packages:
     resolution: {integrity: sha512-gJB6HLm5rYwSLI6PQa+X1t5CFGrv1J1TWG+sOyMCeKz2ojaj6Fnl/rZEspogG+cvqbt4AE/2eIyD2QfLKTBNlQ==}
     dev: true
 
-  /@emotion/is-prop-valid@1.2.1:
-    resolution: {integrity: sha512-61Mf7Ufx4aDxx1xlDeOm8aFFigGHE4z+0sKCa+IHCeZKiyP9RLD0Mmx7m8b9/Cf37f7NAvQOOJAbQQGVr5uERw==}
-    dependencies:
-      '@emotion/memoize': 0.8.1
-    dev: true
-
   /@emotion/memoize@0.8.1:
     resolution: {integrity: sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==}
-    dev: true
-
-  /@emotion/react@11.11.3(@types/react@18.2.47)(react@18.2.0):
-    resolution: {integrity: sha512-Cnn0kuq4DoONOMcnoVsTOR8E+AdnKFf//6kUWc4LCdnxj31pZWn7rIULd6Y7/Js1PiPHzn7SKCM9vB/jBni8eA==}
-    peerDependencies:
-      '@types/react': '*'
-      react: '>=16.8.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.23.8
-      '@emotion/babel-plugin': 11.11.0
-      '@emotion/cache': 11.11.0
-      '@emotion/serialize': 1.1.3
-      '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@18.2.0)
-      '@emotion/utils': 1.2.1
-      '@emotion/weak-memoize': 0.3.1
-      '@types/react': 18.2.47
-      hoist-non-react-statics: 3.3.2
-      react: 18.2.0
     dev: true
 
   /@emotion/serialize@1.1.3:
@@ -1433,37 +1402,8 @@ packages:
     resolution: {integrity: sha512-0QBtGvaqtWi+nx6doRwDdBIzhNdZrXUppvTM4dtZZWEGTXL/XE/yJxLMGlDT1Gt+UHH5IX1n+jkXyytE/av7OA==}
     dev: true
 
-  /@emotion/styled@11.11.0(@emotion/react@11.11.3)(@types/react@18.2.47)(react@18.2.0):
-    resolution: {integrity: sha512-hM5Nnvu9P3midq5aaXj4I+lnSfNi7Pmd4EWk1fOZ3pxookaQTNew6bp4JaCBYM4HVFZF9g7UjJmsUmC2JlxOng==}
-    peerDependencies:
-      '@emotion/react': ^11.0.0-rc.0
-      '@types/react': '*'
-      react: '>=16.8.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.23.8
-      '@emotion/babel-plugin': 11.11.0
-      '@emotion/is-prop-valid': 1.2.1
-      '@emotion/react': 11.11.3(@types/react@18.2.47)(react@18.2.0)
-      '@emotion/serialize': 1.1.3
-      '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@18.2.0)
-      '@emotion/utils': 1.2.1
-      '@types/react': 18.2.47
-      react: 18.2.0
-    dev: true
-
   /@emotion/unitless@0.8.1:
     resolution: {integrity: sha512-KOEGMu6dmJZtpadb476IsZBclKvILjopjUii3V+7MnXIQCYh8W3NgNcgwo21n9LXZX6EDIKvqfjYxXebDwxKmQ==}
-    dev: true
-
-  /@emotion/use-insertion-effect-with-fallbacks@1.0.1(react@18.2.0):
-    resolution: {integrity: sha512-jT/qyKZ9rzLErtrjGgdkMBn2OP8wl0G3sQlBb3YPryvKHsjvINUhVaPFfP+fpBcOkmrVOVEEHQFJ7nbj2TH2gw==}
-    peerDependencies:
-      react: '>=16.8.0'
-    dependencies:
-      react: 18.2.0
     dev: true
 
   /@emotion/utils@1.2.1:
@@ -2135,26 +2075,6 @@ packages:
     dependencies:
       tailwindcss: 3.4.1
     dev: false
-
-  /@hookform/devtools@4.3.1(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-CrWxEoHQZaOXJZVQ8KBgOuAa8p2LI8M0DAN5GTRTmdCieRwFVjVDEmuTAVazWVRRkpEQSgSt3KYp7VmmqXdEnw==}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
-      react-dom: ^16.8.0 || ^17 || ^18
-    dependencies:
-      '@emotion/react': 11.11.3(@types/react@18.2.47)(react@18.2.0)
-      '@emotion/styled': 11.11.0(@emotion/react@11.11.3)(@types/react@18.2.47)(react@18.2.0)
-      '@types/lodash': 4.14.202
-      little-state-machine: 4.8.0(react@18.2.0)
-      lodash: 4.17.21
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      react-simple-animate: 3.5.2(react-dom@18.2.0)
-      use-deep-compare-effect: 1.8.1(react@18.2.0)
-      uuid: 8.3.2
-    transitivePeerDependencies:
-      - '@types/react'
-    dev: true
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -4688,10 +4608,6 @@ packages:
       '@types/unist': 2.0.10
     dev: true
 
-  /@types/lodash@4.14.202:
-    resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
-    dev: true
-
   /@types/mdast@3.0.15:
     resolution: {integrity: sha512-LnwD+mUEfxWMa1QpDraczIn6k0Ee3SMicuYSSzS6ZYl2gKS09EClnJYGd8Du6rfc5r/GZEk5o1mRb8TaTj03sQ==}
     dependencies:
@@ -6527,12 +6443,6 @@ packages:
     resolution: {integrity: sha512-nAxA0v8+vXSBDt3AnRUNjyRIQ0rD+ntpbAp4LnPkumc5M9yUbSMa4XDU9Q6etY4f1Wp4bNgvc1yjiZtsTTrSng==}
     dev: true
 
-  /hoist-non-react-statics@3.3.2:
-    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
-    dependencies:
-      react-is: 16.13.1
-    dev: true
-
   /hosted-git-info@6.1.1:
     resolution: {integrity: sha512-r0EI+HBMcXadMrugk0GCQ+6BQV39PiWAZVfq7oIckeGiN7sjRGyQxPdft3nQekFTCQbYxLBH+/axZMeH8UX6+w==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
@@ -6943,14 +6853,6 @@ packages:
     dependencies:
       cookie: 0.5.0
     dev: false
-
-  /little-state-machine@4.8.0(react@18.2.0):
-    resolution: {integrity: sha512-xfi5+iDxTLhu0hbnNubUs+qoQQqxhtEZeObP5ELjUlHnl74bbasY7mOonsGQrAouyrbag3ebNLSse5xX1T7buQ==}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
-    dependencies:
-      react: 18.2.0
-    dev: true
 
   /loader-utils@3.2.1:
     resolution: {integrity: sha512-ZvFw1KWS3GVyYBYb7qkmRM/WwL2TQQBxgCK62rlvm4WpVQ23Nb4tYjApUlfjrEGvOs7KHEsmyUn75OHZrJMWPw==}
@@ -8444,14 +8346,6 @@ packages:
       '@remix-run/router': 1.14.2
       react: 18.2.0
 
-  /react-simple-animate@3.5.2(react-dom@18.2.0):
-    resolution: {integrity: sha512-xLE65euP920QMTOmv5haPlml+hmOPDkbIr5WeF7ADIXWBYt5kW/vwpNfWg8EKMab8aeDxIZ6QjffVh8v2dUyhg==}
-    peerDependencies:
-      react-dom: ^16.8.0 || ^17 || ^18
-    dependencies:
-      react-dom: 18.2.0(react@18.2.0)
-    dev: true
-
   /react-style-singleton@2.2.1(@types/react@18.2.47)(react@18.2.0):
     resolution: {integrity: sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g==}
     engines: {node: '>=10'}
@@ -9592,17 +9486,6 @@ packages:
       react: 18.2.0
       tslib: 2.6.2
 
-  /use-deep-compare-effect@1.8.1(react@18.2.0):
-    resolution: {integrity: sha512-kbeNVZ9Zkc0RFGpfMN3MNfaKNvcLNyxOAAd9O4CBZ+kCBXXscn9s/4I+8ytUER4RDpEYs5+O6Rs4PqiZ+rHr5Q==}
-    engines: {node: '>=10', npm: '>=6'}
-    peerDependencies:
-      react: '>=16.13'
-    dependencies:
-      '@babel/runtime': 7.23.8
-      dequal: 2.0.3
-      react: 18.2.0
-    dev: true
-
   /use-sidecar@1.1.2(@types/react@18.2.47)(react@18.2.0):
     resolution: {integrity: sha512-epTbsLuzZ7lPClpz2TyryBfztm7m+28DlEv2ZCQ3MDr5ssiwyOwGH/e5F9CkfWjJ1t4clvI58yF822/GUkjjhw==}
     engines: {node: '>=10'}
@@ -9637,6 +9520,7 @@ packages:
   /uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
+    dev: false
 
   /uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}

@@ -1,5 +1,5 @@
-import { useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { getFormProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import {
 	json,
 	type ActionFunctionArgs,
@@ -31,18 +31,16 @@ const LoginFormSchema = z.object({
 	remember: z.boolean().optional(),
 });
 
-// First we create our UI with the form doing a POST and the inputs with the
-// names we are going to use in the strategy
 export default function LoginRoute() {
 	const actionData = useActionData<typeof action>();
 	const [searchParams] = useSearchParams();
 	const [form, fields] = useForm({
 		id: "login-form",
-		constraint: getFieldsetConstraint(LoginFormSchema),
+		constraint: getZodConstraint(LoginFormSchema),
 		// defaultValue: { redirectTo },
-		lastSubmission: actionData?.submission,
+		lastResult: actionData?.result,
 		onValidate({ formData }) {
-			return parse(formData, { schema: LoginFormSchema });
+			return parseWithZod(formData, { schema: LoginFormSchema });
 		},
 		shouldRevalidate: "onBlur",
 	});
@@ -53,17 +51,17 @@ export default function LoginRoute() {
 		<div className="flex justify-center p-1.5 flex-col w-full">
 			<div>
 				<div className="md:p-4">
-					{actionData?.submission.error.login && (
+					{form.errors && (
 						<div className="p-3 bg-red-200 text-red-600 rounded-md">
-							{actionData.submission.error.login}
+							{form.errors}
 						</div>
 					)}
-					<Form method="POST" {...form.props}>
+					<Form method="POST" {...getFormProps(form)}>
 						<AuthenticityTokenInput />
 						<div className="flex flex-col gap-y-2 w-full pb-2">
 							<Input placeholder="Email" type="email" name="email" required />
-							{fields.email.error && (
-								<p className="text-red-500">{fields.email.error}</p>
+							{fields.email.errors && (
+								<p className="text-red-500">{fields.email.errors}</p>
 							)}
 							<Input
 								placeholder="Password"
@@ -80,8 +78,8 @@ export default function LoginRoute() {
 									forgot password?
 								</Link>
 							</div>
-							{fields.email.error && (
-								<p className="text-red-500">{fields.password.error}</p>
+							{fields.email.errors && (
+								<p className="text-red-500">{fields.password.errors}</p>
 							)}
 							<div className="flex justify-between items-center">
 								<StatusButton
@@ -140,15 +138,14 @@ export async function action({ request }: ActionFunctionArgs) {
 	await requireAnonymous(request);
 	const formData = await request.formData();
 	await validateCSRF(formData, request.headers);
-	const submission = await parse(formData, {
+	const submission = await parseWithZod(formData, {
 		schema: (intent) =>
 			LoginFormSchema.transform(async (data, ctx) => {
-				if (intent !== "submit") return { ...data, session: null };
+				if (intent !== null) return { ...data, session: null };
 
 				const session = await login(data);
 				if (!session) {
 					ctx.addIssue({
-						path: ["login"],
 						code: z.ZodIssueCode.custom,
 						message: "Invalid username or password",
 					});
@@ -159,25 +156,19 @@ export async function action({ request }: ActionFunctionArgs) {
 			}),
 		async: true,
 	});
-
-	submission.payload.password = undefined;
-	if (submission.intent !== "submit") {
-		// @ts-expect-error - conform should probably have support for doing this
-		//
-		// biome-ignore lint/performance/noDelete: I'm not sure of another way?
-		delete submission.value?.password;
-		return json({ status: "idle", submission } as const);
+	if (submission.status !== "success" || !submission.value.session) {
+		return json(
+			{ result: submission.reply({ hideFields: ["password"] }) },
+			{ status: submission.status === "error" ? 400 : 200 },
+		);
 	}
-	if (!submission.value?.session) {
-		return json({ status: "error", submission } as const, { status: 400 });
-	}
-
-	const { session, remember } = submission.value;
+	const { session, remember, redirectTo } = submission.value;
 
 	return handleNewSession({
 		request,
-		remember: remember ?? false,
 		session,
+		remember: remember ?? false,
+		redirectTo,
 	});
 }
 

@@ -6,7 +6,7 @@ import { verifySessionStorage } from "~/utils/verification.server";
 import { authSessionStorage } from "~/services/session.server";
 import { sessionKey, signup } from "~/services/auth.server";
 import { validateCSRF } from "~/utils/csrf.server";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { prisma } from "@dactylo/db";
 import { redirectWithToast } from "~/utils/toast.server";
 import { safeRedirect } from "remix-utils/safe-redirect";
@@ -17,7 +17,7 @@ import {
 	// useLoaderData,
 	useSearchParams,
 } from "@remix-run/react";
-import { useForm } from "@conform-to/react";
+import { getFormProps, useForm } from "@conform-to/react";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
@@ -39,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	const email = await getSessionEmail(request);
 	const formData = await request.formData();
 	await validateCSRF(formData, request.headers);
-	const submission = await parse(formData, {
+	const submission = await parseWithZod(formData, {
 		schema: (intent) =>
 			SignupFormSchema.superRefine(async (data, ctx) => {
 				const existingUser = await prisma.user.findUnique({
@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
 					return;
 				}
 			}).transform(async (data) => {
-				if (intent !== "submit") return { ...data, session: null };
+				if (intent !== null) return { ...data, session: null };
 
 				const session = await signup({ ...data, email });
 				return { ...data, session };
@@ -63,11 +63,12 @@ export async function action({ request }: ActionFunctionArgs) {
 		async: true,
 	});
 
-	if (submission.intent !== "submit") {
-		return json({ status: "idle", submission } as const);
-	}
-	if (!submission.value?.session) {
-		return json({ status: "error", submission } as const, { status: 400 });
+	if (submission.status !== "success" || !submission.value.session) {
+		// return json({ status: "idle", submission } as const);
+		return json(
+			{ result: submission.reply() },
+			{ status: submission.status === "error" ? 400 : 200 },
+		);
 	}
 
 	const { session, remember, redirectTo } = submission.value;
@@ -108,19 +109,19 @@ export default function SignupRoute() {
 
 	const [form] = useForm({
 		id: "onboarding-form",
-		constraint: getFieldsetConstraint(SignupFormSchema),
+		constraint: getZodConstraint(SignupFormSchema),
 		defaultValue: { redirectTo },
-		lastSubmission: actionData?.submission,
+		lastResult: actionData?.result,
 		onValidate({ formData }) {
-			return parse(formData, { schema: SignupFormSchema });
+			return parseWithZod(formData, { schema: SignupFormSchema });
 		},
 		shouldRevalidate: "onBlur",
 	});
 
 	return (
 		<>
-			{form.errors.toString()}
-			<Form method="POST" {...form.props} className="space-y-3">
+			{form.errors}
+			<Form method="POST" {...getFormProps(form)} className="space-y-3">
 				<AuthenticityTokenInput />
 				<Input type="password" name="password" placeholder="Password" />
 				<Input

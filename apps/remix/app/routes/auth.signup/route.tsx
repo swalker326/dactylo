@@ -1,6 +1,6 @@
-import { useForm } from "@conform-to/react";
+import { getFormProps, useForm } from "@conform-to/react";
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { parse, getFieldsetConstraint } from "@conform-to/zod";
+import { parseWithZod, getZodConstraint } from "@conform-to/zod";
 import * as E from "@react-email/components";
 import { Form, useActionData } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
@@ -22,7 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
 	// await validateCSRF(formData, request.headers);
 
-	const submission = await parse(formData, {
+	const submission = await parseWithZod(formData, {
 		schema: SIGNUP_SCHEMA.superRefine(async (data, ctx) => {
 			const exisitngUser = await prisma.user.findUnique({
 				where: { email: data.email },
@@ -40,11 +40,11 @@ export async function action({ request }: ActionFunctionArgs) {
 		async: true,
 	});
 
-	if (submission.intent !== "submit") {
-		return json({ submission, status: "idle" } as const, { status: 400 });
-	}
-	if (!submission.value) {
-		return json({ submission, status: "error" } as const, { status: 400 });
+	if (submission.status !== "success") {
+		return json(
+			{ result: submission.reply() },
+			{ status: submission.status === "error" ? 400 : 200 },
+		);
 	}
 	const { email } = submission.value;
 	const { verifyUrl, redirectTo, otp } = await prepareVerification({
@@ -59,26 +59,31 @@ export async function action({ request }: ActionFunctionArgs) {
 		react: <SignupEmail onboardingUrl={verifyUrl.toString()} otp={otp} />,
 	});
 	if (response.status === "success") {
-		const path = redirectTo.pathname + redirectTo.search;
-		return redirect(path);
+		return redirect(redirectTo.toString());
 	}
-		submission.error[""] = [response.error.message];
-		return json({ status: "error", submission } as const, { status: 500 });
+	return json(
+		{
+			result: submission.reply({ formErrors: [response.error.message] }),
+		},
+		{
+			status: 500,
+		},
+	);
 }
 
 export default function SignupRoute() {
 	const actionData = useActionData<typeof action>();
 	const [form, fields] = useForm({
-		constraint: getFieldsetConstraint(SIGNUP_SCHEMA),
-		lastSubmission: actionData?.submission,
+		constraint: getZodConstraint(SIGNUP_SCHEMA),
+		lastResult: actionData?.result,
 		onValidate({ formData }) {
-			return parse(formData, { schema: SIGNUP_SCHEMA });
+			return parseWithZod(formData, { schema: SIGNUP_SCHEMA });
 		},
 		shouldValidate: "onBlur",
 	});
 	return (
 		<div>
-			<Form method="POST" {...form.props}>
+			<Form method="POST" {...getFormProps(form)}>
 				<div className="flex flex-col gap-y-2 w-full">
 					<Input
 						data-1p-ignore

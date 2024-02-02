@@ -8,7 +8,7 @@ import {
 import { Link } from "@remix-run/react";
 import { z } from "zod";
 import { prisma } from "@dactylo/db";
-import { parse } from "@conform-to/zod";
+import { parseWithZod } from "@conform-to/zod";
 import { getUserId, requireUserId } from "~/services/auth.server";
 import { addVote } from "~/utils/votes.server";
 import { VideoCard } from "~/components/video-card";
@@ -50,8 +50,8 @@ export async function action({ request }: ActionFunctionArgs) {
 	const userId = await requireUserId(request);
 	const formData = await request.formData();
 
-	const submission = parse(formData, { schema: SignActionSchema });
-	if (submission.intent !== "submit" || !submission.value) {
+	const submission = parseWithZod(formData, { schema: SignActionSchema });
+	if (submission.status !== "success" || !submission.value) {
 		return json({ status: "error", error: submission }, { status: 400 });
 	}
 	const { videoId, intent } = submission.value;

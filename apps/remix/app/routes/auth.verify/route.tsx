@@ -1,5 +1,5 @@
-import { useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { getFormProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { useSearchParams, useActionData, Form } from "@remix-run/react";
@@ -40,10 +40,10 @@ export default function VerifyRoute() {
 	const verifyType = searchParams.get("type");
 	const [form, { code, redirectTo, target, type }] = useForm({
 		id: "verify-form",
-		constraint: getFieldsetConstraint(VerifySchema),
-		lastSubmission: actionData?.submission,
+		constraint: getZodConstraint(VerifySchema),
+		lastResult: actionData?.result,
 		onValidate({ formData }) {
-			return parse(formData, { schema: VerifySchema });
+			return parseWithZod(formData, { schema: VerifySchema });
 		},
 		defaultValue: {
 			code: searchParams.get("code") ?? "",
@@ -70,14 +70,14 @@ export default function VerifyRoute() {
 			<div className="mx-auto flex w-72 max-w-full flex-col justify-center gap-1">
 				<Form
 					method="POST"
-					{...form.props}
+					{...getFormProps(form)}
 					className="flex flex-col w-full gap-3"
 				>
 					<AuthenticityTokenInput />
 					<Input {...code} />
-					{code.error && (
+					{code.errors && (
 						<div className="bg-red-100 text-red-600 p-1 px-2 rounded-md">
-							{code.error}
+							{code.errors}
 						</div>
 					)}
 					<input {...type} type="hidden" />

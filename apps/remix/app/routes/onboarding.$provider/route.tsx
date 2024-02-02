@@ -1,5 +1,5 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { SubmissionResult, getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { invariant } from "@epic-web/invariant";
 import {
 	json,
@@ -97,12 +97,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 		email,
 		status: "idle",
 		submission: {
-			intent: "",
-			payload: (prefilledProfile ?? {}) as Record<string, unknown>,
+			status: "error",
+			initialValue: prefilledProfile ?? {},
 			error: {
 				"": typeof formError === "string" ? [formError] : [],
 			},
-		},
+		} as SubmissionResult,
 	});
 }
 
@@ -116,7 +116,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		request.headers.get("cookie"),
 	);
 
-	const submission = await parse(formData, {
+	const submission = await parseWithZod(formData, {
 		schema: SignupFormSchema.superRefine(async (data, ctx) => {
 			const existingUser = await prisma.user.findUnique({
 				where: { email },
@@ -142,11 +142,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		async: true,
 	});
 
-	if (submission.intent !== "submit") {
-		return json({ status: "idle", submission } as const);
-	}
-	if (!submission.value?.session) {
-		return json({ status: "error", submission } as const, { status: 400 });
+	if (submission.status !== "success") {
+		return json(
+			{ result: submission.reply() },
+			{ status: submission.status === "error" ? 400 : 200 },
+		);
 	}
 
 	const { session, redirectTo } = submission.value;
@@ -195,10 +195,10 @@ export default function SignupRoute() {
 		},
 	] = useForm({
 		id: "onboarding-provider-form",
-		constraint: getFieldsetConstraint(SignupFormSchema),
-		lastSubmission: actionData?.submission ?? data.submission,
+		constraint: getZodConstraint(SignupFormSchema),
+		lastResult: actionData?.result ?? data.submission,
 		onValidate({ formData }) {
-			return parse(formData, { schema: SignupFormSchema });
+			return parseWithZod(formData, { schema: SignupFormSchema });
 		},
 		shouldRevalidate: "onBlur",
 	});
@@ -216,19 +216,19 @@ export default function SignupRoute() {
 				<Form
 					method="POST"
 					className="mx-auto min-w-full max-w-lg sm:min-w-[368px] flex flex-col gap-2"
-					{...form.props}
+					{...getFormProps(form)}
 				>
-					{imageUrl.defaultValue ? (
+					{imageUrl.initialValue ? (
 						<div className="mb-4 flex flex-col items-center justify-center gap-4">
 							<img
-								src={imageUrl.defaultValue}
+								src={imageUrl.initialValue}
 								alt="Profile"
 								className="h-24 w-24 rounded-full"
 							/>
 							<p className="text-body-sm text-muted-foreground">
 								You can change your photo later
 							</p>
-							<input {...conform.input(imageUrl, { type: "hidden" })} />
+							<input {...getInputProps(imageUrl, { type: "hidden" })} />
 						</div>
 					) : null}
 
@@ -252,9 +252,9 @@ export default function SignupRoute() {
 							</Link>
 						</label>
 					</div>
-					{agreeToTermsOfServiceAndPrivacyPolicy.error ? (
+					{agreeToTermsOfServiceAndPrivacyPolicy.errors ? (
 						<div className="text-red-500 bg-red-100 p-3 rounded-md">
-							{agreeToTermsOfServiceAndPrivacyPolicy.error}
+							{agreeToTermsOfServiceAndPrivacyPolicy.errors}
 						</div>
 					) : null}
 

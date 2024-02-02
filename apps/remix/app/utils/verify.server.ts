@@ -5,7 +5,7 @@ import { getDomainUrl } from "~/utils/misc";
 import { generateTOTP, verifyTOTP } from "~/utils/totp.server";
 import { Submission } from "@conform-to/react";
 import { verifySessionStorage } from "~/utils/verification.server";
-import { parse } from "@conform-to/zod";
+import { parseWithZod } from "@conform-to/zod";
 import { invariant } from "@epic-web/invariant";
 
 export const codeQueryParam = "code";
@@ -91,7 +91,10 @@ export async function prepareVerification({
 export async function handleOnboardingVerification({
 	submission,
 }: VerifyFunctionArgs) {
-	invariant(submission.value, "submission.value should be defined by now");
+	invariant(
+		submission.status === "success",
+		"submission.value should be defined by now",
+	);
 	const verifySession = await verifySessionStorage.getSession();
 	verifySession.set(onboardingEmailSessionKey, submission.value.target);
 	return redirect("/auth/onboarding", {
@@ -131,12 +134,12 @@ export async function validateRequest(
 	request: Request,
 	body: URLSearchParams | FormData,
 ) {
-	const submission = await parse(body, {
+	const submission = await parseWithZod(body, {
 		schema: VerifySchema.superRefine(async (data, ctx) => {
 			const codeIsValid = await isCodeValid({
-				code: data.code,
-				target: data.target,
-				type: data.type,
+				code: data[codeQueryParam],
+				type: data[typeQueryParam],
+				target: data[targetQueryParam],
 			});
 			if (!codeIsValid) {
 				ctx.addIssue({
@@ -150,11 +153,11 @@ export async function validateRequest(
 		async: true,
 	});
 
-	if (submission.intent !== "submit") {
-		return json({ status: "idle", submission } as const);
-	}
-	if (!submission.value) {
-		return json({ status: "error", submission } as const, { status: 400 });
+	if (submission.status !== "success") {
+		return json(
+			{ result: submission.reply() },
+			{ status: submission.status === "error" ? 400 : 200 },
+		);
 	}
 
 	// this code path could be part of a loader (GET request), so we need to make
@@ -176,19 +179,19 @@ export async function validateRequest(
 
 	switch (submissionValue[typeQueryParam]) {
 		// case "reset-password": {
-		//   await deleteVerification();
-		//   return handleResetPasswordVerification({ request, body, submission });
+		// 	await deleteVerification();
+		// 	return handleResetPasswordVerification({ request, body, submission });
 		// }
 		case "onboarding": {
 			await deleteVerification();
 			return handleOnboardingVerification({ request, body, submission });
 		}
 		// case "change-email": {
-		//   await deleteVerification();
-		//   return handleChangeEmailVerification({ request, body, submission });
+		// 	await deleteVerification();
+		// 	return handleChangeEmailVerification({ request, body, submission });
 		// }
 		// case "2fa": {
-		//   return handleLoginTwoFactorVerification({ request, body, submission });
+		// 	return handleLoginTwoFactorVerification({ request, body, submission });
 		// }
 	}
 }
