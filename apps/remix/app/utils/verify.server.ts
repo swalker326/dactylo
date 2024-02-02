@@ -74,7 +74,7 @@ export async function prepareVerification({
 		type,
 		target,
 		...verificationConfig,
-		expiresAt: new Date(Date.now() + verificationConfig.period * 1000),
+		expiresAt: new Date(Date.now() + verificationConfig.period * 5000),
 	};
 	await prisma.verification.upsert({
 		where: { target_type: { target, type } },
@@ -115,8 +115,15 @@ export async function isCodeValid({
 }) {
 	const verification = await prisma.verification.findUnique({
 		where: {
-			target_type: { target, type },
-			OR: [{ expiresAt: { gt: new Date() } }, { expiresAt: null }],
+			target_type: {
+				target,
+				type,
+			},
+			AND: {
+				expiresAt: {
+					gt: new Date(),
+				},
+			},
 		},
 		select: { algorithm: true, secret: true, period: true, charSet: true },
 	});

@@ -1,4 +1,4 @@
-import { getFormProps, useForm } from "@conform-to/react";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 
 import { ActionFunctionArgs, json } from "@remix-run/node";
@@ -37,7 +37,10 @@ export async function loader() {
 export default function VerifyRoute() {
 	const actionData = useActionData<typeof action>();
 	const [searchParams] = useSearchParams();
-	const verifyType = searchParams.get("type");
+	const parseWithZodType = VerificationTypeSchema.safeParse(
+		searchParams.get("type"),
+	);
+	const verifyType = parseWithZodType.success ? parseWithZodType.data : null;
 	const [form, { code, redirectTo, target, type }] = useForm({
 		id: "verify-form",
 		constraint: getZodConstraint(VerifySchema),
@@ -74,15 +77,15 @@ export default function VerifyRoute() {
 					className="flex flex-col w-full gap-3"
 				>
 					<AuthenticityTokenInput />
-					<Input {...code} />
+					<Input {...getInputProps(code, { type: "text" })} />
 					{code.errors && (
 						<div className="bg-red-100 text-red-600 p-1 px-2 rounded-md">
 							{code.errors}
 						</div>
 					)}
-					<input {...type} type="hidden" />
-					<input {...target} type="hidden" />
-					<input {...redirectTo} type="hidden" />
+					<input {...getInputProps(type, { type: "hidden" })} />
+					<input {...getInputProps(target, { type: "hidden" })} />
+					<input {...getInputProps(redirectTo, { type: "hidden" })} />
 					<div className="w-full flex justify-center">
 						<Button>Submit</Button>
 					</div>
