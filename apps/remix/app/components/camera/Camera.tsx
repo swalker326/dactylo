@@ -151,6 +151,7 @@ export const CameraComponent = ({
 					<div className="w-20 flex items-center justify-center">
 						{mediaBlobURL && (
 							<button
+								className="rounded-full border p-2 bg-blue-500"
 								type="button"
 								onClick={() => {
 									setCameraActive(false);

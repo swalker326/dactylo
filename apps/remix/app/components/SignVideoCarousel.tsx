@@ -49,7 +49,11 @@ export function SignVideoCarousel({
 					.sort((vA, vB) => (vB.voteCount > vA.voteCount ? 1 : -1))
 					.map((video) => (
 						<swiper-slide key={video.id}>
-							<VideoCard video={video} userId={userId || null} />
+							{video ? (
+								<VideoCard video={video} userId={userId || null} />
+							) : (
+								<>No Sign Bad</>
+							)}
 						</swiper-slide>
 					))}
 			</swiper-container>
