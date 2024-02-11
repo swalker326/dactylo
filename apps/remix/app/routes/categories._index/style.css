@@ -1,0 +1,4 @@
+swiper-slide {
+  @apply min-h-72;
+  @apply flex flex-col justify-center items-center;
+}
