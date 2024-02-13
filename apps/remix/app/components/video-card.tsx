@@ -102,6 +102,8 @@ function VoteButtons({
 				videoId: videoId,
 				voteDate: new Date(),
 				voteType: intent,
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			};
 		} else if (currentVote.voteType === intent) {
 			currentVote = undefined;
@@ -158,7 +160,7 @@ function VoteButtons({
 									<ThumbsUp size={24} className={iconBaseStyle} />
 								</span>
 							</button>
-							<span className="text-xl font-bold w-[3ch] text-center">
+							<span className="text-lg font-bold w-[3ch] text-center">
 								{String(count).padStart(2, " ")}
 							</span>
 							<button

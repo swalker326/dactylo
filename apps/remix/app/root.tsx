@@ -1,6 +1,5 @@
 import {
 	Links,
-	LiveReload,
 	Meta,
 	Outlet,
 	Scripts,
@@ -78,7 +77,7 @@ export default function App() {
 				<AuthenticityTokenProvider token={data.csrfToken}>
 					<div className="min-h-[100svh] flex flex-col">
 						<Header user={data.user || null} />
-						<div className="flex flex-col container p-0 sm:p-4 max-w-full md:max-w-3xl flex-grow mt-16">
+						<div className="flex flex-col container p-0 sm:p-4 max-w-full md:max-w-3xl flex-grow mt-20 md:mt-28">
 							<Outlet />
 						</div>
 						<footer className=" hidden md:flex  justify-between items-center px-2 mt-2">
@@ -88,7 +87,6 @@ export default function App() {
 					<Toaster />
 					<ScrollRestoration />
 					<Scripts />
-					<LiveReload />
 				</AuthenticityTokenProvider>
 				<div id="camera-root" />
 				<NavProgress />

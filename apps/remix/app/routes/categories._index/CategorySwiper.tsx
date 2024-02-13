@@ -15,7 +15,7 @@ export function CategorySwiper({
 		<div className="bg-white py-3 rounded-md">
 			<Link
 				to={`${category.slug}`}
-				className="px-1.5 text-3xl text-blue-700 dark:text-blue-500 font-bold"
+				className="px-1.5 text-2xl text-blue-700 dark:text-blue-500 font-bold"
 			>
 				{category.name}
 			</Link>
@@ -32,7 +32,8 @@ export function CategorySwiper({
 					<swiper-slide key={sign.id}>
 						{sign.videos.length === 0 ? (
 							<h4>
-								No videos for {sign.term.word} 😿{" "}
+								No videos for{" "}
+								<span className="font-bold">{sign.term.word}</span> 😿{" "}
 								<Link
 									className="text-blue-500"
 									to={`/dashboard/create?signId=${sign.id}`}
@@ -40,17 +41,17 @@ export function CategorySwiper({
 									create one!
 								</Link>
 							</h4>
-							// <div className="flex justify-center h-full border border-green-500">
-							// </div>
 						) : (
-							<>
-								<h3 className="capitalize px-1.5">{sign.term.word}</h3>
+							<div className="relative">
+								<h3 className="absolute capitalize px-1.5 left-1/2 -translate-x-1/2 top-5 bg-white text-lg rounded-md">
+									{sign.term.word}
+								</h3>
 								<VideoCard
 									key={sign.videos[0].id}
 									video={sign.videos[0]}
 									userId={userId || null}
 								/>
-							</>
+							</div>
 						)}
 					</swiper-slide>
 				))}

@@ -15,7 +15,7 @@ export function SignVideoCarousel({
 	return (
 		<div className="bg-white rounded-lg">
 			<div className="flex justify-between px-1.5 items-center">
-				<h2 className="py-3 md:py-6 text-4xl capitalize font-bold">
+				<h2 className="py-3 md:py-6 text-2xl capitalize font-bold">
 					{sign.term.word}
 				</h2>
 				<Popover>

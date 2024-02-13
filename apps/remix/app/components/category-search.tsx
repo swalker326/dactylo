@@ -1,6 +1,6 @@
 export function CategorySearch() {
 	return (
-		<div className="flex justify-center p-1.5 md:px-0 md:pb-3">
+		<div className="flex justify-center p-1.5 md:p-0 md:pb-3">
 			<input
 				type="text"
 				placeholder="Search for a category"

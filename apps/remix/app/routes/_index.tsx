@@ -97,7 +97,7 @@ export default function Index() {
 					<Input
 						name="search"
 						defaultValue={searchParams.get("search") || ""}
-						className="h-14 text-xl"
+						className="h-14 text-lg"
 						placeholder="Find a Sign..."
 					/>
 
