@@ -56,7 +56,11 @@ export default function LoginRoute() {
 							{form.errors}
 						</div>
 					)}
-					<Form method="POST" {...getFormProps(form)}>
+					<Form
+						method="POST"
+						{...getFormProps(form)}
+						className="bg-white rounded-md p-1.5"
+					>
 						<AuthenticityTokenInput />
 						<div className="flex flex-col gap-y-2 w-full pb-2">
 							<Input placeholder="Email" type="email" name="email" required />
@@ -96,8 +100,8 @@ export default function LoginRoute() {
 						</div>
 					</Form>
 					<div className="relative py-2">
-						<div className="text-body-xs uppercase absolute left-1/2 bg-gray-100 px-3 text-gray-600 opacity-55 -translate-x-1/2 top-1/2 -translate-y-1/2">
-							<p>or login with</p>
+						<div className="text-nowrap text-xs uppercase absolute left-1/2 bg-gray-100 px-3 text-gray-800  -translate-x-1/2 top-1/2 -translate-y-1/2">
+							<p className="text-center">or login/create an account with</p>
 						</div>
 						<Separator className="my-4" />
 					</div>
@@ -114,8 +118,8 @@ export default function LoginRoute() {
 						</div>
 					</div>
 					<div className="relative py-2">
-						<div className="text-nowrap text-body-xs uppercase absolute left-1/2 bg-gray-100 px-3 top-1/2 -translate-y-1/2 text-gray-600 -translate-x-1/2">
-							<p className="opacity-55">or create an account</p>
+						<div className="text-nowrap text-xs uppercase absolute left-1/2 bg-gray-100 px-3 text-gray-800  -translate-x-1/2 top-1/2 -translate-y-1/2">
+							<p className="text-center">or create an account with email</p>
 						</div>
 						<Separator className="my-4" />
 					</div>
