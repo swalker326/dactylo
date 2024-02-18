@@ -29,6 +29,9 @@ function NavProgress() {
 	return (
 		<div
 			role="progressbar"
+			aria-valuemax={1}
+			aria-valuemin={0}
+			aria-valuenow={delayedPending ? 0.5 : 1}
 			aria-hidden={delayedPending ? undefined : true}
 			aria-valuetext={delayedPending ? "Loading" : undefined}
 			className="fixed inset-x-0 left-0 top-0 z-50 h-[0.20rem] animate-pulse"
