@@ -70,7 +70,7 @@ export const CameraComponent = ({
 	if (!devices.length) {
 		return (
 			<div className="flex flex-col items-center justify-center">
-				<p className="text-2xl text-center">No camera found</p>
+				<p className="text-lg text-center">No camera found</p>
 				<Button onClick={initCamera} type="button">
 					Retry
 				</Button>

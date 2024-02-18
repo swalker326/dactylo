@@ -30,7 +30,6 @@ export default function DashboardIndex() {
 
 	return (
 		<div className="flex flex-col">
-			<h2 className="text-4xl pb-3">Your Videos</h2>
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				{videos.map((video) => (
 					<div key={video.id} className="w-full">
@@ -38,20 +37,20 @@ export default function DashboardIndex() {
 							<div className="bg-white dark:bg-gray-700 dark:text-white rounded-lg overflow-hidden">
 								<div className="flex items-center justify-between px-1.5">
 									<Link to={`/sign/${video.sign.id}`}>
-										<h2 className="text-4xl extra-bold py-2 capitalize">
+										<h2 className="text-2xl extra-bold py-2 capitalize">
 											{video.sign?.term.word}
 										</h2>
 									</Link>
 									{video.status === "UNDER_REVIEW" ? (
-										<span className="text-orange-500 text-xl font-bold">
+										<span className="text-orange-500 text-lg font-bold">
 											Pending
 										</span>
 									) : video.status === "REMOVED" ? (
-										<span className="text-red-500 text-xl font-bold">
+										<span className="text-red-500 text-lg font-bold">
 											Removed
 										</span>
 									) : (
-										<span className="text-green-500 text-xl font-bold">
+										<span className="text-green-500 text-lg font-bold">
 											Approved
 										</span>
 									)}

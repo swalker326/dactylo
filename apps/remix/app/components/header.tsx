@@ -3,20 +3,20 @@ import { Form, Link, NavLink, useFetcher, useLocation } from "@remix-run/react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { type loader as rootLoader } from "~/root";
-import {
-	Home,
-	LayoutDashboard,
-	TrendingUp,
-	UserIcon,
-	X,
-	Menu,
-} from "lucide-react";
+import { Home, LayoutDashboard, UserIcon, X, Menu, Plus } from "lucide-react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuPortal,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 export type RootUser = Awaited<
 	ReturnType<Awaited<ReturnType<typeof rootLoader>>["json"]>
@@ -32,20 +32,24 @@ const NAV_LINKS: Record<
 > = {
 	"/": {
 		title: "Home",
-		icon: <Home size={24} />,
+		icon: <Home size={28} />,
 	},
 	"/categories": {
 		title: "Categories",
-		icon: <LayoutDashboard size={24} />,
+		icon: <LayoutDashboard size={28} />,
 	},
-	"/trending": {
-		title: "Trending",
-		icon: <TrendingUp size={24} />,
-	},
+	// "/trending": {
+	// 	title: "Trending",
+	// 	icon: <TrendingUp size={28} />,
+	// },
 	"/dashboard": {
 		condition: (user) => Boolean(user),
 		title: "Dashboard",
-		icon: <UserIcon size={24} />,
+		icon: <UserIcon size={28} />,
+	},
+	"/sign/create": {
+		title: "Create Sign",
+		icon: <Plus size={28} />,
 	},
 };
 
@@ -65,7 +69,7 @@ export function Header({ user }: { user: RootUser | null }) {
 					<div>
 						<ul className="flex gap-6 items-center">
 							{Object.entries(NAV_LINKS).map(([path, values]) => {
-								const { icon } = values;
+								const { icon, title } = values;
 								if (values.condition && values.condition(user) === false) {
 									return null;
 								}
@@ -74,14 +78,13 @@ export function Header({ user }: { user: RootUser | null }) {
 										<NavLink
 											to={path}
 											className={({ isActive }) =>
-												`${
-													isActive
-														? "text-blue-500 font-bold "
-														: "text-grey-200"
-												}`
+												`${isActive ? "text-blue-500 " : "text-grey-200"}`
 											}
 										>
-											{icon}
+											<div className="flex flex-col items-center">
+												{icon}
+												<h4>{title}</h4>
+											</div>
 										</NavLink>
 									</li>
 								);

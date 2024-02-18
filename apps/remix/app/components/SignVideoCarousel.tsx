@@ -31,7 +31,7 @@ export function SignVideoCarousel({
 					</PopoverTrigger>
 					<PopoverContent className="w-80">
 						{sign?.definition}
-						<h4 className="text-xl py-2 font-bold">Example</h4>
+						<h4 className="text-lg py-2 font-bold">Example</h4>
 						{sign?.example}
 					</PopoverContent>
 				</Popover>

@@ -47,6 +47,7 @@ model Video {
   url           String
   user          User        @relation(fields: [userId], references: [id])
   status        VideoStatus
+  approvedOn    DateTime?
   sign          Sign        @relation(fields: [signId], references: [id])
   votes         Vote[]
   favorites     Favorite[]

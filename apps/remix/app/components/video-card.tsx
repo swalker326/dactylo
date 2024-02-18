@@ -144,7 +144,7 @@ function VoteButtons({
 				<input type="hidden" name="intent" value={intent} />
 				{variant === "default" ? (
 					<div className="py-4 px-1.5">
-						<div className="flex gap-x-1 rounded-xl bg-gray-300 dark:bg-gray-800 py-4 px-2 items-center w-full justify-center">
+						<div className="flex gap-x-1 rounded-xl bg-gray-300 dark:bg-gray-800 py-2 px-2 items-center w-full justify-center">
 							<button
 								aria-label="upvote"
 								value="UPVOTE"

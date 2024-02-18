@@ -35,6 +35,7 @@ export default function CategoriesRoute() {
 						<ul>
 							{sign.videos.map((video) => (
 								<video
+								  loop
 									key={video.id}
 									src={getVideoUrl(video.url, "720", "ws")}
 									autoPlay

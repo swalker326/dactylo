@@ -25,7 +25,6 @@ export const meta: MetaFunction = () => {
 export async function loader({ request }: LoaderFunctionArgs) {
 	const maybeUser = await getUserId(request);
 	const searchTerm = new URL(request.url).searchParams.get("search");
-	console.log("SEARCH TERM: ", searchTerm);
 	if (searchTerm) {
 		const signs = await prisma.sign.findMany({
 			where: {
@@ -145,16 +144,16 @@ export default function Index() {
 						),
 					)
 				) : (
-					<div>
-						<h1 className="text-3xl font-bold text-center">
+					<div className="bg-white rounded-md p-2">
+						<h1 className="text-xl font-bold text-center">
 							No Signs Found 😢
 						</h1>
 						<div className="flex items-center justify-center p-3">
 							<Link
-								className="w-1/2 items-center gap-1 flex justify-center p-3 text-xl font-bold  rounded-md hover:bg-blue-600 bg-blue-500 hover:text-white text-white"
+								className="w-1/2 items-center gap-1 flex justify-center p-3 text-lg font-bold  rounded-md hover:bg-blue-600 bg-blue-500 hover:text-white text-white"
 								to="/sign/create"
 							>
-								<span>Create One</span> <Plus />
+								<span>Request One</span> <Plus />
 							</Link>
 						</div>
 					</div>
