@@ -11,13 +11,6 @@ import {
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "~/components/ui/tooltip";
-
 export type RootUser = Awaited<
 	ReturnType<Awaited<ReturnType<typeof rootLoader>>["json"]>
 >["user"];
