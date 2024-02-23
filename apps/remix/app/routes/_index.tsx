@@ -2,6 +2,7 @@ import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
 import {
 	Form,
 	Link,
+	useFetcher,
 	useNavigation,
 	useSearchParams,
 	useSubmit,
@@ -14,6 +15,8 @@ import { useDebounce } from "~/hooks/useDebounce";
 import { getUserId } from "~/services/auth.server";
 import { Image, Plus, PlusCircleIcon } from "lucide-react";
 import { SignVideoCarousel } from "~/components/SignVideoCarousel";
+import { useEffect, useRef, useState } from "react";
+import { fetchSignsForInfiniteScroll } from "~/components/infinite-scroll.server";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -24,7 +27,9 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const maybeUser = await getUserId(request);
-	const searchTerm = new URL(request.url).searchParams.get("search");
+	const url = new URL(request.url);
+	const searchTerm = url.searchParams.get("search");
+
 	if (searchTerm) {
 		const signs = await prisma.sign.findMany({
 			where: {
@@ -56,35 +61,75 @@ export async function loader({ request }: LoaderFunctionArgs) {
 			}),
 		);
 
-		return typedjson({ signs, userId: maybeUser });
+		return typedjson({ signs, nextCursor: null, userId: maybeUser });
 	}
-	const signs = await prisma.sign.findMany({
-		//* Comment this 'where' out to see empty signs
-		where: {
-			videos: { some: { status: "ACTIVE" } },
-		},
-		include: {
-			term: true,
-			videos: {
-				where: { status: "ACTIVE" },
-				include: { votes: true, favorites: true },
-			},
-		},
-		take: 10,
-		orderBy: { updatedAt: "desc" },
+	const { signs, nextCursor } = await fetchSignsForInfiniteScroll({
+		pageSize: 5,
+		cursor: undefined,
 	});
-	return typedjson({ signs, userId: maybeUser });
+	return typedjson({ signs, nextCursor, userId: maybeUser });
+}
+export async function action({ request }: LoaderFunctionArgs) {
+	const formData = await request.formData();
+	const cursor = formData.get("cursor");
+	const { signs, nextCursor } = await fetchSignsForInfiniteScroll({
+		pageSize: 5,
+		cursor: cursor as string,
+	});
+	return typedjson({ signs, nextCursor });
 }
 
 export default function Index() {
-	const [searchParams] = useSearchParams();
-	const navigation = useNavigation();
+	const { signs, nextCursor, userId } = useTypedLoaderData<typeof loader>();
 	const submit = useSubmit();
-	const { signs, userId } = useTypedLoaderData<typeof loader>();
+	const [currentCursor, setCurrentCursor] = useState(nextCursor);
+	const [searchParams] = useSearchParams();
+	const loadMoreRef = useRef<HTMLDivElement>(null);
+	const [currentSigns, setCurrentSigns] = useState<typeof signs>(signs);
+	const navigation = useNavigation();
 	const isSearching = navigation.formAction?.includes("/?index");
+	const {
+		data,
+		submit: fetcherSubmit,
+		state: loadMoreState,
+	} = useFetcher<typeof loader>({
+		key: "load-more",
+	});
 	const handleFormChange = useDebounce((form: HTMLFormElement) => {
 		submit(form);
 	}, 500);
+	const loadMore = async () => {
+		fetcherSubmit({ cursor: currentCursor }, { method: "POST" });
+	};
+
+	// Add Listeners to scroll and client resize
+	useEffect(() => {
+		if (isSearching) return;
+		const observer = new IntersectionObserver(
+			async (entries) => {
+				if (entries[0].isIntersecting && nextCursor) {
+					// Fetch the next batch of posts
+					if (!currentCursor) return;
+					if (loadMoreState === "idle") {
+						loadMore().then(() => {
+							if (data && data.signs.length > 0) {
+								setCurrentCursor(data.nextCursor);
+								setCurrentSigns((prev) => [...prev, ...data.signs]);
+							}
+						});
+					}
+				}
+			},
+			{ rootMargin: "200px", threshold: 1.0 },
+		);
+
+		if (loadMoreRef.current) {
+			observer.observe(loadMoreRef.current);
+		}
+
+		return () => observer.disconnect();
+	}, [nextCursor, loadMore]);
+
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="bg-white w-full p-1.5 py-3 rounded-lg">
@@ -128,8 +173,8 @@ export default function Index() {
 				</div>
 			</div>
 			<div className="grid grid-cols-1 gap-4">
-				{signs.length > 0 ? (
-					signs.map((sign) =>
+				{currentSigns.length > 0 ? (
+					currentSigns.map((sign) =>
 						sign.videos.length > 0 ? (
 							<SignVideoCarousel key={sign.id} sign={sign} userId={userId} />
 						) : (
@@ -145,9 +190,7 @@ export default function Index() {
 					)
 				) : (
 					<div className="bg-white rounded-md p-2">
-						<h1 className="text-xl font-bold text-center">
-							No Signs Found 😢
-						</h1>
+						<h1 className="text-xl font-bold text-center">No Signs Found 😢</h1>
 						<div className="flex items-center justify-center p-3">
 							<Link
 								className="w-1/2 items-center gap-1 flex justify-center p-3 text-lg font-bold  rounded-md hover:bg-blue-600 bg-blue-500 hover:text-white text-white"
@@ -158,6 +201,13 @@ export default function Index() {
 						</div>
 					</div>
 				)}
+			</div>
+			<div ref={loadMoreRef} className="flex justify-center ">
+				<Spinner
+					className={`animate-spin -ml-1 mr-3 h-6 w-6 text-blue-500 ${
+						loadMoreState === "submitting" ? "opacity-100" : "opacity-0"
+					} ease-out duration-200`}
+				/>
 			</div>
 		</div>
 	);
