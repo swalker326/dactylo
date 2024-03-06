@@ -1,15 +1,26 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Form, Link, NavLink, useFetcher, useLocation } from "@remix-run/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { type loader as rootLoader } from "~/root";
-import { Home, LayoutDashboard, UserIcon, X, Menu, Plus } from "lucide-react";
+import {
+	Home,
+	LayoutDashboard,
+	UserIcon,
+	X,
+	Menu,
+	Plus,
+	SearchIcon,
+} from "lucide-react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuPortal,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Input } from "./ui/input";
+import { flushSync } from "react-dom";
+import { Search } from "~/components/SearchDialog";
 
 export type RootUser = Awaited<
 	ReturnType<Awaited<ReturnType<typeof rootLoader>>["json"]>
@@ -46,18 +57,32 @@ const NAV_LINKS: Record<
 	},
 };
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export function Header({ user }: { user: RootUser | null }) {
 	const [open, setOpen] = useState(false);
+	const [isSearchVisible, setSearchVisible] = useState(false);
 	const isLoggedIn = Boolean(user);
+	const searchInput = useRef<HTMLInputElement>(null);
 	const loc = useLocation();
 	return (
 		<header className="flex justify-between items-center px-2 py-0.5 sm:py-2 bg-white fixed w-full z-10">
 			<div className="flex justify-between w-full items-center">
-				<NavLink to="/">
-					<h1 className="text-3xl">
-						<span className="font-bold text-blue-600">dact</span>ylo
-					</h1>
-				</NavLink>
+				<div className="flex gap-4 items-center relative">
+					<NavLink to="/">
+						<h1 className="text-2xl">
+							<span className="font-bold text-blue-600">dact</span>ylo
+						</h1>
+					</NavLink>
+					<Search />
+					{/* <Input
+						ref={searchInput}
+						// className={`absolute focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-700 ${
+						// 	isSearchVisible ? "opacity-100" : "opacity-0"
+						// } -right-full border-l-0 rounded-none rounded-r-sm transition-opacity duration-200 ease-in-out`}
+						placeholder="Search"
+						className="absolute  -right-full translate-x-3 bottom-3 "
+					/> */}
+				</div>
 				<div className="hidden sm:flex">
 					<div>
 						<ul className="flex gap-6 items-center">

@@ -105,13 +105,13 @@ export default function SignIdRoute() {
 				</div>
 			)}
 			<div className="flex flex-col gap-y-2 px-1.5 md:px-0 py-4">
-				<h3 className="text-3xl">More Videos...</h3>
+				<h3 className="text-xl">More Videos...</h3>
 				<Link
 					to={`/dashboard/create?signId=${sign.id}`}
 					className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md py-1 px-8"
 				>
 					<div className="flex justify-center items-center w-full h-full py-2 gap-2">
-						<p className="text-xl">Add a Video</p>
+						<p className="">Add a Video</p>
 						<PlusCircleIcon size={22} />
 					</div>
 				</Link>

@@ -50,7 +50,7 @@ export default function SignVideoRoute() {
 	return (
 		<div>
 			<div className="space-y-1 p-1.5 pb-3">
-				<h1 className="text-6xl capitalize">{video.sign.term.word}</h1>
+				<h1 className="text-4xl capitalize">{video.sign.term.word}</h1>
 				<h2 className="text-body-lg">{video.sign.definition}</h2>
 			</div>
 			<div className="relative ">

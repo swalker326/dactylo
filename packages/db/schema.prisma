@@ -121,10 +121,11 @@ model Vote {
 }
 
 model Category {
-  id    String @id @default(cuid())
-  slug  String @unique
-  name  String
-  signs Sign[] @relation("SignCategories")
+  id          String @id @default(cuid())
+  slug        String @unique
+  name        String
+  signs       Sign[] @relation("SignCategories")
+  description String @default("") @db.VarChar(2000)
 }
 
 enum VideoStatus {

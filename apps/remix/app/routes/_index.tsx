@@ -13,10 +13,12 @@ import { Input } from "~/components/ui/input";
 import { prisma } from "@dactylo/db";
 import { useDebounce } from "~/hooks/useDebounce";
 import { getUserId } from "~/services/auth.server";
-import { Image, Plus, PlusCircleIcon } from "lucide-react";
+import { Image, Plus, PlusCircleIcon, SearchIcon } from "lucide-react";
 import { SignVideoCarousel } from "~/components/SignVideoCarousel";
 import { useEffect, useRef, useState } from "react";
 import { fetchSignsForInfiniteScroll } from "~/components/infinite-scroll.server";
+import { Search } from "~/components/SearchDialog";
+import { Button } from "~/components/ui/button";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -133,43 +135,39 @@ export default function Index() {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="bg-white w-full p-1.5 py-3 rounded-lg">
-				<Form
-					method="GET"
-					onChange={(e) => handleFormChange(e.currentTarget)}
-					className="relative"
-				>
-					<Input
-						name="search"
-						defaultValue={searchParams.get("search") || ""}
-						className="h-14 text-lg"
-						placeholder="Find a Sign..."
-					/>
-
-					<div
-						className={`absolute top-1/2 right-2 -translate-y-1/2 transition-all duration-400 ease-in-out ${
-							isSearching ? "opacity-100" : "opacity-0"
-						}`}
-					>
-						<Spinner className=" animate-spin  -ml-1 mr-3 h-6 w-6 text-black" />
+				<div className="flex justify-around w-full px-10 py-3 font-bold">
+					<div className="p-2 hover:bg-gray-100 rounded-md">
+						<Search
+							trigger={
+								<div className="text-blue-500 cursor-pointer">
+									<div className="flex items-center gap-2 flex-col">
+										<SearchIcon aria-label="view sign info" size={23} />
+										<p className="text-black dark:text-white">Search</p>
+									</div>
+								</div>
+							}
+						/>
 					</div>
-				</Form>
-				<div className="flex justify-center gap-12 bg-white w-full px-10 py-3 font-bold">
-					<Link to="/dashboard/create">
-						<div className="text-blue-500">
-							<div className="flex items-center gap-2">
-								<PlusCircleIcon aria-label="view sign info" size={23} />
-								<p className="text-black dark:text-white">Create</p>
+					<div className="p-2 hover:bg-gray-100 rounded-md">
+						<Link to="/dashboard/create">
+							<div className="text-blue-500">
+								<div className="flex flex-col items-center gap-2">
+									<PlusCircleIcon aria-label="view sign info" size={23} />
+									<p className="text-black dark:text-white">Create</p>
+								</div>
 							</div>
-						</div>
-					</Link>
-					<Link to="/dashboard">
-						<div className="text-green-600">
-							<div className="flex items-center gap-2">
-								<Image size={23} />
-								<p className="text-black dark:text-white">Your Videos</p>
+						</Link>
+					</div>
+					<div className="p-2 hover:bg-gray-100 rounded-md">
+						<Link to="/dashboard">
+							<div className="text-green-600">
+								<div className="flex items-center gap-2 flex-col">
+									<Image size={23} />
+									<p className="text-black dark:text-white">Your Videos</p>
+								</div>
 							</div>
-						</div>
-					</Link>
+						</Link>
+					</div>
 				</div>
 			</div>
 			<div className="grid grid-cols-1 gap-4">
