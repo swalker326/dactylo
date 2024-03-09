@@ -32,7 +32,7 @@ export class Server {
 	queue: EncoderQueue = new EncoderQueue();
 	worker = new EncoderWorker(this.queue);
 	constructor(options: Options) {
-		this.port = options.port || 8080;
+		this.port = options.port || 5000;
 	}
 	start() {
 		this.loadRoutes("./routes/");
