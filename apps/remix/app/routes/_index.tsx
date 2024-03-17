@@ -1,4 +1,5 @@
 import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
+import { prisma } from "@dactylo/db";
 import {
 	Form,
 	Link,
@@ -10,7 +11,7 @@ import {
 import Spinner from "~/icons/spinner.svg?react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Input } from "~/components/ui/input";
-import { prisma } from "@dactylo/db";
+// import { prisma } from "@dactylo/db";
 import { useDebounce } from "~/hooks/useDebounce";
 import { getUserId } from "~/services/auth.server";
 import { Image, Plus, PlusCircleIcon, SearchIcon } from "lucide-react";
@@ -18,7 +19,7 @@ import { SignVideoCarousel } from "~/components/SignVideoCarousel";
 import { useEffect, useRef, useState } from "react";
 import { fetchSignsForInfiniteScroll } from "~/components/infinite-scroll.server";
 import { Search } from "~/components/SearchDialog";
-import { Button } from "~/components/ui/button";
+import { signs as DBsigns } from "@dactylo/drizzle-db/models/signs";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -69,7 +70,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		pageSize: 5,
 		cursor: undefined,
 	});
-	return typedjson({ signs, nextCursor, userId: maybeUser });
+	return typedjson({ signs, nextCursor: 1, userId: maybeUser });
 }
 export async function action({ request }: LoaderFunctionArgs) {
 	const formData = await request.formData();

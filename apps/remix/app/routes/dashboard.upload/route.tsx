@@ -12,7 +12,7 @@ const ResponseSchema = z.object({
 	id: z.string(),
 });
 
-const transcoderUrl = process.env.TRANSCODER_URL || "http://localhost:8080";
+const transcoderUrl = process.env.TRANSCODER_URL || "http://localhost:5000";
 
 export async function action({ request }: ActionFunctionArgs) {
 	const userId = await requireUserId(request);

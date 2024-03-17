@@ -19,5 +19,6 @@ export async function searchFor(searchTerm: string) {
 			name: { contains: searchTerm },
 		},
 	});
-  return { signs, categories };
+	console.log(signs, categories);
+	return { signs, categories };
 }

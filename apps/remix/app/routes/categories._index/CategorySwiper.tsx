@@ -3,6 +3,7 @@ import { UseDataFunctionReturn } from "remix-typedjson";
 import { VideoCard } from "~/components/video-card";
 import { loader } from "~/routes/categories._index/route";
 import "./style.css";
+import { DataFunctionArgs } from "remix-typedjson/dist/remix";
 
 export function CategorySwiper({
 	category,
@@ -28,7 +29,7 @@ export function CategorySwiper({
 				navigation={true}
 				pagination={true}
 			>
-				{category.signs.map((sign) => (
+				{category.signs.map(({ sign }) => (
 					<swiper-slide key={sign.id}>
 						{sign.videos.length === 0 ? (
 							<h4>

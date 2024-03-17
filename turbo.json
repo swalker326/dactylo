@@ -7,7 +7,7 @@
     "PORT"
   ],
   "pipeline": {
-    "db:generate": {
+    "generate-types": {
       "cache": false
     },
     "db:push": {
@@ -40,7 +40,7 @@
     },
     "dev": {
       "dependsOn": [
-        "^db:generate"
+        "generate-types"
       ],
       "cache": false,
       "persistent": true

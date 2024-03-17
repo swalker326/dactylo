@@ -1,11 +1,13 @@
 import { prisma } from "@dactylo/db/index";
-import { Link, MetaFunction } from "@remix-run/react";
+import { MetaFunction, useLoaderData } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { CategorySearch } from "~/components/category-search";
 import { getVideoUrl } from "~/utils/video";
 import { CategorySwiper } from "./CategorySwiper";
 import { getUserId } from "~/services/auth.server";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { db } from "@dactylo/drizzle-db";
+import { categories as DBcategories } from "@dactylo/drizzle-db/models/categories";
 
 export const meta: MetaFunction = () => {
 	return [{ title: "Categories" }];
@@ -13,23 +15,39 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const maybeUserId = await getUserId(request);
-	const categories = await prisma.category.findMany({
-		where: { signs: { some: {} } },
-		include: {
+	const categories = await db.query.categories.findMany({
+		with: {
 			signs: {
-				take: 5,
-				include: {
-					term: true,
-					videos: {
-						where: { status: "ACTIVE" },
-						orderBy: { voteCount: "desc" },
-						include: { votes: true, favorites: true },
+				with: {
+					sign: {
+						with: {
+							term: true,
+							videos: { with: { votes: true, favorites: true } },
+						},
 					},
 				},
 			},
 		},
-		take: 10,
 	});
+
+	// const categories = await prisma.category.findMany({
+	// 	// where: { signs: { some: {} } },
+	// 	include: {
+	// 		signs: {
+	// 			take: 5,
+	// 			include: {
+	// 				term: true,
+	// 				videos: {
+	// 					// where: { status: "ACTIVE" },
+	// 					orderBy: { voteCount: "desc" },
+	// 					include: { votes: true, favorites: true },
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// 	take: 10,
+	// });
+	console.log("CATEGORIES", categories);
 	return typedjson({ categories, userId: maybeUserId });
 }
 export default function CategoriesRoute() {
