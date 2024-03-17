@@ -1,10 +1,12 @@
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createId } from "@paralleldrive/cuid2";
+import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
 
-export const categories = sqliteTable("Category", {
-  id: text("id").primaryKey().$defaultFn(createId),
-  slug: text("slug").notNull(),
-  name: text("name").notNull(),
-  description: text("description").default("").notNull(),
-  createdAt: text("createdAt").default("CURRENT_TIMESTAMP").notNull(),
+export const category = sqliteTable("category", {
+	id: int("id").primaryKey({ autoIncrement: true }),
+	slug: text("slug").notNull(),
+	name: text("name").notNull(),
+	description: text("description").default("").notNull(),
+	updatedAt: text("updatedAt"),
+	createdAt: text("createdAt")
+		.$defaultFn(() => new Date().toISOString())
+		.notNull(),
 });
