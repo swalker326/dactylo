@@ -1,6 +1,6 @@
 export const slugerize = (str: string) => {
-	return str
-		.toLowerCase()
-		.replace(/[^\w ]+/g, "")
-		.replace(/ +/g, "-");
+  return str
+    .toLowerCase()
+    .replace(/[^\w ]+/g, "")
+    .replace(/ +/g, "-");
 };
