@@ -1,105 +1,105 @@
-import * as terms from "./term";
-import * as signs from "./sign";
-import * as videos from "./videos";
-import * as reports from "./reports";
-import * as favorites from "./favorites";
-import * as users from "./users";
-import * as votes from "./votes";
-import * as categories from "./categories";
-import * as videoStatuses from "./video-statuses";
-import * as voteTypes from "./vote-types";
-import * as userImages from "./user-images";
-import * as searches from "./searches";
-import * as searchSigns from "./search-signs";
-import * as requestStatuses from "./request-statuses";
-import * as requestTypes from "./request-types";
-import * as requests from "./requests";
-import * as passwords from "./passwords";
-import * as sessions from "./sessions";
-import * as permissions from "./permissions";
-import * as roles from "./roles";
-import * as verifications from "./verifications";
-import * as connections from "./connections";
-import * as termsRelations from "./term-relations";
-import * as signsRelations from "./sign-relations";
-import * as videosRelations from "./videos-relations";
-import * as reportsRelations from "./reports-relations";
-import * as favoritesRelations from "./favorites-relations";
-import * as usersRelations from "./users-relations";
-import * as votesRelations from "./votes-relations";
-import * as categoriesRelations from "./categories-relations";
-import * as videoStatusesRelations from "./video-statuses-relations";
-import * as voteTypesRelations from "./vote-types-relations";
-import * as userImagesRelations from "./user-images-relations";
-import * as searchesRelations from "./searches-relations";
-import * as searchSignsRelations from "./search-signs-relations";
-import * as requestStatusesRelations from "./request-statuses-relations";
-import * as requestTypesRelations from "./request-types-relations";
-import * as requestsRelations from "./requests-relations";
-import * as passwordsRelations from "./passwords-relations";
-import * as sessionsRelations from "./sessions-relations";
-import * as permissionsRelations from "./permissions-relations";
-import * as rolesRelations from "./roles-relations";
-import * as connectionsRelations from "./connections-relations";
-import * as categoriesToSigns from "./categories-to-signs";
-import * as signsToSigns from "./sign-to-sign";
-import * as rolesToUsers from "./roles-to-users";
-import * as permissionsToRoles from "./permissions-to-roles";
-import * as categoriesToSignsRelations from "./categories-to-signs-relations";
-import * as signsToSignsRelations from "./sign-to-sign-relations";
-import * as rolesToUsersRelations from "./roles-to-users-relations";
-import * as permissionsToRolesRelations from "./permissions-to-roles-relations";
+import * as term from "./term";
+import * as sign from "./sign";
+import * as video from "./video";
+import * as report from "./report";
+import * as favorite from "./favorite";
+import * as user from "./user";
+import * as vote from "./vote";
+import * as category from "./category";
+import * as videoStatus from "./video-status";
+import * as voteType from "./vote-type";
+import * as userImage from "./user-image";
+import * as search from "./search";
+import * as searchSign from "./search-sign";
+import * as requestStatus from "./request-status";
+import * as requestType from "./request-type";
+import * as request from "./request";
+import * as password from "./password";
+import * as session from "./session";
+import * as permission from "./permission";
+import * as role from "./role";
+import * as verification from "./verification";
+import * as connection from "./connection";
+import * as termRelations from "./term-relations";
+import * as signRelations from "./sign-relations";
+import * as videoRelations from "./video-relations";
+import * as reportRelations from "./report-relations";
+import * as favoriteRelations from "./favorite-relations";
+import * as userRelations from "./user-relations";
+import * as voteRelations from "./vote-relations";
+import * as categoryRelations from "./category-relations";
+import * as videoStatusRelations from "./video-status-relations";
+import * as voteTypeRelations from "./vote-type-relations";
+import * as userImageRelations from "./user-images-relations";
+import * as searchRelations from "./search-relations";
+import * as searchSignRelations from "./search-sign-relations";
+import * as requestStatusRelations from "./request-status-relations";
+import * as requestTypeRelations from "./request-type-relations";
+import * as requestRelations from "./request-relations";
+import * as passwordRelations from "./password-relations";
+import * as sessionRelations from "./session-relations";
+import * as permissionRelations from "./permission-relations";
+import * as roleRelations from "./role-relations";
+import * as connectionRelations from "./connection-relations";
+import * as categoryToSign from "./category-to-sign";
+import * as signToSign from "./sign-to-sign";
+import * as roleToUser from "./role-to-user";
+import * as permissionToRole from "./permission-to-role";
+import * as categoryToSignRelations from "./category-to-sign-relations";
+import * as signToSignRelations from "./sign-to-sign-relations";
+import * as roleToUserRelations from "./role-to-user-relations";
+import * as permissionToRoleRelations from "./permission-to-role-relations";
 
 export const schema = {
-  ...terms,
-  ...signs,
-  ...videos,
-  ...reports,
-  ...favorites,
-  ...users,
-  ...votes,
-  ...categories,
-  ...videoStatuses,
-  ...voteTypes,
-  ...userImages,
-  ...searches,
-  ...searchSigns,
-  ...requestStatuses,
-  ...requestTypes,
-  ...requests,
-  ...passwords,
-  ...sessions,
-  ...permissions,
-  ...roles,
-  ...verifications,
-  ...connections,
-  ...termsRelations,
-  ...signsRelations,
-  ...videosRelations,
-  ...reportsRelations,
-  ...favoritesRelations,
-  ...usersRelations,
-  ...votesRelations,
-  ...categoriesRelations,
-  ...videoStatusesRelations,
-  ...voteTypesRelations,
-  ...userImagesRelations,
-  ...searchesRelations,
-  ...searchSignsRelations,
-  ...requestStatusesRelations,
-  ...requestTypesRelations,
-  ...requestsRelations,
-  ...passwordsRelations,
-  ...sessionsRelations,
-  ...permissionsRelations,
-  ...rolesRelations,
-  ...connectionsRelations,
-  ...categoriesToSigns,
-  ...signsToSigns,
-  ...rolesToUsers,
-  ...permissionsToRoles,
-  ...categoriesToSignsRelations,
-  ...signsToSignsRelations,
-  ...rolesToUsersRelations,
-  ...permissionsToRolesRelations,
+	...term,
+	...sign,
+	...video,
+	...report,
+	...favorite,
+	...user,
+	...vote,
+	...category,
+	...videoStatus,
+	...voteType,
+	...userImage,
+	...search,
+	...searchSign,
+	...requestStatus,
+	...requestType,
+	...request,
+	...password,
+	...session,
+	...permission,
+	...role,
+	...verification,
+	...connection,
+	...termRelations,
+	...signRelations,
+	...videoRelations,
+	...reportRelations,
+	...favoriteRelations,
+	...userRelations,
+	...voteRelations,
+	...categoryRelations,
+	...videoStatusRelations,
+	...voteTypeRelations,
+	...userImageRelations,
+	...searchRelations,
+	...searchSignRelations,
+	...requestStatusRelations,
+	...requestTypeRelations,
+	...requestRelations,
+	...passwordRelations,
+	...sessionRelations,
+	...permissionRelations,
+	...roleRelations,
+	...connectionRelations,
+	...categoryToSign,
+	...signToSign,
+	...roleToUser,
+	...permissionToRole,
+	...categoryToSignRelations,
+	...signToSignRelations,
+	...roleToUserRelations,
+	...permissionToRoleRelations,
 };

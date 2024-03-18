@@ -1,11 +1,11 @@
 import { relations } from "drizzle-orm";
-import { userImages } from "./user-images";
-import { users } from "./users";
+import { userImage } from "./user-image";
+import { user } from "./user";
 
-export const userImagesRelations = relations(userImages, (helpers) => ({
-  user: helpers.one(users, {
-    relationName: "UserToUserImage",
-    fields: [userImages.userId],
-    references: [users.id],
-  }),
+export const userImageRelations = relations(userImage, (helpers) => ({
+	user: helpers.one(user, {
+		relationName: "userToUserImage",
+		fields: [userImage.userId],
+		references: [user.id],
+	}),
 }));
