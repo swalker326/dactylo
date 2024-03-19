@@ -1,4 +1,4 @@
-import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
 
 export const vote = sqliteTable("vote", {
@@ -16,3 +16,6 @@ export const vote = sqliteTable("vote", {
 		enum: ["UPVOTE", "DOWNVOTE", "NO_VOTE"],
 	}).notNull(),
 });
+
+export type SelectVote = typeof vote.$inferSelect;
+export type InsertVote = typeof vote.$inferInsert;

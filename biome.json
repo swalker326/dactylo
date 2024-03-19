@@ -10,6 +10,9 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
+			"correctness": {
+				"noUnusedVariables": "warn"
+			},
 			"recommended": true
 		}
 	}

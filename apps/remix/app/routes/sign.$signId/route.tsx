@@ -5,38 +5,49 @@ import {
 	MetaFunction,
 	json,
 } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
-import { prisma } from "@dactylo/db";
 import { parseWithZod } from "@conform-to/zod";
 import { getUserId, requireUserId } from "~/services/auth.server";
 import { addVote } from "~/utils/votes.server";
-import { VideoCard } from "~/components/video-card";
+import { VideoCard } from "~/components/drizzle-video-card";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { PlusCircleIcon } from "lucide-react";
+import { db, eq, schema } from "@dactylo/drizzle-db";
+
+export async function getSignWithVideos({ signId }: { signId: string }) {
+	const sign = await db.query.sign.findFirst({
+		where: eq(schema.sign, signId),
+		with: {
+			term: true,
+			videos: {
+				where: eq(schema.video.videoStatus, "APPROVED"),
+				with: {
+					favorites: true,
+					votes: true,
+				},
+			},
+		},
+	});
+	return sign;
+}
+export type VideoWithVotes = NonNullable<
+	Awaited<ReturnType<typeof getSignWithVideos>>
+>["videos"][0];
+export type SignWithVideos = ReturnType<typeof getSignWithVideos>;
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
 	const { signId } = params;
 	const userId = await getUserId(request);
 	invariant(signId, "sign-id is required");
-	const sign = await prisma.sign.findUnique({
-		where: { id: signId },
-		include: {
-			term: true,
-			videos: {
-				where: { status: "ACTIVE" },
-				orderBy: { voteCount: "desc" },
-				include: { votes: true, favorites: true },
-			},
-		},
-	});
+	const sign = await getSignWithVideos({ signId });
 	invariant(sign, "sign not found");
-	return typedjson({ sign, userId });
+	return json({ sign, userId });
 }
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
+	if (!data) return [{ title: "Sign" }];
 	const term =
-		data?.sign?.term.word.charAt(0).toLocaleUpperCase() +
+		data.sign?.term.word.charAt(0).toLocaleUpperCase() +
 		data.sign.term.word.slice(1);
 	return [{ title: term || "Sign" }];
 };
@@ -64,7 +75,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function SignIdRoute() {
-	const { sign, userId } = useTypedLoaderData<typeof loader>();
+	const { sign, userId } = useLoaderData<typeof loader>();
 	const { videos } = sign;
 	const topVideo = videos[0];
 
