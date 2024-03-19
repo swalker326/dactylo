@@ -1,7 +1,8 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 export const verifications = sqliteTable("verification", {
-	id: integer("id").primaryKey({ autoIncrement: true }),
+	id: text("id").primaryKey().$defaultFn(nanoid),
 	type: text("type").notNull(),
 	target: text("target").notNull(),
 	secret: text("secret").notNull(),

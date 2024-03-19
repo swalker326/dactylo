@@ -1,11 +1,12 @@
 import { sqliteTable, text, real, int } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 export const video = sqliteTable("video", {
-	id: int("id").primaryKey({ autoIncrement: true }),
+	id: text("id").primaryKey().$defaultFn(nanoid),
 	videoId: text("videoId").notNull(),
 	trendingScore: real("trendingScore").default(0).notNull(),
-	signId: int("signId").notNull(),
-	userId: int("userId").notNull(),
+	signId: text("signId").notNull(),
+	userId: text("userId").notNull(),
 	updatedAt: text("updatedAt"),
 	createdAt: text("createdAt")
 		.$defaultFn(() => new Date().toISOString())
@@ -13,5 +14,7 @@ export const video = sqliteTable("video", {
 	voteCount: int("voteCount", { mode: "number" }).default(0).notNull(),
 	url: text("url").notNull(),
 	approvedOn: text("updatedAt"),
-	videoStatusId: int("videoStatusId", { mode: "number" }).notNull(),
+	videoStatus: text("videoStatus", {
+		enum: ["APPROVED", "REJECTED", "PENDING"],
+	}).notNull(),
 });

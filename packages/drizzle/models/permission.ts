@@ -1,7 +1,8 @@
 import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 export const permission = sqliteTable("permission", {
-	id: int("id").primaryKey({ autoIncrement: true }),
+	id: text("id").primaryKey().$defaultFn(nanoid),
 	action: text("action").notNull(),
 	entity: text("entity").notNull(),
 	access: text("access").notNull(),

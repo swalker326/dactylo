@@ -1,8 +1,9 @@
 import { InferSelectModel, InferInsertModel } from "drizzle-orm";
 import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 export const term = sqliteTable("term", {
-	id: int("id").primaryKey({ autoIncrement: true }),
+	id: text("id").primaryKey().$defaultFn(nanoid),
 	word: text("word").notNull().unique(),
 	createdAt: text("createdAt")
 		.notNull()

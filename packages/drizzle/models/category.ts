@@ -1,7 +1,8 @@
 import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 export const category = sqliteTable("category", {
-	id: int("id").primaryKey({ autoIncrement: true }),
+	id: text("id").primaryKey().$defaultFn(nanoid),
 	slug: text("slug").notNull(),
 	name: text("name").notNull(),
 	description: text("description").default("").notNull(),

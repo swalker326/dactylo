@@ -1,9 +1,10 @@
 import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 export const vote = sqliteTable("vote", {
-	id: int("id").primaryKey({ autoIncrement: true }),
-	userId: int("userId").notNull(),
-	videoId: int("videoId").notNull(),
+	id: text("id").primaryKey().$defaultFn(nanoid),
+	userId: text("userId").notNull(),
+	videoId: text("videoId").notNull(),
 	voteDate: text("voteDate")
 		.$defaultFn(() => new Date().toISOString())
 		.notNull(),
@@ -11,5 +12,7 @@ export const vote = sqliteTable("vote", {
 	createdAt: text("createdAt")
 		.$defaultFn(() => new Date().toISOString())
 		.notNull(),
-	voteTypeId: int("voteTypeId").notNull(),
+	voteType: text("voteTypeId", {
+		enum: ["UPVOTE", "DOWNVOTE", "NO_VOTE"],
+	}).notNull(),
 });

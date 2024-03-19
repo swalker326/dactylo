@@ -6,13 +6,7 @@ import * as favorite from "./favorite";
 import * as user from "./user";
 import * as vote from "./vote";
 import * as category from "./category";
-import * as videoStatus from "./video-status";
-import * as voteType from "./vote-type";
 import * as userImage from "./user-image";
-import * as search from "./search";
-import * as searchSign from "./search-sign";
-import * as requestStatus from "./request-status";
-import * as requestType from "./request-type";
 import * as request from "./request";
 import * as password from "./password";
 import * as session from "./session";
@@ -28,13 +22,7 @@ import * as favoriteRelations from "./favorite-relations";
 import * as userRelations from "./user-relations";
 import * as voteRelations from "./vote-relations";
 import * as categoryRelations from "./category-relations";
-import * as videoStatusRelations from "./video-status-relations";
-import * as voteTypeRelations from "./vote-type-relations";
 import * as userImageRelations from "./user-images-relations";
-import * as searchRelations from "./search-relations";
-import * as searchSignRelations from "./search-sign-relations";
-import * as requestStatusRelations from "./request-status-relations";
-import * as requestTypeRelations from "./request-type-relations";
 import * as requestRelations from "./request-relations";
 import * as passwordRelations from "./password-relations";
 import * as sessionRelations from "./session-relations";
@@ -59,13 +47,7 @@ export const schema = {
 	...user,
 	...vote,
 	...category,
-	...videoStatus,
-	...voteType,
 	...userImage,
-	...search,
-	...searchSign,
-	...requestStatus,
-	...requestType,
 	...request,
 	...password,
 	...session,
@@ -81,13 +63,7 @@ export const schema = {
 	...userRelations,
 	...voteRelations,
 	...categoryRelations,
-	...videoStatusRelations,
-	...voteTypeRelations,
 	...userImageRelations,
-	...searchRelations,
-	...searchSignRelations,
-	...requestStatusRelations,
-	...requestTypeRelations,
 	...requestRelations,
 	...passwordRelations,
 	...sessionRelations,

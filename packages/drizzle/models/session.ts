@@ -1,11 +1,12 @@
 import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 export const session = sqliteTable("session", {
-	id: int("id").primaryKey({ autoIncrement: true }),
+	id: text("id").primaryKey().$defaultFn(nanoid),
 	expirationDate: int("expirationDate", { mode: "timestamp" }).notNull(),
-	updatedAt: text("updatedAt"),
 	createdAt: text("createdAt")
 		.$defaultFn(() => new Date().toISOString())
 		.notNull(),
-	userId: int("userId").notNull(),
+	updatedAt: text("updatedAt"),
+	userId: text("userId").notNull(),
 });

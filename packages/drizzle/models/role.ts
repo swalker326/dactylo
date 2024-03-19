@@ -1,7 +1,8 @@
-import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
 
 export const role = sqliteTable("role", {
-	id: int("id").primaryKey({ autoIncrement: true }),
+	id: text("id").primaryKey().$defaultFn(nanoid),
 	name: text("name").notNull(),
 	description: text("description").default("").notNull(),
 	createdAt: text("createdAt")
