@@ -5,12 +5,12 @@ import { video } from "./video";
 
 export const votesRelations = relations(vote, (helpers) => ({
 	user: helpers.one(user, {
-		relationName: "userToVote",
+		relationName: "userToVotes",
 		fields: [vote.userId],
 		references: [user.id],
 	}),
 	video: helpers.one(video, {
-		relationName: "videoToVote",
+		relationName: "videoToVotes",
 		fields: [vote.videoId],
 		references: [video.id],
 	}),

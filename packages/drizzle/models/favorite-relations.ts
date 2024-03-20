@@ -10,7 +10,7 @@ export const favoriteRelations = relations(favorite, (helpers) => ({
 		references: [user.id],
 	}),
 	video: helpers.one(video, {
-		relationName: "favoriteToVideo",
+		relationName: "videoToFavorites",
 		fields: [favorite.videoId],
 		references: [video.id],
 	}),

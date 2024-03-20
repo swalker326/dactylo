@@ -5,12 +5,12 @@ import { user } from "./user";
 
 export const reportRelations = relations(report, (helpers) => ({
 	video: helpers.one(video, {
-		relationName: "reportToVideo",
+		relationName: "videoToReports",
 		fields: [report.videoId],
 		references: [video.id],
 	}),
 	user: helpers.one(user, {
-		relationName: "reportToUser",
+		relationName: "reportsToUser",
 		fields: [report.userId],
 		references: [user.id],
 	}),

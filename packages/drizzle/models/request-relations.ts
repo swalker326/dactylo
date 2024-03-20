@@ -4,7 +4,7 @@ import { user } from "./user";
 
 export const requestRelations = relations(request, (helpers) => ({
 	user: helpers.one(user, {
-		relationName: "requestToUser",
+		relationName: "requestsToUser",
 		fields: [request.userId],
 		references: [user.id],
 	}),

@@ -13,11 +13,11 @@ export const videosRelations = relations(video, (helpers) => ({
 		references: [user.id],
 	}),
 	sign: helpers.one(sign, {
-		relationName: "signToVideo",
+		relationName: "videosToSign",
 		fields: [video.signId],
 		references: [sign.id],
 	}),
-	votes: helpers.many(vote, { relationName: "votesToVideo" }),
-	favorites: helpers.many(favorite, { relationName: "favoritesToVideo" }),
-	reports: helpers.many(report, { relationName: "reportsToVideo" }),
+	votes: helpers.many(vote, { relationName: "videoToVotes" }),
+	favorites: helpers.many(favorite, { relationName: "videoToFavorites" }),
+	reports: helpers.many(report, { relationName: "videoToReports" }),
 }));

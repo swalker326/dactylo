@@ -12,8 +12,8 @@ import { report } from "./report";
 import { request } from "./request";
 
 export const usersRelations = relations(user, (helpers) => ({
-	uploadedVideos: helpers.many(video, { relationName: "videosToUser" }),
-	votes: helpers.many(vote, { relationName: "votesToUser" }),
+	uploadedVideos: helpers.many(video, { relationName: "userToVideo" }),
+	votes: helpers.many(vote, { relationName: "userToVotes" }),
 	roles: helpers.many(roleToUser),
 	image: helpers.one(userImage, {
 		relationName: "userToUserImage",
@@ -25,9 +25,9 @@ export const usersRelations = relations(user, (helpers) => ({
 		fields: [user.id],
 		references: [password.userId],
 	}),
-	sessions: helpers.many(session, { relationName: "sessionsToUser" }),
-	connections: helpers.many(connection, { relationName: "connectionsToUser" }),
-	favorites: helpers.many(favorite, { relationName: "favoritesToUser" }),
+	sessions: helpers.many(session, { relationName: "sessionToUser" }),
+	connections: helpers.many(connection, { relationName: "connectionToUser" }),
+	favorites: helpers.many(favorite, { relationName: "favoriteToUser" }),
 	reports: helpers.many(report, { relationName: "reportsToUser" }),
 	requests: helpers.many(request, { relationName: "requestsToUser" }),
 }));

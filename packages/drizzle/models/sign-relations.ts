@@ -6,7 +6,7 @@ import { signToSign } from "./sign-to-sign";
 import { term } from "./term";
 
 export const signRelations = relations(sign, (helpers) => ({
-	videos: helpers.many(video, { relationName: "signToVideo" }),
+	videos: helpers.many(video, { relationName: "videosToSign" }),
 	categories: helpers.many(categoryToSign),
 	relatedSigns: helpers.many(signToSign, { relationName: "relatedSigns" }),
 	relatedToSigns: helpers.many(signToSign, {
